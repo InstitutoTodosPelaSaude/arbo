@@ -1,0 +1,15 @@
+version: '2'
+services:
+  postgresdwitps:
+    env_file:
+      - .env
+    build: .
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+  adminer:
+    image: adminer
+    ports:
+      - "8091:8080"

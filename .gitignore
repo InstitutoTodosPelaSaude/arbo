@@ -29,4 +29,5 @@ profiles.yml
 
 .user.yaml
 
-postgres/
+postgres/.env
+postgres/create_database.sql
