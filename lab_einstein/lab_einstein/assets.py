@@ -16,12 +16,17 @@ def einstein_raw(context):
     root_path = pathlib.Path(__file__).parent.parent.parent.absolute()
     einstein_path = root_path / "data" / "einstein"
 
-    engine = create_engine('postgresql://<TODO>')
+    engine = create_engine('postgresql://itps_dev:itps_dev@localhost:5433/itps_dev')
 
     for file in os.listdir(einstein_path):
-        einstein_df = pd.read_excel(einstein_path / file, dtype = str)
+
+        if not file.endswith('.xlsx'):
+            continue
+
+        print(einstein_path / file)
+        einstein_df = pd.read_excel(einstein_path / file, dtype = str, sheet_name='DENGUE')
         einstein_df['file_name'] = file
-        einstein_df.to_sql('einstein', engine, if_exists='append', index=False)
+        einstein_df.to_sql('einstein_raw', engine, schema='arboviroses', if_exists='replace', index=False)
 
     engine.dispose()
 
