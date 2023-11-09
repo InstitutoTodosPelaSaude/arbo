@@ -1,5 +1,3 @@
-
-
 WITH source_data AS (
     SELECT * FROM
     {{ ref("einstein_fix_values") }}
@@ -7,4 +5,4 @@ WITH source_data AS (
 SELECT
     *
 FROM source_data
-WHERE result != 'Pos' AND result != 'Neg'
+WHERE age < 0 OR age > 120 OR age IS NULL
