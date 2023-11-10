@@ -1,6 +1,20 @@
 
 {{ config(materialized='table') }}
 
+-- PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG	    VÍRUS DENGUE:
+-- PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG	    VÍRUS CHIKUNGUNYA:
+-- PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG	    VÍRUS ZIKA:
+-- PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG --> arbo_pcr_3
+
+-- SOROLOGIA PARA DENGUE	                DENGUE IGG --> igg_serum
+-- SOROLOGIA PARA DENGUE	                DENGUE IGM --> igm_serum
+-- TESTE RÁPIDO PARA DENGUE IGG	            DENGUE IGG, TESTE RÁPIDO --> igg_serum
+-- TESTE RÁPIDO PARA DENGUE IGM E NS1	    DENGUE IGM, TESTE RÁPIDO --> igm_serum
+-- TESTE RÁPIDO PARA DENGUE IGM E NS1	    DENGUE NS1, TESTE RÁPIDO --> ns1_antigen
+
+
+-- test_id, exame, detalhe_exame
+
 {%
     set 
     test_kit_map = {
@@ -17,7 +31,7 @@
 WITH source_data AS (
 
     SELECT * FROM
-    {{ ref("einstein_convert_types") }}
+    {{ ref("01_einstein_convert_types") }}
 
 )
 SELECT 

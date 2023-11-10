@@ -13,7 +13,7 @@ def einstein_raw(context):
 
     API Docs: https://github.com/HackerNews/API#new-top-and-best-stories
     """
-    root_path = pathlib.Path(__file__).parent.parent.parent.absolute()
+    root_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
     einstein_path = root_path / "data" / "einstein"
 
     engine = create_engine('postgresql://itps_dev:itps_dev@localhost:5433/itps_dev')
