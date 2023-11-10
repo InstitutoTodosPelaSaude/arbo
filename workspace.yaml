@@ -1,7 +1,7 @@
 load_from:
     - python_module:
         module_name: lab_einstein.definitions
-        working_directory: lab_einstein
+        working_directory: dagster/lab_einstein
     - python_module:
         module_name: lab_sabin.definitions
-        working_directory: lab_sabin
+        working_directory: dagster/lab_sabin

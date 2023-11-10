@@ -12,20 +12,18 @@ data/**/*.tsv
 data/**/*.json
 data/**/*.parquet
 
+**/.DS_Store
+tmp*/
+
 logs/
 **/*.log
 
 postgres/data/
 
-target/
-
-tmp*/
-
-dbt_modules/
-
-**/.DS_Store
-
-profiles.yml
+dbt/dbt_modules/
+dbt/target/
+dbt/logs/
+dbt/profiles.yml
 
 .user.yaml
 
