@@ -32,15 +32,15 @@ SELECT
             END
         )
     ) AS sample_id,
-
+    detalhe_exame,
     test_id,
 
     -- test_kit
     CASE
         WHEN detalhe_exame IN (
-            'VÍRUS DENGUE',
-            'VÍRUS CHIKUNGUNYA',
-            'VÍRUS ZIKA'
+            'VÍRUS DENGUE:',
+            'VÍRUS CHIKUNGUNYA:',
+            'VÍRUS ZIKA:'
         ) THEN 'arbo_pcr_3'
         WHEN detalhe_exame IN (
             'DENGUE IGG',
