@@ -7,5 +7,5 @@ COPY profiles.yml /root/.dbt/profiles.yml
 
 WORKDIR /usr/app/arboviroses/
 
-# Keep container running
+# Keep container running forever
 ENTRYPOINT [ "tail", "-f", "/dev/null" ]
