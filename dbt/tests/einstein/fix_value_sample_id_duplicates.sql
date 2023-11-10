@@ -3,6 +3,7 @@ WITH source_data AS (
     {{ ref("02_einstein_fix_values") }}
 )
 SELECT
-    *
+    COUNT(*)
 FROM source_data
-WHERE age < 0 OR age > 120 OR age IS NULL
+GROUP BY sample_id
+HAVING COUNT(*) > 3

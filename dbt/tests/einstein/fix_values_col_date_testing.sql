@@ -1,6 +1,6 @@
 WITH source_data AS (
     SELECT * FROM
-    {{ ref("einstein_fix_values") }}
+    {{ ref("02_einstein_fix_values") }}
 )
 SELECT
     *

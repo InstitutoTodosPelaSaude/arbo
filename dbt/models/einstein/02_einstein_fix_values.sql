@@ -5,28 +5,11 @@
 -- PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG	    VÍRUS CHIKUNGUNYA:
 -- PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG	    VÍRUS ZIKA:
 -- PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG --> arbo_pcr_3
-
 -- SOROLOGIA PARA DENGUE	                DENGUE IGG --> igg_serum
 -- SOROLOGIA PARA DENGUE	                DENGUE IGM --> igm_serum
 -- TESTE RÁPIDO PARA DENGUE IGG	            DENGUE IGG, TESTE RÁPIDO --> igg_serum
 -- TESTE RÁPIDO PARA DENGUE IGM E NS1	    DENGUE IGM, TESTE RÁPIDO --> igm_serum
 -- TESTE RÁPIDO PARA DENGUE IGM E NS1	    DENGUE NS1, TESTE RÁPIDO --> ns1_antigen
-
-
--- test_id, exame, detalhe_exame
-
-{%
-    set 
-    test_kit_map = {
-        "Dengue IgM": "igm_serum",
-        "Dengue IgG/IgM": "igg_serum",
-        "Dengue IgG/IgM": "igm_serum",
-        "Dengue NS1": "ns1_antigen",
-        "Vírus Chikungunya PCR": "arbo_pcr_3",
-        "Vírus Dengue PCR": "arbo_pcr_3",
-        "Vírus Zika PCR": "arbo_pcr_3",
-    }
-%}
 
 WITH source_data AS (
 
@@ -35,12 +18,41 @@ WITH source_data AS (
 
 )
 SELECT 
+    
+    -- CREATE UNIQUE hash using test_id, detalhe_exame, and exame
+    -- to avoid duplicates
+    md5(
+        CONCAT(
+            test_id,
+            exame,
+
+            CASE
+                WHEN exame ILIKE 'PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG' THEN 'MULTIPLEX'
+                ELSE detalhe_exame
+            END
+        )
+    ) AS sample_id,
 
     test_id,
+
+    -- test_kit
     CASE
-        {% for test_kit in test_kit_map %}
-            WHEN test_kit ILIKE '{{ test_kit }}' THEN '{{ test_kit_map[test_kit] }}'
-        {% endfor %}
+        WHEN detalhe_exame IN (
+            'VÍRUS DENGUE',
+            'VÍRUS CHIKUNGUNYA',
+            'VÍRUS ZIKA'
+        ) THEN 'arbo_pcr_3'
+        WHEN detalhe_exame IN (
+            'DENGUE IGG',
+            'DENGUE IGG, TESTE RÁPIDO'
+        ) THEN 'igg_serum'
+        WHEN detalhe_exame IN (
+            'DENGUE IGM',
+            'DENGUE IGM, TESTE RÁPIDO'
+        ) THEN 'igm_serum'
+        WHEN detalhe_exame IN (
+            'DENGUE NS1, TESTE RÁPIDO'
+        ) THEN 'ns1_antigen'
         ELSE 'UNKNOWN'
     END AS test_kit,
     
@@ -51,10 +63,8 @@ SELECT
     END AS gender,
     age,
 
-    detalhe_exame,
     location,
     state,
-    pathogen,
     
     CASE 
         WHEN result = 'DETECTADO' THEN 'Pos'

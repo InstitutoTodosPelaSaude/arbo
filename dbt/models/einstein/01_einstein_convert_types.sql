@@ -12,7 +12,7 @@ SELECT
     "ACCESSION" AS test_id,
     "SEXO" AS gender,
     "IDADE"::INT AS age,
-    "EXAME" AS test_kit,
+    "EXAME" AS exame,
     "DETALHE_EXAME" AS detalhe_exame,
     "DH_COLETA"::DATE AS date_testing,
     "MUNICÍPIO" AS location,
