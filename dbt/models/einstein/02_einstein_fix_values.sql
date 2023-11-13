@@ -21,6 +21,7 @@ SELECT
     
     -- CREATE UNIQUE hash using test_id, detalhe_exame, and exame
     -- to avoid duplicates
+    -- Testes PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG recebem o mesmo id
     md5(
         CONCAT(
             test_id,
@@ -67,9 +68,9 @@ SELECT
     state,
     
     CASE 
-        WHEN result = 'DETECTADO' THEN 'Pos'
-        WHEN result = 'NÃO DETECTADO' THEN 'Neg'
-        ELSE 'UNKNOWN' 
+        WHEN result = 'DETECTADO' THEN 1
+        WHEN result = 'NÃO DETECTADO' THEN 0
+        ELSE NULL
     END AS result,
 
     date_testing,
