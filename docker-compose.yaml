@@ -1,0 +1,11 @@
+version: '2'
+services:
+  dagster:
+    build: .
+    environment:
+      - DAGSTER_DBT_PARSE_PROJECT_ON_LOAD=1
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/app/arboviroses/
+    

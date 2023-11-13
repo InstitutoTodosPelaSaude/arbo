@@ -1,11 +1,11 @@
-FROM ghcr.io/dbt-labs/dbt-core:1.6.5
-
-RUN pip install --upgrade pip
-RUN pip install --upgrade dbt-postgres
-
-COPY profiles.yml /root/.dbt/profiles.yml
+FROM python:3.11-slim-bookworm
 
 WORKDIR /usr/app/arboviroses/
 
-# Keep container running forever
-ENTRYPOINT [ "tail", "-f", "/dev/null" ]
+COPY requirements.txt /usr/app/arboviroses/
+
+RUN apt update
+RUN pip install -r requirements.txt
+
+# Keep container running
+CMD ["dagster", "dev"]
