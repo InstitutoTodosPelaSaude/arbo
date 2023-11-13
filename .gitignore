@@ -29,3 +29,5 @@ dbt/profiles.yml
 
 postgres/.env
 postgres/create_database.sql
+
+.env

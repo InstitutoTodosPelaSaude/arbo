@@ -4,8 +4,16 @@ import pandas as pd
 import os
 import pathlib
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 
 from .constants import dbt_manifest_path
+
+load_dotenv()
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 @asset(compute_kind="python")
 def einstein_raw(context):
@@ -16,7 +24,7 @@ def einstein_raw(context):
     root_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
     einstein_path = root_path / "data" / "einstein"
 
-    engine = create_engine('postgresql://itps_dev:itps_dev@localhost:5433/itps_dev')
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
     einstein_df = pd.DataFrame()
     for file in os.listdir(einstein_path):
