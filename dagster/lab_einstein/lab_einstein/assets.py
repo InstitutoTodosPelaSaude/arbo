@@ -18,16 +18,18 @@ def einstein_raw(context):
 
     engine = create_engine('postgresql://itps_dev:itps_dev@localhost:5433/itps_dev')
 
+    einstein_df = pd.DataFrame()
     for file in os.listdir(einstein_path):
-
         if not file.endswith('.xlsx'):
             continue
 
         print(einstein_path / file)
-        einstein_df = pd.read_excel(einstein_path / file, dtype = str, sheet_name='DENGUE')
-        einstein_df['file_name'] = file
-        einstein_df.to_sql('einstein_raw', engine, schema='arboviroses', if_exists='replace', index=False)
-
+        df = pd.read_excel(einstein_path / file, dtype = str, sheet_name='DENGUE')
+        df['file_name'] = file
+        einstein_df = pd.concat([einstein_df, df], ignore_index=True)
+        
+    # Save to db
+    einstein_df.to_sql('einstein_raw', engine, schema='arboviroses', if_exists='replace', index=False)
     engine.dispose()
 
     context.add_output_metadata({'num_rows': einstein_df.shape[0]})
