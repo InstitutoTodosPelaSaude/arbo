@@ -1,15 +1,25 @@
 version: 2
 
 sources:
-  - name: einstein
+  - name: dagster
     description: Raw data from Einstein
     schema: arboviroses
     tables:
       - name: einstein_raw
+        meta:
+          dagster:
+            asset_key: ["einstein_raw"]
 
 models:
   - name: 05_einstein_deduplicate
     description: Deduplicate columns using the sample_id
+    columns:
+      - name: sample_id
+        tests:
+          - unique
+  - name: 06_einstein_final
+    access: public
+    description: Final table for Einstein
     columns:
       - name: sample_id
         tests:

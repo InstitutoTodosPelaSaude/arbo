@@ -24,6 +24,7 @@ dbt/dbt_modules/
 dbt/target/
 dbt/logs/
 dbt/profiles.yml
+dbt/.user.yml
 
 .user.yaml
 

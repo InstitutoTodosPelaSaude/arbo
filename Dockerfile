@@ -7,5 +7,6 @@ COPY requirements.txt /usr/app/arboviroses/
 RUN apt update
 RUN pip install -r requirements.txt
 
-# Keep container running
+RUN dbt seed
+
 CMD ["dagster", "dev"]
