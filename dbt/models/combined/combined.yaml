@@ -1,0 +1,6 @@
+sources:
+  - name: age_groups
+    description: Table to map age groups created by dbt seed
+    schema: arboviroses
+    tables:
+      - name: age_groups
