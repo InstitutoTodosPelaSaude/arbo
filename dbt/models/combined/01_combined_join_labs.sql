@@ -4,7 +4,10 @@
 
 WITH source_data AS (
 
-    SELECT * FROM {{ ref("06_einstein_final") }}
+    SELECT 
+    'EINSTEIN' as lab_id,
+    * 
+    FROM {{ ref("06_einstein_final") }}
 
 )
 SELECT
