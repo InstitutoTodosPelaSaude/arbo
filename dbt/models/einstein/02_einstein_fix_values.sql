@@ -64,8 +64,8 @@ SELECT
     END AS gender,
     age,
     
-    regexp_replace(lower(unaccent(location)), '[^\w\s]', '', 'g') AS location,
-    regexp_replace(lower(unaccent(state)), '[^\w\s]', '', 'g') AS state,
+    regexp_replace(upper(unaccent(location)), '[^\w\s]', '', 'g') AS location,
+    regexp_replace(upper(unaccent(state)), '[^\w\s]', '', 'g') AS state,
     
     CASE 
         WHEN result = 'DETECTADO' THEN 1
