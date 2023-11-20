@@ -39,9 +39,11 @@ SELECT
     --  0: Neg if there is no POS results and there is at least one NEG result
     -- -1: NT if there is no POS or NEG results
     {% for pathogen in test_result_columns %}
-        MAX({{pathogen}}) OVER(
-            PARTITION BY sample_id
-        ) AS {{pathogen}}
+        CASE 
+            WHEN MAX({{pathogen}}) OVER( PARTITION BY sample_id) = 1 THEN 'Pos'
+            WHEN MAX({{pathogen}}) OVER( PARTITION BY sample_id) = 0 THEN 'Neg'
+            WHEN MAX({{pathogen}}) OVER( PARTITION BY sample_id) = -1 THEN 'NT'
+        END AS {{pathogen}}
         {% if not loop.last %}
             ,
         {% endif %}
