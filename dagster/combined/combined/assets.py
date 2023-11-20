@@ -21,14 +21,14 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
 
 @asset(
     compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "04_combined_location")]
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "combined_04_location")]
 )
 def export_to_xlsx(context):
     """
     Get the final combined data from the database and export to xlsx
     """
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-    df = pd.read_sql('select * from arboviroses."04_combined_location"', engine)
+    df = pd.read_sql('select * from arboviroses."combined_04_location"', engine)
     df.to_excel('data/combined/combined.xlsx', index=False)
     engine.dispose()
 

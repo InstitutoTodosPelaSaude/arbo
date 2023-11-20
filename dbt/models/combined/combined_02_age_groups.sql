@@ -5,7 +5,7 @@
 WITH source_data AS (
 
     SELECT * 
-    FROM {{ ref("01_combined_join_labs") }}
+    FROM {{ ref("combined_01_join_labs") }}
 
 )
 SELECT 
