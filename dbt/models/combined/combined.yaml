@@ -9,3 +9,8 @@ sources:
     schema: arboviroses
     tables:
       - name: epiweeks
+  - name: municipios
+    description: Table to map location created by dbt seed
+    schema: arboviroses
+    tables:
+      - name: municipios
