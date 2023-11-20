@@ -21,7 +21,7 @@ SELECT
     age,
     location,
     state,
-    result,
+    --result,
     date_testing,
     file_name,
     denv_test_result,
