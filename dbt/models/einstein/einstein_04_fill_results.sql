@@ -18,7 +18,7 @@
 WITH source_data AS(
     SELECT
     *
-    FROM {{ ref("03_einstein_pivot_results") }}
+    FROM {{ ref("einstein_03_pivot_results") }}
 )
 SELECT
     -- add all coluns EXEPT test_result_columns and id_columns

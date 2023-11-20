@@ -7,7 +7,7 @@ WITH source_data AS (
     SELECT 
     'EINSTEIN' as lab_id,
     * 
-    FROM {{ ref("06_einstein_final") }}
+    FROM {{ ref("einstein_06_final") }}
 
 )
 SELECT

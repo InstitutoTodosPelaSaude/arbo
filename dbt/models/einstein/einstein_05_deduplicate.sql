@@ -10,7 +10,7 @@ WITH source_data AS(
     ROW_NUMBER() OVER(
         PARTITION BY sample_id
     ) AS row_number
-    FROM {{ ref("04_einstein_fill_results") }}
+    FROM {{ ref("einstein_04_fill_results") }}
 )
 SELECT
     

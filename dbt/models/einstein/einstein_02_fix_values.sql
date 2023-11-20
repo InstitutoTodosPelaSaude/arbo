@@ -14,7 +14,7 @@
 WITH source_data AS (
 
     SELECT * FROM
-    {{ ref("01_einstein_convert_types") }}
+    {{ ref("einstein_01_convert_types") }}
 
 )
 SELECT 

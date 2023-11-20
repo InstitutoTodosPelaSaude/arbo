@@ -83,7 +83,7 @@ WITH source_data AS (
         )
     }}
     FROM
-    {{ ref("02_einstein_fix_values") }}
+    {{ ref("einstein_02_fix_values") }}
 
 )
 SELECT * FROM source_data

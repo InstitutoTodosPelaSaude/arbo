@@ -10,7 +10,7 @@
 WITH source_data AS(
     SELECT
     *
-    FROM {{ ref("05_einstein_deduplicate") }}
+    FROM {{ ref("einstein_05_deduplicate") }}
 )
 SELECT
     *,
