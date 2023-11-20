@@ -63,9 +63,9 @@ SELECT
         ELSE 'UNKNOWN'
     END AS gender,
     age,
-
-    location,
-    state,
+    
+    regexp_replace(lower(unaccent(location)), '[^\w]+','') AS location,
+    state AS state,
     
     CASE 
         WHEN result = 'DETECTADO' THEN 1
