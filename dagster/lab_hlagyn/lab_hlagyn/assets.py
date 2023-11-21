@@ -30,10 +30,13 @@ def hlagyn_raw(context):
         if not file.endswith('.xlsx'):
             continue
 
-        print(hlagyn_path / file)
-        df = pd.read_excel(hlagyn_path / file, dtype = str, sheet_name='DENGUE') # TODO: change sheet name
+        df = pd.read_excel(hlagyn_path / file, dtype = str)
+        if 'Unnamed: 0' in df.columns: 
+            # Some files have an empty row in the beginning
+            df = pd.read_excel(hlagyn_path / file, skiprows=1, dtype = str)
+
         df['file_name'] = file
-        einstein_df = pd.concat([einstein_df, df], ignore_index=True)
+        hlagyn_df = pd.concat([hlagyn_df, df], ignore_index=True)
         
     # Save to db
     hlagyn_df.to_sql('hlagyn_raw', engine, schema='arboviroses', if_exists='replace', index=False)
