@@ -15,7 +15,7 @@ DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
-@dbt_assets(manifest=dbt_manifest_path, select='combined')
+@dbt_assets(manifest=dbt_manifest_path, select='combined +epiweeks +municipios +age_groups')
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
