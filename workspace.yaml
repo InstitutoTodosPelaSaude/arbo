@@ -3,9 +3,6 @@ load_from:
         module_name: lab_einstein.definitions
         working_directory: dagster/lab_einstein
     - python_module:
-        module_name: lab_sabin.definitions
-        working_directory: dagster/lab_sabin
-    - python_module:
         module_name: lab_hilab.definitions
         working_directory: dagster/lab_hilab
     - python_module:

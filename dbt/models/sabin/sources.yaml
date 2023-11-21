@@ -1,8 +1,0 @@
-version: 2
-
-sources:
-  - name: sabin
-    description: Raw data from Sabin
-    schema: arboviroses
-    tables:
-      - name: sabin_raw
