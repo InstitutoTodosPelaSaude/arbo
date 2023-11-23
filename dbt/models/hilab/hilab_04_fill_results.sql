@@ -27,7 +27,6 @@ SELECT
     age,
     location,
     state_code,
-    result,
     date_testing,
     patient_id,
     file_name,
