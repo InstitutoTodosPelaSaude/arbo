@@ -9,3 +9,14 @@ sources:
         meta:
           dagster:
             asset_key: ["hilab_raw"]
+
+models:
+  - name: hilab_02_fix_values
+    description: Fix values in hilab_raw and create sample_id
+    columns:
+      - name: sample_id
+        tests:
+          - unique
+      - name: test_kit
+        tests:
+          - not_null

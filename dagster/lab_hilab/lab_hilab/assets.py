@@ -27,13 +27,12 @@ def hilab_raw(context):
 
     hilab_df = pd.DataFrame()
     for file in os.listdir(hilab_path):
-        if not file.endswith('.xlsx'):
+        if not file.endswith('.csv'):
             continue
 
-        print(hilab_path / file)
-        df = pd.read_excel(hilab_path / file, dtype = str, sheet_name='DENGUE') # TODO: change sheet name
+        df = pd.read_csv(hilab_path / file)
         df['file_name'] = file
-        einstein_df = pd.concat([einstein_df, df], ignore_index=True)
+        hilab_df = pd.concat([hilab_df, df], ignore_index=True)
         
     # Save to db
     hilab_df.to_sql('hilab_raw', engine, schema='arboviroses', if_exists='replace', index=False)
