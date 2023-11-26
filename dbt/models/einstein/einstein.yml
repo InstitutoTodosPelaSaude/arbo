@@ -11,13 +11,31 @@ sources:
             asset_key: ["einstein_raw"]
 
 models:
-  - name: 05_einstein_deduplicate
+  - name: einstein_02_fix_values
+    description: Fix values in the raw table
+    columns:
+      - name: gender
+      - name: age
+      - name: test_kit
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['arbo_pcr_3', 'igg_serum', 'igm_serum', 'ns1_antigen']
+      
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+  - name: einstein_05_deduplicate
     description: Deduplicate columns using the sample_id
     columns:
       - name: sample_id
         tests:
           - unique
-  - name: 06_einstein_final
+
+  - name: einstein_06_final
     access: public
     description: Final table for Einstein
     columns:
