@@ -12,7 +12,7 @@ sources:
 
 models:
   - name: einstein_02_fix_values
-    description: Fix values in the raw table
+    description: Fix values and add the sample_id column in the raw table
     columns:
       - name: gender
       - name: age
@@ -27,6 +27,12 @@ models:
           - not_null
           - accepted_values:
               values: [0, 1]
+
+  - name: einstein_03_pivot_results
+    description: '{{ doc("pivot_results") }}'
+
+  - name: einstein_04_fill_results
+    description: '{{ doc("fill_results") }}'
 
   - name: einstein_05_deduplicate
     description: Deduplicate columns using the sample_id
