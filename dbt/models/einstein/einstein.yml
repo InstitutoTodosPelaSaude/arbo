@@ -35,6 +35,18 @@ models:
         tests:
           - unique
 
+      - name: test_id
+        tests:
+          - relationships:
+              to: ref('einstein_04_fill_results')
+              field: test_id
+
+      - name: sample_id
+        tests:
+          - relationships:
+              to: ref('einstein_04_fill_results')
+              field: sample_id
+
   - name: einstein_06_final
     access: public
     description: Final table for Einstein
