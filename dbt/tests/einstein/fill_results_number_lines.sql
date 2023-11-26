@@ -1,0 +1,1 @@
+{{ tables_have_the_same_number_lines('einstein_03_pivot_results', 'einstein_04_fill_results') }}
