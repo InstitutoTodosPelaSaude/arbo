@@ -92,6 +92,7 @@ gdf = gdf.drop('geometry', axis=1)
 # remove special characters
 
 gdf['NM_MUN_NORM'] = gdf['NM_MUN'].str.upper()
+gdf['NM_MUN_NORM'] = gdf['NM_MUN_NORM'].str.replace('-', ' ', regex=False)
 gdf['NM_MUN_NORM'] = gdf['NM_MUN_NORM'].str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8')
 gdf['NM_MUN_NORM'] = gdf['NM_MUN_NORM'].str.replace(re.compile(r'[^a-zA-Z0-9 ]'), '', regex=True)
 
