@@ -31,4 +31,7 @@ dbt/.user.yml
 postgres/.env
 postgres/create_database.sql
 
+utils/*.csv
+utils/*.zip
+
 .env
