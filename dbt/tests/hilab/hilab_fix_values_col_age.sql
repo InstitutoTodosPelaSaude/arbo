@@ -5,4 +5,4 @@ WITH source_data AS (
 SELECT
     *
 FROM source_data
-WHERE age < 0 OR age > 120 OR age IS NULL
+WHERE age < 0 OR age > 120 

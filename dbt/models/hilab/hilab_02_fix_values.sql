@@ -35,8 +35,25 @@
 
 WITH source_data AS (
 
-    SELECT * FROM
-    {{ ref('hilab_01_convert_types') }}
+    SELECT
+    *,
+    ROW_NUMBER() OVER(
+        PARTITION BY md5(
+                        CONCAT(
+                            test_id,
+                            exame,
+                            patient_id
+                        )
+                    )
+        ORDER BY md5(
+                    CONCAT(
+                        test_id,
+                        exame,
+                        patient_id
+                    )
+                )
+    ) AS row_number
+    FROM {{ ref('hilab_01_convert_types') }}
 
 )
 SELECT
@@ -82,3 +99,5 @@ SELECT
     END AS gender,
     file_name
 FROM source_data
+-- This column is used to filter out duplicate rows
+WHERE row_number = 1
