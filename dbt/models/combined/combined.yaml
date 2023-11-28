@@ -48,6 +48,16 @@ models:
               to: ref('combined_02_age_groups')
               field: sample_id
 
+  - name: combined_04_fix_location
+    description: Fix location name with mistakes in combined table 
+    columns:
+      - name: sample_id
+        tests:
+          - unique
+          - relationships:
+              to: ref('combined_03_dates')
+              field: sample_id
+
   - name: combined_05_location
     description: Add location info to combined table
     columns:
@@ -55,5 +65,5 @@ models:
         tests:
           - unique
           - relationships:
-              to: ref('combined_03_dates')
+              to: ref('combined_04_fix_location')
               field: sample_id
