@@ -17,9 +17,8 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 @asset(compute_kind="python")
 def einstein_raw(context):
-    """Get top stories from the HackerNews top stories endpoint.
-
-    API Docs: https://github.com/HackerNews/API#new-top-and-best-stories
+    """
+    Read all excel files from data/einstein folder and save to db
     """
     root_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
     einstein_path = root_path / "data" / "einstein"
