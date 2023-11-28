@@ -15,20 +15,20 @@ DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
-@dbt_assets(manifest=dbt_manifest_path, select='combined +epiweeks +municipios +age_groups')
+@dbt_assets(manifest=dbt_manifest_path, select='combined +epiweeks +municipios +age_groups +fix_location')
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
 @asset(
     compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "combined_04_location")]
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "combined_05_location")]
 )
 def export_to_xlsx(context):
     """
     Get the final combined data from the database and export to xlsx
     """
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-    df = pd.read_sql('select * from arboviroses."combined_04_location"', engine)
+    df = pd.read_sql('select * from arboviroses."combined_05_location"', engine)
     df.to_excel('data/combined/combined.xlsx', index=False)
     engine.dispose()
 

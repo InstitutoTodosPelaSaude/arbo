@@ -9,6 +9,11 @@ sources:
     schema: arboviroses
     tables:
       - name: epiweeks
+  - name: fix_location
+    description: Table to fix locations with mistakes created by dbt seed
+    schema: arboviroses
+    tables:
+      - name: fix_location
   - name: municipios
     description: Table to map location created by dbt seed
     schema: arboviroses
@@ -43,7 +48,7 @@ models:
               to: ref('combined_02_age_groups')
               field: sample_id
 
-  - name: combined_04_location
+  - name: combined_05_location
     description: Add location info to combined table
     columns:
       - name: sample_id
