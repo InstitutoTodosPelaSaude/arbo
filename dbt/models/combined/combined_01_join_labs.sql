@@ -40,6 +40,13 @@ WITH source_data AS (
     'HILAB' as lab_id,
     {{ columns | join(', ') }}
     FROM {{ ref("hilab_05_final") }}
+    
+    UNION
+    
+    SELECT 
+    'HLAGYN' as lab_id,
+    {{ columns | join(', ') }}
+    FROM {{ ref("hlagyn_05_final") }}
 )
 SELECT
     *
