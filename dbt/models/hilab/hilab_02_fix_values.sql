@@ -90,7 +90,10 @@ SELECT
         ELSE NULL
     END AS state,
 
-    age,
+    CASE
+        WHEN age > 120 OR age < 0 THEN NULL
+        ELSE age
+    END AS age,
     patient_id,
     CASE
         WHEN gender ILIKE 'F%' THEN 'F'
