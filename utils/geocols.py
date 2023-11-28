@@ -72,6 +72,37 @@ sigla_uf_to_region = {
     'TO': 'NORTE'
 }
 
+# https://www.ibge.gov.br/explica/codigos-dos-municipios.php
+sigla_uf_to_uf_code = {
+    'AC': 12,
+    'AL': 27,
+    'AP': 16,
+    'AM': 13,
+    'BA': 29,
+    'CE': 23,
+    'DF': 53,
+    'ES': 32,
+    'GO': 52,
+    'MA': 21,
+    'MT': 51,
+    'MS': 50,
+    'MG': 31,
+    'PA': 15,
+    'PB': 25,
+    'PR': 41,
+    'PE': 26,
+    'PI': 22,
+    'RJ': 33,
+    'RN': 24,
+    'RS': 43,
+    'RO': 11,
+    'RR': 14,
+    'SC': 42,
+    'SP': 35,
+    'SE': 28,
+    'TO': 17
+}
+
 # transform geometry in the centroid of the polygon
 
 gdf['geometry'] = gdf['geometry'].centroid
@@ -104,9 +135,12 @@ gdf['NM_UF_NORM'] = gdf['NM_UF_NORM'].str.replace(re.compile(r'[^a-zA-Z0-9 ]'), 
 
 gdf['REGIAO'] = gdf['SIGLA_UF'].map(sigla_uf_to_region)
 
+gdf['CD_UF'] = gdf['SIGLA_UF'].map(sigla_uf_to_uf_code)
+
 gdf = gdf[
     [
         'CD_MUN',
+        'CD_UF',
         'SIGLA_UF',
         'NM_UF',
         'NM_UF_NORM',

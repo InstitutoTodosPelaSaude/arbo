@@ -15,7 +15,7 @@ SELECT
     NULL as macroregion,
     NULL as macroregion_code,
     lc."SIGLA_UF" as state_code,
-    NULL as state_ibge_code,
+    lc."CD_UF" as state_ibge_code,
     lc."CD_MUN" as location_ibge_code,
     lc.lat as lat,
     lc.long as long
