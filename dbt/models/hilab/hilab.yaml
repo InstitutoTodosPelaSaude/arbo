@@ -23,6 +23,9 @@ models:
       - name: test_kit
         tests:
           - not_null
+      - name: result
+        tests:
+          - not_null
   
   - name: hilab_03_pivot_results
     description: '{{ doc("pivot_results") }}'
