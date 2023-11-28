@@ -22,5 +22,5 @@ SELECT
     "UF" AS state_code,
     file_name,
     "Método" AS metodo,
-    "Id cliente" AS id_cliente
+    "Id cliente" AS patient_id
 FROM source_data
