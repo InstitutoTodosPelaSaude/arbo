@@ -20,4 +20,6 @@ SELECT
     "Sexo" AS gender,
     file_name
 FROM source_data
-WHERE "Exame" NOT IN ('Influenza A', 'Influenza B', 'Covid-19 Antígeno')
+WHERE 
+    "Exame" NOT IN ('Influenza A', 'Influenza B', 'Covid-19 Antígeno') AND
+    "Resultado" NOT IN ('Inválido')
