@@ -1,0 +1,1 @@
+{{ tables_have_the_same_number_lines('combined_02_age_groups', 'combined_03_dates') }}

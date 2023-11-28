@@ -14,3 +14,41 @@ sources:
     schema: arboviroses
     tables:
       - name: municipios
+
+models:
+  - name: combined_01_join_labs
+    description: Join all labs in one table
+    columns:
+      - name: sample_id
+        tests:
+          - unique
+
+  - name: combined_02_age_groups
+    description: Add age groups to combined table
+    columns:
+      - name: sample_id
+        tests:
+          - unique
+          - relationships:
+              to: ref('combined_01_join_labs')
+              field: sample_id
+
+  - name: combined_03_dates
+    description: Add epiweeks to combined table
+    columns:
+      - name: sample_id
+        tests:
+          - unique
+          - relationships:
+              to: ref('combined_02_age_groups')
+              field: sample_id
+
+  - name: combined_04_location
+    description: Add location info to combined table
+    columns:
+      - name: sample_id
+        tests:
+          - unique
+          - relationships:
+              to: ref('combined_03_dates')
+              field: sample_id
