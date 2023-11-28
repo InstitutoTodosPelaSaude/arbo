@@ -27,7 +27,7 @@ dagster_dbt_translator = DagsterDbtTranslator(
 
 @dbt_assets(
         manifest=dbt_manifest_path, 
-        select='combined +epiweeks +municipios +age_groups +fix_location',
+        select='combined +epiweeks +municipios +age_groups +fix_location +macroregions',
         dagster_dbt_translator=dagster_dbt_translator
 )
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):

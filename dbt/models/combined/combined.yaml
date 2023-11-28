@@ -19,6 +19,11 @@ sources:
     schema: arboviroses
     tables:
       - name: municipios
+  - name: macroregions
+    description: Table to map macroregions created by dbt seed
+    schema: arboviroses
+    tables:
+      - name: macroregions
 
 models:
   - name: combined_01_join_labs
