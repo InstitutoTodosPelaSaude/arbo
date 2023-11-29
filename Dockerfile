@@ -7,7 +7,4 @@ COPY dbt/ /usr/app/arboviroses/dbt/
 
 RUN apt update
 RUN pip install -r requirements.txt
-
-RUN cd dbt && dbt seed && cd ..
-
-CMD ["dagster", "dev"]
+WORKDIR /usr/app/arboviroses/
