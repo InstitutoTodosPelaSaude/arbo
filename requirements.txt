@@ -16,6 +16,7 @@ dagster==1.5.5
 dagster-dbt==0.21.5
 dagster-graphql==1.5.5
 dagster-pipes==1.5.5
+dagster-postgres
 dagster-webserver==1.5.5
 dbt-core==1.6.7
 dbt-extractor==0.4.1

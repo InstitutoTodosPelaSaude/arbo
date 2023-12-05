@@ -4,6 +4,7 @@ services:
     build: .
     environment:
       - DAGSTER_DBT_PARSE_PROJECT_ON_LOAD=1
+      - DAGSTER_HOME=/usr/app/arboviroses/dagster_home
     ports:
       - "3000:3000"
     volumes:
