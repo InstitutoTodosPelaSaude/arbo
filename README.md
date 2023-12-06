@@ -2,11 +2,11 @@
 Pipeline de análise de dados de exames de diagnóstico para arbovírus (RADIM).
 
 ## Dependências
-1. Docker
+1. [Docker](https://docs.docker.com/get-docker/)
+2. Linux ou [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install
+) (Windows)
 
-## Como executar
-
-### Instalando com Docker
+## Instalando com Docker
 
 ### Configurando Postgres
 
@@ -38,6 +38,10 @@ No diretório ```dbt``` faça as seguintes alterações:
 ### Configurando o Dagster
 
 1. No diretório raiz, crie um arquivo ```.env``` com base no modelo ```.env.example``` e preencha as variáveis de ambiente com as credenciais do usuário de desenvolvimento.
+
+    * Preencha os campos DB_* com as credenciais do ambiente (dev, prod).
+
+    * Preencha os campos DB_DAGSTER_* com as credenciais do banco de dados onde o dagster irá armazenar os metadados.
 
 2. Inicie os contêiners do ```docker-compose.yml```
     ```sh
