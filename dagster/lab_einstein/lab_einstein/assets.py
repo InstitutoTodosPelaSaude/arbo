@@ -1,4 +1,6 @@
-from dagster import AssetExecutionContext, asset
+from dagster import AssetExecutionContext, asset, MaterializeResult, MetadataValue
+from textwrap import dedent
+
 from dagster_dbt import (
     DbtCliResource, 
     dbt_assets,
@@ -48,7 +50,20 @@ def einstein_raw(context):
     einstein_df.to_sql('einstein_raw', engine, schema='arboviroses', if_exists='replace', index=False)
     engine.dispose()
 
-    context.add_output_metadata({'num_rows': einstein_df.shape[0]})
+    n_rows = einstein_df.shape[0]
+    context.add_output_metadata({'num_rows': n_rows})
+
+    return MaterializeResult(
+        metadata={
+            "info": MetadataValue.md(dedent(f"""
+            # Einstein Raw
+
+            Last updated: {pd.Timestamp.now() - pd.Timedelta(hours=3)}
+
+            Number of rows processed: {n_rows}
+            """))
+        }
+    )
 
 @dbt_assets(
         manifest=dbt_manifest_path, 
