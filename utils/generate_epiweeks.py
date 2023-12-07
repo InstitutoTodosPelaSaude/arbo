@@ -12,7 +12,7 @@ for year in years:
     for _, week in enumerate(Year(year).iterweeks()):
         week_num = week.isoformat()[-2:]
         epiweeks.append( (year, week_num, week.enddate(), week.startdate()) ) 
-        print(week_numF, week.enddate(), week.startdate())
+        print(week_num, week.enddate(), week.startdate())
 
 
 df_epiweeks = pd.DataFrame(epiweeks, columns=['year', 'week_num', 'end_date', 'start_date'])
