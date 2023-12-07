@@ -2,6 +2,8 @@
 
 {{ config(materialized='table') }}
 
+{% set column_names = dbt_utils.get_filtered_columns_in_relation(from=ref('combined_04_fix_location'), except=["state", "location"]) %}
+
 WITH 
 source_data AS (
 
@@ -23,11 +25,20 @@ macroregions AS (
     FROM {{ ref("macroregions") }}
 )
 
-
 SELECT 
-    source_data.*,
-    'BRASIL' as country,
-    municipios."REGIAO" as region,
+    {% for column_name in column_names %}
+        {{ column_name }},
+    {% endfor %}
+    municipios."NM_MUN" as location,
+    municipios."NM_UF" as state,
+    'Brasil' as country,
+    CASE 
+        WHEN municipios."REGIAO" = 'NORTE' THEN 'Norte'
+        WHEN municipios."REGIAO" = 'NORDESTE' THEN 'Nordeste'
+        WHEN municipios."REGIAO" = 'CENTRO-OESTE' THEN 'Centro-Oeste'
+        WHEN municipios."REGIAO" = 'SUDESTE' THEN 'Sudeste'
+        WHEN municipios."REGIAO" = 'SUL' THEN 'Sul'
+    END as region,
     macroregions."DS_NOMEPAD_macsaud" as macroregion,
     macroregions."CO_MACSAUD" as macroregion_code,
     municipios."SIGLA_UF" as state_code,

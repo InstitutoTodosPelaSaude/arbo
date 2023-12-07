@@ -34,7 +34,8 @@ SELECT
     source_data.created_at,	
     source_data.updated_at,	
     source_data.age_group,	
-    source_data.epiweek,	
+    source_data.epiweek_enddate,
+    source_data.epiweek_number,
     source_data.month
 FROM source_data
 LEFT JOIN {{ ref('fix_location') }} AS fl ON (
