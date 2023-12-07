@@ -10,8 +10,11 @@ WITH source_data AS (
 )
 SELECT 
     source_data.*,
-    ew.week_num as epiweek,
-    EXTRACT(MONTH FROM source_data.date_testing) as month
+    ew.end_date as epiweek_enddate,
+    ew.week_num as epiweek_number,
+
+    TO_CHAR(source_data.date_testing, 'YYYY-MM') as month
+    
 FROM source_data
 LEFT JOIN {{ ref('epiweeks') }} AS ew ON source_data.date_testing >= ew.start_date AND source_data.date_testing <= ew.end_date
 
