@@ -12,7 +12,7 @@ SELECT
     patient_id,
     test_kit,
     age,
-    gender,
+    sex,
     date_testing,
     state,
     location,

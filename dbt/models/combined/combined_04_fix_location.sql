@@ -13,7 +13,7 @@ SELECT
     source_data.sample_id,	
     source_data.test_id,	
     source_data.test_kit,	
-    source_data.gender,	
+    source_data.sex,	
     source_data.age,
     CASE
         WHEN fl.source_location IS NULL THEN source_data.location

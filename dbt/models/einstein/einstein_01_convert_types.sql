@@ -10,7 +10,7 @@ WITH source_data AS (
 )
 SELECT
     "ACCESSION" AS test_id,
-    "SEXO" AS gender,
+    "SEXO" AS sex,
     "IDADE"::INT AS age,
     "EXAME" AS exame,
     "DETALHE_EXAME" AS detalhe_exame,

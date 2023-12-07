@@ -43,7 +43,7 @@ SELECT
             test_id,
             date_testing,
             age,
-            gender
+            sex
         )
     ) AS sample_id,
     test_id,
@@ -51,10 +51,10 @@ SELECT
     
     age,
     CASE
-        WHEN gender ILIKE 'M%' THEN 'M'
-        WHEN gender ILIKE 'F%' THEN 'F'
+        WHEN sex ILIKE 'M%' THEN 'M'
+        WHEN sex ILIKE 'F%' THEN 'F'
         ELSE NULL
-    END AS gender, 
+    END AS sex, 
 
     date_testing,
     CASE

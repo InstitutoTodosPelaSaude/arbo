@@ -10,7 +10,7 @@ WITH source_data AS (
 )
 SELECT
     "Idade"::INT AS age,
-    "Sexo" AS gender,
+    "Sexo" AS sex,
     "Pedido" AS test_id,
     "Data Coleta"::DATE AS date_testing,
     "Zika vírus" AS zika_result,

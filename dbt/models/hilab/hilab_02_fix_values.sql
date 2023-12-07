@@ -96,10 +96,10 @@ SELECT
     END AS age,
     patient_id,
     CASE
-        WHEN gender ILIKE 'F%' THEN 'F'
-        WHEN gender ILIKE 'M%' THEN 'M'
+        WHEN sex ILIKE 'F%' THEN 'F'
+        WHEN sex ILIKE 'M%' THEN 'M'
         ELSE NULL
-    END AS gender,
+    END AS sex,
     file_name
 FROM source_data
 -- This column is used to filter out duplicate rows

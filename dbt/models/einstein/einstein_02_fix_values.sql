@@ -58,10 +58,10 @@ SELECT
     END AS test_kit,
     
     CASE 
-        WHEN gender ILIKE 'F%' THEN 'F'
-        WHEN gender ILIKE 'M%' THEN 'M'
+        WHEN sex ILIKE 'F%' THEN 'F'
+        WHEN sex ILIKE 'M%' THEN 'M'
         ELSE 'UNKNOWN'
-    END AS gender,
+    END AS sex,
     age,
     
     regexp_replace(upper(unaccent(location)), '[^\w\s]', '', 'g') AS location,

@@ -17,7 +17,7 @@ SELECT
     "Resultado" AS result,
     "Idade"::INT AS age,
     "Paciente" AS patient_id,
-    "Sexo" AS gender,
+    "Sexo" AS sex,
     file_name
 FROM source_data
 WHERE 

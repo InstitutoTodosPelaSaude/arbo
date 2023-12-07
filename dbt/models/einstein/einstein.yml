@@ -14,7 +14,7 @@ models:
   - name: einstein_02_fix_values
     description: Fix values and add the sample_id column in the raw table
     columns:
-      - name: gender
+      - name: sex
       - name: age
       - name: test_kit
         tests:

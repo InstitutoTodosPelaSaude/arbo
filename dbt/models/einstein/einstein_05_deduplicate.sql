@@ -18,7 +18,7 @@ SELECT
     sample_id,
     test_id,
     test_kit,
-    gender,
+    sex,
     age,
     location,
     state,
