@@ -27,7 +27,7 @@ macroregions AS (
 
 SELECT 
     {% for column_name in column_names %}
-        {{ column_name }},
+        "{{ column_name }}",
     {% endfor %}
     municipios."NM_MUN" as location,
     municipios."NM_UF" as state,
