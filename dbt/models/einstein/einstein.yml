@@ -6,6 +6,28 @@ sources:
     schema: arboviroses
     tables:
       - name: einstein_raw
+        description: '{{ doc("einstein_raw") }}'
+        columns:
+          - name: ACCESSION
+            description: The ID of the sample. Not unique. It repeats whan a sample is used in multiple tests OR when a test has multiple targets.
+          - name: SEXO
+            description: Gender of the patient
+          - name: IDADE
+            description: Age of the patient
+          - name: EXAME
+            description: The name of the test performed.
+          - name: DETALHE_EXAME
+            description: Details about the test performed. Usually, when a test has multiple targets or pathogen, this column will have the target name.
+          - name: DH_COLETA
+            description: Date of the sample collection
+          - name: MUNICÍPIO
+            description: City where the sample was collected
+          - name: ESTADO
+            description: State where the sample was collected
+          - name: PATOGENO
+            description: The name of the pathogen detected in the sample. *Not useful, because it is always filled with DENGUE*
+          - name: RESULTADO
+            description: The result of the test. DETECTADO or NÃO DETECTADO
         meta:
           dagster:
             asset_key: ["einstein_raw"]

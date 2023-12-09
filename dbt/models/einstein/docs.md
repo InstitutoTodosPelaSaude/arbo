@@ -55,3 +55,10 @@ Final table:
 *The empty cells represent NT - Not Tested*
 
 {% enddocs %}
+
+
+{% docs einstein_raw %}
+
+Raw table from Einstein Lab. Exactly as it was received.
+
+{% enddocs %}
