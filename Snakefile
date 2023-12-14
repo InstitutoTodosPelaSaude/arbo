@@ -49,7 +49,7 @@ rule arguments:
 		cache = "data/combined_arbo.tsv",
 		date_column = "date_testing",
 		start_date = "2022-01-01",
-		end_date = "2023-12-09" ## update last epidemiological week here
+		end_date = "2023-12-02" ## update last epidemiological week here
 
 arguments = rules.arguments.params
 
