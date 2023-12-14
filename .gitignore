@@ -38,10 +38,9 @@ utils/*.zip
 
 dagster_home/**/
 
-figures/
 
-EDA/figures/
-EDA/figures/gal_am_12_12_23
-EDA/combined_arbo.xlsx
+EDA/figures/*
+EDA/data/cglab/gal_am_12_12_23
+EDA/data/*
+EDA/results/*
 
-EDA/gal_am_12_12_23
