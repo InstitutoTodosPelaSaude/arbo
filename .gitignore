@@ -39,17 +39,8 @@ utils/*.zip
 dagster_home/**/
 
 
-## data folder
-EDA/data/*
-
-## results folder
-EDA/results/*
-
-## Arquivos específicos em results
-EDA/results/casos_denv.tsv
-EDA/results/casosest_denv.tsv
-EDA/results/infodengue_casos_filtro.csv
-
-## figures folder
 EDA/figures/*
+EDA/data/cglab/gal_am_12_12_23
+EDA/data/*
+EDA/results/*
 
