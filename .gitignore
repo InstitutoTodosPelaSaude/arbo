@@ -40,5 +40,4 @@ dagster_home/**/
 
 figures/
 EDA/data/cglab/gal_am_12_12_23
-EDA/scripts/Gal2ITpS.ipynb
-EDA/scripts/reformat_gal.py
+
