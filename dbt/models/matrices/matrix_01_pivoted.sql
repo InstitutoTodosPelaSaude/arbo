@@ -5,12 +5,18 @@ WITH source_data AS (
         sample_id,
         test_kit,
         epiweek_enddate,
-        combined_pivoted.*
-    FROM
+        "DENV_test_result",
+        "ZIKV_test_result",
+        "CHIKV_test_result",
+        "YFV_test_result",
+        "MAYV_test_result",
+        "OROV_test_result",
+        "WNV_test_result"
     FROM {{ ref("combined_05_location") }}
-),
+)
 SELECT
-    *
+    combined.*,
+    combined_pivoted.*
 FROM
     source_data combined
 CROSS JOIN LATERAL (
