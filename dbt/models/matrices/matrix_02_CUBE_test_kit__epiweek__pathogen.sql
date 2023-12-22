@@ -16,14 +16,15 @@ SELECT
     -- Total Number of lines
     -- Positivity Rate Pos/Pos+Neg
 
-    SUM(CASE WHEN result = 'Pos' THEN 1 ELSE 0 END) AS total_pos,
-    SUM(CASE WHEN result = 'Neg' THEN 1 ELSE 0 END) AS total_neg,
-    SUM(CASE WHEN result = 'NT'  THEN 1 ELSE 0 END) AS total_nt,
+    SUM(CASE WHEN result = 'Pos' THEN 1 ELSE 0 END) AS "Pos",
+    SUM(CASE WHEN result = 'Neg' THEN 1 ELSE 0 END) AS "Neg",
+    SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END) AS "PosNeg",
+    SUM(CASE WHEN result = 'NT'  THEN 1 ELSE 0 END) AS "NT",
     COUNT(*) AS total_lines,
     CASE
         -- Avoid division by zero
         WHEN SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END) > 0 THEN
-            SUM(CASE WHEN result = 'Pos' THEN 1 ELSE 0 END) / SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END)
+            SUM(CASE WHEN result = 'Pos' THEN 1 ELSE 0 END)::decimal / SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END)
         ELSE NULL
     END AS positivity_rate
 
