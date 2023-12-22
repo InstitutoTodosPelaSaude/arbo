@@ -13,6 +13,11 @@ WITH source_data AS (
         "OROV_test_result",
         "WNV_test_result"
     FROM {{ ref("combined_05_location") }}
+    WHERE -- FILTER USEFUL TEST KITS FOR EACH PATHOGEN
+        CASE 
+            WHEN "DENV_test_result" IN ('Pos', 'Neg') THEN test_kit IN ('arbo_pcr_3', 'ns1_antigen')
+            ELSE TRUE
+        END
 )
 SELECT
     combined.*,
