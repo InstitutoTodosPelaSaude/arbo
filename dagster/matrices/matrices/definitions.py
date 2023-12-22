@@ -12,7 +12,8 @@ defs = Definitions(
             country_posrate_direct_weeks,
             country_totaltests_direct_weeks,
             country_posneg_direct_weeks,
-            country_pos_direct_weeks],
+            country_pos_direct_weeks,
+            country_posneg_testkits_weeks],
     schedules=schedules,
     resources={
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
