@@ -273,3 +273,49 @@ def country_pos_testkits_weeks(context):
         df.to_sql(f'matrix_{pathogen}_country_pos_testkits_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
 
     engine.dispose()
+
+@asset(
+    compute_kind="python", 
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
+)
+def state_posneg_acute_weeks(context):
+    """
+    Generate matrices from the database and export to tsv
+    """
+    for pathogen in PATHOGENS:
+        # Build query
+        query = f"""
+            SELECT
+                pathogen,
+                epiweek_enddate,
+                "Pos",
+                "Neg"
+            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
+            WHERE
+                pathogen = '{pathogen}' AND
+                test_kit IS NULL AND
+                epiweek_enddate IS NOT NULL
+        """
+
+        # Get results from database
+        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+        df = pd.read_sql(query, engine)
+
+        # Transform data to the right format
+        df = df.set_index(['pathogen', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
+        df_pos, df_neg = df['Pos'], df['Neg']
+
+        df_pos.columns = df_pos.columns.to_flat_index()
+        df_pos.insert(0, 'pathogen', df['pathogen'].iloc[0])
+        df_pos.insert(1, '_test_result', 'Pos')
+
+        df_neg.columns = df_neg.columns.to_flat_index()
+        df_neg.insert(0, 'pathogen', df['pathogen'].iloc[0])
+        df_neg.insert(1, '_test_result', 'Neg')
+
+        df = pd.concat([df_pos, df_neg], axis=0)
+
+        # Save in the database
+        df.to_sql(f'matrix_{pathogen}_state_posneg_acute_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
+
+    engine.dispose()
