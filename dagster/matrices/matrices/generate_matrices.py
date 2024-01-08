@@ -84,6 +84,72 @@ def generate_country_epiweek_matrix(
     df.to_sql(matrix_name, engine, schema='arboviroses', if_exists='replace', index=False)
     engine.dispose() 
 
+def generate_state_epiweek_matrix(
+        cube_db_table: str,
+        pathogen: str,
+        matrix_name: str
+    ) -> None:
+    """
+    Generates a state-epiweek matrix using a given cube_table.
+    
+    Args:
+        cube_db_table: The name of the table in the database where the cube is stored.
+        pathogen: The pathogen to generate the matrix for.
+        matrix_name: The name of the matrix to be saved to the database.
+    """
+    # Connect to the database
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+
+    # Build the query
+    query = f"""
+        SELECT
+            country,
+            state_code,
+            state,
+            lab_id,
+            test_kit,
+            pathogen,
+            epiweek_enddate,
+            "Pos",
+            "Neg"
+        FROM arboviroses."{cube_db_table}"
+        WHERE
+            country IS NOT NULL AND
+            state_code IS NOT NULL AND
+            state IS NOT NULL AND
+            lab_id IS NOT NULL AND
+            test_kit IS NOT NULL AND
+            epiweek_enddate IS NOT NULL AND
+            pathogen = '{pathogen}'
+    """
+
+    # Execute the query
+    df = pd.read_sql(query, engine)
+
+    # Pivot the dataframe to generate the matrix
+    index_list = ['country', 'state_code', 'state', 'lab_id', 'test_kit', 'pathogen', 'epiweek_enddate']
+    df = df.set_index(index_list).unstack('epiweek_enddate').reset_index()
+
+    # Adjust the column names for the matrix format
+    df_pos, df_neg = df['Pos'], df['Neg']
+
+    new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
+    df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
+    df = df[['country', 'state_code', 'state', 'lab_id', 'test_kit', 'pathogen']]
+
+    df_pos.columns = df_pos.columns.to_flat_index()
+    df_pos.insert(0, f'{pathogen}_test_result', 'Pos')
+    df_pos = pd.concat([df, df_pos], axis=1)
+
+    df_neg.columns = df_neg.columns.to_flat_index()
+    df_neg.insert(0, f'{pathogen}_test_result', 'Neg')
+    df_neg = pd.concat([df, df_neg], axis=1)
+
+    df = pd.concat([df_pos, df_neg], axis=0)
+
+    # Save the matrix to the database
+    df.to_sql(matrix_name, engine, schema='arboviroses', if_exists='replace', index=False)
+
 def generate_country_agegroup_matrix(
         cube_db_table: str,
         matrix_name: str

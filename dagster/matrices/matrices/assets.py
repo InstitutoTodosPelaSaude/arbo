@@ -13,7 +13,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
 from .constants import dbt_manifest_path
-from .generate_matrices import generate_country_epiweek_matrix, generate_country_agegroup_matrix
+from .generate_matrices import generate_country_epiweek_matrix, generate_country_agegroup_matrix, generate_state_epiweek_matrix
 
 load_dotenv()
 DB_HOST = os.getenv('DB_HOST')
@@ -78,6 +78,29 @@ def country_epiweek_matrices(context):
                 show_testkits=False,
                 matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_direct_weeks_noigg'
             )
+
+@asset(
+    compute_kind="python", 
+    deps=[
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_state_epiweek_noigg"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_state_epiweek_withigg")
+    ]
+)
+def state_epiweek_matrices(context):
+    """
+    Generate state matrices for each pathogen.
+    """
+    for pathogen in PATHOGENS:
+        generate_state_epiweek_matrix(
+            cube_db_table='matrix_02_CUBE_state_epiweek_noigg',
+            pathogen=pathogen,
+            matrix_name=f'matrix_{pathogen.upper()}_state_posneg_testkits_weeks_noigg'
+        )
+        generate_state_epiweek_matrix(
+            cube_db_table='matrix_02_CUBE_state_epiweek_withigg',
+            pathogen=pathogen,
+            matrix_name=f'matrix_{pathogen.upper()}_state_posneg_testkits_weeks_withigg'
+        )
 
 @asset(
     compute_kind="python", 
