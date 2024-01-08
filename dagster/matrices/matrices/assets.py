@@ -83,14 +83,18 @@ def country_epiweek_matrices(context):
     compute_kind="python", 
     deps=[
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_country_agegroup_withigg"),
-        # get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_country_epiweek_noigg")
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_country_agegroup_noigg")
     ]
 )
-def country_agegroup_matrix():
+def country_agegroup_matrices():
     """
     Generate agegroup matrix for all pathogens and PosNeg metric.
     """
     generate_country_agegroup_matrix(
         cube_db_table='matrix_02_CUBE_country_agegroup_withigg',
         matrix_name='matrix_ALL_country_agegroup_withigg'
+    )
+    generate_country_agegroup_matrix(
+        cube_db_table='matrix_02_CUBE_country_agegroup_noigg',
+        matrix_name='matrix_ALL_country_agegroup_noigg'
     )

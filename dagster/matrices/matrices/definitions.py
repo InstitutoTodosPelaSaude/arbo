@@ -10,7 +10,7 @@ from .schedules import schedules
 defs = Definitions(
     assets=[arboviroses_dbt_assets,
             country_epiweek_matrices,
-            country_agegroup_matrix],
+            country_agegroup_matrices],
     schedules=schedules,
     resources={
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
