@@ -1,7 +1,10 @@
 
 WITH source_data AS (
     SELECT
-        *
+        test_kit,
+        epiweek_enddate,
+        result,
+        pathogen
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE -- FILTER USEFUL TEST KITS FOR EACH PATHOGEN
         CASE 

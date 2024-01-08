@@ -1,8 +1,9 @@
 
 WITH source_data AS (
     SELECT
-        test_kit,
-        epiweek_enddate
+        country,
+        epiweek_enddate,
+        age_group,
         result,
         pathogen
     FROM {{ ref("matrix_01_pivoted") }}
@@ -13,9 +14,10 @@ WITH source_data AS (
         END
 )
 SELECT
-    test_kit,
+    country,
     epiweek_enddate,
     pathogen,
+    age_group,
     
     -- # Key indicators
     -- Total Number of Pos
@@ -38,4 +40,4 @@ SELECT
 FROM
     source_data
 GROUP BY
-    CUBE(test_kit, epiweek_enddate, pathogen)
+    CUBE(country, epiweek_enddate, pathogen, age_group)

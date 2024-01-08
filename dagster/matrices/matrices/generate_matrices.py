@@ -83,3 +83,61 @@ def generate_country_epiweek_matrix(
     # Save the matrix to the database
     df.to_sql(matrix_name, engine, schema='arboviroses', if_exists='replace', index=False)
     engine.dispose() 
+
+def generate_country_agegroup_matrix(
+        cube_db_table: str,
+        matrix_name: str
+    ) -> None:
+    """
+    Generates a country-agegroup matrix using a given cube_table.
+    
+    Args:
+        cube_db_table: The name of the table in the database where the cube is stored.
+        matrix_name: The name of the matrix to be saved to the database.
+    """
+    # Connect to the database
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+
+    # Build the query
+    query = f"""
+        SELECT
+            country,
+            pathogen,
+            epiweek_enddate,
+            age_group,
+            "Pos",
+            "Neg"
+        FROM arboviroses."{cube_db_table}"
+        WHERE
+            country IS NOT NULL AND
+            epiweek_enddate IS NOT NULL AND
+            pathogen IS NOT NULL AND
+            age_group IS NOT NULL
+    """
+
+    # Execute the query
+    df = pd.read_sql(query, engine)
+
+    # Pivot the dataframe to generate the matrix
+    index_list = ['country', 'pathogen', 'epiweek_enddate', 'age_group']
+    df = df.set_index(index_list).unstack('age_group').reset_index()
+
+    # Adjust the column names for the matrix format
+    df_pos, df_neg = df['Pos'], df['Neg']
+
+    new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
+    df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
+    df = df[['country', 'pathogen', 'epiweek_enddate']]
+
+    df_pos.columns = df_pos.columns.to_flat_index()
+    df_pos.insert(0, f'test_result', 'Pos')
+    df_pos = pd.concat([df, df_pos], axis=1)
+
+    df_neg.columns = df_neg.columns.to_flat_index()
+    df_neg.insert(0, f'test_result', 'Neg')
+    df_neg = pd.concat([df, df_neg], axis=1)
+
+    df = pd.concat([df_pos, df_neg], axis=0).sort_values(['epiweek_enddate', 'country', 'pathogen', ])
+
+    # Save the matrix to the database
+    df.to_sql(matrix_name, engine, schema='arboviroses', if_exists='replace', index=False)
