@@ -121,3 +121,34 @@ def country_agegroup_matrices():
         cube_db_table='matrix_02_CUBE_country_agegroup_noigg',
         matrix_name='matrix_ALL_country_agegroup_noigg'
     )
+
+@asset(
+    compute_kind="python", 
+    deps=[
+        country_epiweek_matrices,
+        state_epiweek_matrices,
+        country_agegroup_matrices
+    ]
+)
+def export_matrices_to_tsv():
+    """
+    Export all matrices to TSV files. The TSV files are saved to the `matrices` folder.
+    """
+
+    
+    # Connect to the database
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+
+    # Get the list of matrix tables
+    matrix_tables = pd.read_sql_query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'", engine).table_name.tolist()
+    matrix_tables = [table for table in matrix_tables if table.startswith('matrix_')]
+
+    # Create the matrices folder if it doesn't exist
+    path = 'data/matrices'
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+
+    # Export each matrix table to a TSV file
+    for table in matrix_tables:
+        df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
+        df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
+

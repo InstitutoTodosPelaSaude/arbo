@@ -11,7 +11,8 @@ defs = Definitions(
     assets=[arboviroses_dbt_assets,
             country_epiweek_matrices,
             country_agegroup_matrices,
-            state_epiweek_matrices],
+            state_epiweek_matrices,
+            export_matrices_to_tsv],
     schedules=schedules,
     resources={
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
