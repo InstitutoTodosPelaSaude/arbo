@@ -13,6 +13,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
 from .constants import dbt_manifest_path
+from .generate_matrices import generate_country_epiweek_matrix
 
 load_dotenv()
 DB_HOST = os.getenv('DB_HOST')
@@ -37,285 +38,43 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
 
 @asset(
     compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
+    deps=[
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_country_epiweek_withigg"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_country_epiweek_noigg")
+    ]
 )
-def country_posrate_direct_weeks(context):
+def country_epiweek_matrices(context):
     """
-    Generate matrices from the database and export to tsv
+    Generate country matrices for each pathogen and metric combination.
     """
+    METRICS = ['PosNeg', 'Pos', 'totaltests', 'posrate']
     for pathogen in PATHOGENS:
-        # Build query
-        query = f"""
-            SELECT
-                pathogen,
-                epiweek_enddate,
-                positivity_rate
-            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
-            WHERE
-                pathogen = '{pathogen}' AND
-                test_kit IS NULL AND
-                epiweek_enddate IS NOT NULL
-        """
-
-        # Get results from database
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-        df = pd.read_sql(query, engine)
-
-        # Asserts
-        assert df.epiweek_enddate.nunique() == df.shape[0], 'There are duplicated dates'
-
-        # Transform data to the right format
-        df = df.set_index(['pathogen', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
-        new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
-        df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
-
-        # Create or manipulate custom columns
-        df.insert(1, f'{pathogen}_test_result', 'Pos')
-
-        # Save in the database
-        df.to_sql(f'matrix_{pathogen}_country_posrate_direct_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
-
-    engine.dispose()
-
-@asset(
-    compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
-)
-def country_totaltests_direct_weeks(context):
-    """
-    Generate matrices from the database and export to tsv
-    """
-    for pathogen in PATHOGENS:
-        # Build query
-        query = f"""
-            SELECT
-                pathogen,
-                epiweek_enddate,
-                "PosNeg"
-            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
-            WHERE
-                pathogen = '{pathogen}' AND
-                test_kit IS NULL AND
-                epiweek_enddate IS NOT NULL
-        """
-
-        # Get results from database
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-        df = pd.read_sql(query, engine)
-
-        # Asserts
-        assert df.epiweek_enddate.nunique() == df.shape[0], 'There are duplicated dates'
-
-        # Transform data to the right format
-        df = df.set_index(['pathogen', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
-        new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
-        df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
-
-        # Save in the database
-        df.to_sql(f'matrix_{pathogen}_country_totaltests_direct_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
-
-    engine.dispose()
-
-@asset(
-    compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
-)
-def country_posneg_direct_weeks(context):
-    """
-    Generate matrices from the database and export to tsv
-    """
-    for pathogen in PATHOGENS:
-        # Build query
-        query = f"""
-            SELECT
-                pathogen,
-                epiweek_enddate,
-                "PosNeg"
-            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
-            WHERE
-                pathogen = '{pathogen}' AND
-                test_kit IS NULL AND
-                epiweek_enddate IS NOT NULL
-        """
-
-        # Get results from database
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-        df = pd.read_sql(query, engine)
-
-        # Asserts
-        assert df.epiweek_enddate.nunique() == df.shape[0], 'There are duplicated dates'
-
-        # Transform data to the right format
-        df = df.set_index(['pathogen', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
-        new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
-        df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
-
-        # Save in the database
-        df.to_sql(f'matrix_{pathogen}_country_posneg_direct_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
-
-    engine.dispose()
-
-@asset(
-    compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
-)
-def country_pos_direct_weeks(context):
-    """
-    Generate matrices from the database and export to tsv
-    """
-    for pathogen in PATHOGENS:
-        # Build query
-        query = f"""
-            SELECT
-                pathogen,
-                epiweek_enddate,
-                "Pos"
-            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
-            WHERE
-                pathogen = '{pathogen}' AND
-                test_kit IS NULL AND
-                epiweek_enddate IS NOT NULL
-        """
-
-        # Get results from database
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-        df = pd.read_sql(query, engine)
-
-        # Asserts
-        assert df.epiweek_enddate.nunique() == df.shape[0], 'There are duplicated dates'
-
-        # Transform data to the right format
-        df = df.set_index(['pathogen', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
-        new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
-        df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
-
-        # Create or manipulate custom columns
-        df.insert(1, f'{pathogen}_test_result', 'Pos')
-
-        # Save in the database
-        df.to_sql(f'matrix_{pathogen}_country_pos_direct_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
-
-    engine.dispose()
-
-@asset(
-    compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
-)
-def country_posneg_testkits_weeks(context):
-    """
-    Generate matrices from the database and export to tsv
-    """
-    for pathogen in PATHOGENS:
-        # Build query
-        query = f"""
-            SELECT
-                pathogen,
-                test_kit,
-                epiweek_enddate,
-                "PosNeg"
-            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
-            WHERE
-                pathogen = '{pathogen}' AND
-                test_kit IS NOT NULL AND
-                epiweek_enddate IS NOT NULL
-        """
-
-        # Get results from database
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-        df = pd.read_sql(query, engine)
-
-        # Transform data to the right format
-        df = df.set_index(['pathogen', 'test_kit', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
-        new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
-        df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
-
-        # Save in the database
-        df.to_sql(f'matrix_{pathogen}_country_posneg_testkits_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
-
-    engine.dispose()
-
-@asset(
-    compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
-)
-def country_pos_testkits_weeks(context):
-    """
-    Generate matrices from the database and export to tsv
-    """
-    for pathogen in PATHOGENS:
-        # Build query
-        query = f"""
-            SELECT
-                pathogen,
-                test_kit,
-                epiweek_enddate,
-                "Pos"
-            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
-            WHERE
-                pathogen = '{pathogen}' AND
-                test_kit IS NOT NULL AND
-                epiweek_enddate IS NOT NULL
-        """
-
-        # Get results from database
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-        df = pd.read_sql(query, engine)
-
-        # Transform data to the right format
-        df = df.set_index(['pathogen', 'test_kit', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
-        new_columns = [(col[0], col[0]) if col[1] == '' else col for col in df.columns.to_list()]
-        df.columns = pd.MultiIndex.from_tuples(new_columns).droplevel(0)
-
-        # Create or manipulate custom columns
-        df.insert(1, f'{pathogen}_test_result', 'Pos')
-
-        # Save in the database
-        df.to_sql(f'matrix_{pathogen}_country_pos_testkits_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
-
-    engine.dispose()
-
-@asset(
-    compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_test_kit__epiweek__pathogen")]
-)
-def state_posneg_acute_weeks(context):
-    """
-    Generate matrices from the database and export to tsv
-    """
-    for pathogen in PATHOGENS:
-        # Build query
-        query = f"""
-            SELECT
-                pathogen,
-                epiweek_enddate,
-                "Pos",
-                "Neg"
-            FROM arboviroses."matrix_02_CUBE_test_kit__epiweek__pathogen"
-            WHERE
-                pathogen = '{pathogen}' AND
-                test_kit IS NULL AND
-                epiweek_enddate IS NOT NULL
-        """
-
-        # Get results from database
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-        df = pd.read_sql(query, engine)
-
-        # Transform data to the right format
-        df = df.set_index(['pathogen', 'epiweek_enddate']).unstack('epiweek_enddate').reset_index()
-        df_pos, df_neg = df['Pos'], df['Neg']
-
-        df_pos.columns = df_pos.columns.to_flat_index()
-        df_pos.insert(0, 'pathogen', df['pathogen'].iloc[0])
-        df_pos.insert(1, '_test_result', 'Pos')
-
-        df_neg.columns = df_neg.columns.to_flat_index()
-        df_neg.insert(0, 'pathogen', df['pathogen'].iloc[0])
-        df_neg.insert(1, '_test_result', 'Neg')
-
-        df = pd.concat([df_pos, df_neg], axis=0)
-
-        # Save in the database
-        df.to_sql(f'matrix_{pathogen}_state_posneg_acute_weeks', engine, schema='arboviroses', if_exists='replace', index=False)
-
-    engine.dispose()
+        for metric in METRICS:
+            generate_country_epiweek_matrix(
+                cube_db_table='matrix_02_CUBE_country_epiweek_withigg',
+                pathogen=pathogen,
+                metric=metric,
+                show_testkits=True,
+                matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_testkits_weeks_withigg'
+            )
+            generate_country_epiweek_matrix(
+                cube_db_table='matrix_02_CUBE_country_epiweek_withigg',
+                pathogen=pathogen,
+                metric=metric,
+                show_testkits=False,
+                matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_direct_weeks_withigg'
+            )
+            generate_country_epiweek_matrix(
+                cube_db_table='matrix_02_CUBE_country_epiweek_noigg',
+                pathogen=pathogen,
+                metric=metric,
+                show_testkits=True,
+                matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_testkits_weeks_noigg'
+            )
+            generate_country_epiweek_matrix(
+                cube_db_table='matrix_02_CUBE_country_epiweek_noigg',
+                pathogen=pathogen,
+                metric=metric,
+                show_testkits=False,
+                matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_direct_weeks_noigg'
+            )

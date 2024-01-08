@@ -9,13 +9,7 @@ from .schedules import schedules
 
 defs = Definitions(
     assets=[arboviroses_dbt_assets,
-            country_posrate_direct_weeks,
-            country_totaltests_direct_weeks,
-            country_posneg_direct_weeks,
-            country_pos_direct_weeks,
-            country_posneg_testkits_weeks,
-            country_pos_testkits_weeks,
-            state_posneg_acute_weeks],
+            country_epiweek_matrices],
     schedules=schedules,
     resources={
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
