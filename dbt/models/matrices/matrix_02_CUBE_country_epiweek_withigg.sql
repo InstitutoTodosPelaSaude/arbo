@@ -2,7 +2,7 @@
 WITH source_data AS (
     SELECT
         test_kit,
-        epiweek_enddate
+        epiweek_enddate,
         result,
         pathogen
     FROM {{ ref("matrix_01_pivoted") }}
