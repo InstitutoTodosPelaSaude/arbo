@@ -10,3 +10,10 @@ services:
     volumes:
       - .:/usr/app/arboviroses/
     entrypoint: ["./entrypoint.sh"]
+
+  streamlit:
+    build: ./streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./streamlit/app:/app
