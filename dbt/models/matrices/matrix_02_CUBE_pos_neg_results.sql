@@ -45,8 +45,8 @@ FROM (
         SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END) AS "totaltests",
         SUM(CASE WHEN result = 'NT'  THEN 1 ELSE 0 END) AS "NT",
         CASE
-            -- Avoid division by zero
-            WHEN SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END) > 0 THEN
+            -- Only compute positivity rate if there are more than 50 tests
+            WHEN SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END) > 50 THEN
                 SUM(CASE WHEN result = 'Pos' THEN 1 ELSE 0 END)::decimal / SUM(CASE WHEN result IN ('Pos', 'Neg') THEN 1 ELSE 0 END)
             ELSE NULL
         END AS "posrate"
