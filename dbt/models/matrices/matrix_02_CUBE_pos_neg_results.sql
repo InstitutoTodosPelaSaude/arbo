@@ -1,3 +1,4 @@
+{{ config(materialized='table') }}
 
 WITH source_data AS (
     SELECT
@@ -31,7 +32,7 @@ FROM (
         country,
         epiweek_enddate,
         age_group,
-        
+
         -- # Key indicators
         -- Total Number of Pos
         -- Total Number of Neg

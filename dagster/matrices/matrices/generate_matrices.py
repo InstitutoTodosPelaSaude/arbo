@@ -46,7 +46,12 @@ def generate_country_epiweek_matrix(
         WHERE
             test_kit IS {'NOT ' if show_testkits else ''}NULL AND
             epiweek_enddate IS NOT NULL AND
-            pathogen = '{pathogen}'
+            pathogen = '{pathogen}' AND
+            country IS NULL AND
+            state_code IS NULL AND
+            state IS NULL AND
+            lab_id IS NULL AND
+            age_group IS NULL
     """
 
     # Execute the query
@@ -120,6 +125,7 @@ def generate_state_epiweek_matrix(
             lab_id IS NOT NULL AND
             test_kit IS NOT NULL AND
             epiweek_enddate IS NOT NULL AND
+            age_group IS NULL AND
             pathogen = '{pathogen}'
     """
 
@@ -176,6 +182,10 @@ def generate_country_agegroup_matrix(
         FROM arboviroses."{cube_db_table}"
         WHERE
             country IS NOT NULL AND
+            state_code IS NULL AND
+            state IS NULL AND
+            lab_id IS NULL AND
+            test_kit IS NULL AND
             epiweek_enddate IS NOT NULL AND
             pathogen IS NOT NULL AND
             age_group IS NOT NULL

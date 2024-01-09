@@ -50,14 +50,14 @@ def country_epiweek_matrices(context):
     for pathogen in PATHOGENS:
         for metric in METRICS:
             generate_country_epiweek_matrix(
-                cube_db_table='matrix_02_CUBE_country_epiweek_noigg',
+                cube_db_table='matrix_02_CUBE_pos_neg_results',
                 pathogen=pathogen,
                 metric=metric,
                 show_testkits=True,
                 matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_testkits_weeks_noigg'
             )
             generate_country_epiweek_matrix(
-                cube_db_table='matrix_02_CUBE_country_epiweek_noigg',
+                cube_db_table='matrix_02_CUBE_pos_neg_results',
                 pathogen=pathogen,
                 metric=metric,
                 show_testkits=False,
@@ -76,7 +76,7 @@ def state_epiweek_matrices(context):
     """
     for pathogen in PATHOGENS:
         generate_state_epiweek_matrix(
-            cube_db_table='matrix_02_CUBE_state_epiweek_noigg',
+            cube_db_table='matrix_02_CUBE_pos_neg_results',
             pathogen=pathogen,
             matrix_name=f'matrix_{pathogen.upper()}_state_posneg_testkits_weeks_noigg'
         )
@@ -92,7 +92,7 @@ def country_agegroup_matrices():
     Generate agegroup matrix for all pathogens and PosNeg metric.
     """
     generate_country_agegroup_matrix(
-        cube_db_table='matrix_02_CUBE_country_agegroup_noigg',
+        cube_db_table='matrix_02_CUBE_pos_neg_results',
         matrix_name='matrix_ALL_country_agegroup_noigg'
     )
 
