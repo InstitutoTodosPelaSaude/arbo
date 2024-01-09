@@ -17,3 +17,4 @@ services:
       - "8501:8501"
     volumes:
       - ./streamlit/app:/app
+      - ./data:/data
