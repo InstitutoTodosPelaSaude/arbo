@@ -115,7 +115,11 @@ def export_matrices_to_tsv():
 
     # Get the list of matrix tables
     matrix_tables = pd.read_sql_query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'", engine).table_name.tolist()
-    matrix_tables = [table for table in matrix_tables if table.startswith('matrix_')]
+    matrix_tables = [
+        table for table in matrix_tables 
+        if table.startswith('matrix_') 
+        and table[7] != '0' # Avoid exporting tables like matrix_02_CUBE_pos_neg_results
+    ]
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
@@ -124,5 +128,11 @@ def export_matrices_to_tsv():
     # Export each matrix table to a TSV file
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
+        df = df.fillna(0)
+
+        if not 'posrate' in table:
+            # cast everything to int
+            df = df.astype(int, errors='ignore')
+
         df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
 
