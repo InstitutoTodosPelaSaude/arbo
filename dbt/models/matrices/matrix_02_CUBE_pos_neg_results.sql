@@ -8,6 +8,7 @@ WITH source_data AS (
         test_kit,
         epiweek_enddate,
         result,
+        age_group,
         pathogen
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE -- FILTER USEFUL TEST KITS FOR EACH PATHOGEN
@@ -29,6 +30,7 @@ FROM (
         state_code,
         country,
         epiweek_enddate,
+        age_group,
         
         -- # Key indicators
         -- Total Number of Pos
@@ -51,12 +53,12 @@ FROM (
     FROM
         source_data
     GROUP BY
-        CUBE(country, state_code, lab_id, test_kit, epiweek_enddate, pathogen)
+        CUBE(country, state_code, lab_id, test_kit, epiweek_enddate, pathogen, age_group)
 ) AS t
 LEFT JOIN (
     SELECT 
         state_code, state
-    FROM "matrix_01_pivoted"
+    FROM {{ ref("matrix_01_pivoted") }}
     GROUP BY state_code, state
 ) as state_table ON t.state_code = state_table.state_code
 

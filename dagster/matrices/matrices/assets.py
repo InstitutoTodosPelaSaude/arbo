@@ -39,7 +39,7 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
 @asset(
     compute_kind="python", 
     deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_country_epiweek_noigg")
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_pos_neg_results")
     ]
 )
 def country_epiweek_matrices(context):
@@ -67,7 +67,7 @@ def country_epiweek_matrices(context):
 @asset(
     compute_kind="python", 
     deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_state_epiweek_noigg"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_pos_neg_results"),
     ]
 )
 def state_epiweek_matrices(context):
@@ -84,7 +84,7 @@ def state_epiweek_matrices(context):
 @asset(
     compute_kind="python", 
     deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_country_agegroup_noigg")
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_pos_neg_results")
     ]
 )
 def country_agegroup_matrices():
