@@ -10,6 +10,8 @@ services:
     volumes:
       - .:/usr/app/arboviroses/
     entrypoint: ["./entrypoint.sh"]
+    networks:
+      - arbonetwork
 
   streamlit:
     build: ./streamlit
@@ -20,3 +22,23 @@ services:
     volumes:
       - ./streamlit/app:/app
       - ./data:/data
+    networks:
+      - arbonetwork
+ 
+  nginx:
+    env_file:
+      - .env
+    build: ./nginx
+    environment:
+      BASIC_USERNAME: ${DAGSTER_USERNAME}
+      BASIC_PASSWORD: ${DAGSTER_PASSWORD}
+    ports:
+      - "80:80"
+    depends_on:
+      - dagster
+    networks:
+      - arbonetwork
+
+networks:
+  arbonetwork:
+    driver: bridge

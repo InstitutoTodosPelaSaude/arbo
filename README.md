@@ -43,9 +43,11 @@ No diretório ```dbt``` faça as seguintes alterações:
 
     * Preencha os campos DB_DAGSTER_* com as credenciais do banco de dados onde o dagster irá armazenar os metadados.
 
+    * Preencha os campos DAGSTER_* para configurar o usuário e senha que dará acesso ao Dagster UI.
+
 2. Inicie os contêiners do ```docker-compose.yml```
     ```sh
     docker compose up -d
     ```
 
-3. Acesse a interface em ```localhost:3000```.
+3. Acesse a interface em ```localhost:80```.
