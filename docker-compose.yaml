@@ -13,6 +13,18 @@ services:
     networks:
       - arbonetwork
 
+  streamlit:
+    build: ./streamlit
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./streamlit/app:/app
+      - ./data:/data
+    networks:
+      - arbonetwork
+ 
   nginx:
     env_file:
       - .env
