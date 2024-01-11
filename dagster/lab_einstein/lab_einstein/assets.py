@@ -42,7 +42,7 @@ def einstein_raw(context):
             continue
 
         print(einstein_path / file)
-        df = pd.read_excel(einstein_path / file, dtype = str, sheet_name='DENGUE')
+        df = pd.read_excel(einstein_path / file, dtype = str, sheet_name='itps_dengue')
         df['file_name'] = file
         einstein_df = pd.concat([einstein_df, df], ignore_index=True)
         
