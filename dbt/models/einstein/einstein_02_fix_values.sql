@@ -33,7 +33,7 @@ SELECT
             END
         )
     ) AS sample_id,
-    detalhe_exame,
+    UPPER(detalhe_exame) AS detalhe_exame,
     test_id,
 
     -- test_kit
