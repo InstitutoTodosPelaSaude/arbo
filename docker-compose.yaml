@@ -34,8 +34,6 @@ services:
       BASIC_PASSWORD: ${DAGSTER_PASSWORD}
     ports:
       - "80:80"
-    depends_on:
-      - dagster
     networks:
       - arbonetwork
 
