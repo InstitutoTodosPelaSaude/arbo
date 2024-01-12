@@ -32,6 +32,9 @@ services:
     environment:
       BASIC_USERNAME: ${DAGSTER_USERNAME}
       BASIC_PASSWORD: ${DAGSTER_PASSWORD}
+    depends_on:
+      - dagster
+      - streamlit
     ports:
       - "80:80"
     networks:
