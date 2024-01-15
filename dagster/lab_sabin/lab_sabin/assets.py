@@ -24,14 +24,10 @@ def sabin_raw(context):
 
     sabin_df = pd.DataFrame()
     for file in os.listdir(sabin_path):
-        if not file.endswith('.xlsx'):
+        if not file.endswith('.csv'):
             continue
 
-        dfs = pd.read_excel(sabin_path / file, dtype = str, sheet_name=None)
-        
-        df = pd.DataFrame()
-        for sheet in dfs:
-            df = pd.concat([df, dfs[sheet]], ignore_index=True)
+        df = pd.read_csv(sabin_path / file, dtype = str)
         
         df['file_name'] = file
         sabin_df = pd.concat([sabin_df, df], ignore_index=True)
