@@ -28,31 +28,32 @@ SELECT
             exame,
 
             CASE
-                WHEN exame ILIKE 'PCR MULTIPLEX ZIKA, DENGUE E CHIKUNG' THEN 'MULTIPLEX'
+                WHEN exame ILIKE 'PCR MULTIPLEX ZIKA, DENGUE E CHIKUNGUNYA' THEN 'MULTIPLEX'
                 ELSE detalhe_exame
             END
         )
     ) AS sample_id,
-    detalhe_exame,
+    UPPER(detalhe_exame) AS detalhe_exame,
     test_id,
 
     -- test_kit
     CASE
-        WHEN detalhe_exame IN (
+        WHEN UPPER(detalhe_exame) IN (
             'VÍRUS DENGUE:',
             'VÍRUS CHIKUNGUNYA:',
             'VÍRUS ZIKA:'
         ) THEN 'arbo_pcr_3'
-        WHEN detalhe_exame IN (
+        WHEN UPPER(detalhe_exame) IN (
             'DENGUE IGG',
             'DENGUE IGG, TESTE RÁPIDO'
         ) THEN 'igg_serum'
-        WHEN detalhe_exame IN (
+        WHEN UPPER(detalhe_exame) IN (
             'DENGUE IGM',
             'DENGUE IGM, TESTE RÁPIDO'
         ) THEN 'igm_serum'
-        WHEN detalhe_exame IN (
-            'DENGUE NS1, TESTE RÁPIDO'
+        WHEN UPPER(detalhe_exame) IN (
+            'DENGUE NS1, TESTE RÁPIDO',
+            'ANTÍGENO NS1 DO VIRUS DA DENGUE'
         ) THEN 'ns1_antigen'
         ELSE 'UNKNOWN'
     END AS test_kit,
