@@ -1,6 +1,6 @@
 {{
     config(
-        materialized='incremental'
+        materialized='table'
     )
 }}
 
@@ -10,8 +10,8 @@ WITH source_data AS (
     FROM {{ source('dagster', 'sabin_raw') }}
 )
 SELECT
-    "OS",
     "Código Posto" AS codigo_posto,
+    "OS" AS test_id,
     "Estado" AS state,
     "Municipio" AS location,
     "DataAtendimento" AS date_testing, -- WIP
