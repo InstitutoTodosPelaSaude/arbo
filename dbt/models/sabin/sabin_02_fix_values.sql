@@ -76,14 +76,15 @@ SELECT
         WHEN sex ILIKE 'M%' THEN 'M'
         ELSE 'UNKNOWN'
     END AS sex,
-    -1 AS age,
+
+    EXTRACT( YEAR FROM AGE(date_testing, birth_date) )::int AS age,
     
     regexp_replace(upper(unaccent(location)), '[^\w\s]', '', 'g') AS location,
     regexp_replace(upper(unaccent(state)), '[^\w\s]', '', 'g') AS state,
 
-    -1 AS result,
+    -2 AS result, -- WIP
 
-    date_testing, -- WIP
+    date_testing,
     file_name
 
 FROM source_data
