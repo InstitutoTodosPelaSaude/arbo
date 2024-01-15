@@ -14,12 +14,12 @@ SELECT
     "OS" AS test_id,
     "Estado" AS state,
     "Municipio" AS location,
-    "DataAtendimento" AS date_testing, -- WIP
-    "DataNascimento",  -- WIP
+    TO_DATE("DataAtendimento", 'DD/MM/YYYY') AS date_testing, 
+    TO_DATE("DataNascimento", 'DD/MM/YYYY') AS birth_date,  
     "Sexo" AS sex,
     "Descricao" AS exame,
     "Parametro" AS detalhe_exame,
     "Resultado" AS result,
-    -- "DataAssinatura",  -- WIP
+    -- "DataAssinatura", 
     "file_name"
 FROM source_data

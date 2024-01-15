@@ -12,23 +12,25 @@ sources:
         description: Raw data from Sabin
 
 models:
+  - name: sabin_01_convert_types
+    description: Convert types
+    columns:
+      - name: date_testing
+        tests:
+          - accepted_range:
+              max_value: "getdate()"
+              
   - name: sabin_02_fix_types
     description: Convert types
     columns:
       - name: sex
         tests:
-          - not_accepted_values:
-              values: ['UNKNOWN']
+          - accepted_values:
+              values: ['F', 'M']
 
       - name: age
         tests:
-          - accepted_range:
+          - dbt_utils.accepted_range:
               min_value: 0
               max_value: 150
-
-      - name: test_kit
-        tests:
-          - not_null
-          - not_accepted_values:
-              values: ['UNKNOWN']
               

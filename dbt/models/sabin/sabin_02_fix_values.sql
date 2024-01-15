@@ -51,11 +51,23 @@ SELECT
             'ZIKAM1',
             -- Chikungunya IgM
             'RCHIKUNGMELISAIGM'
-
         ) THEN 'igm_serum'
+        
         WHEN detalhe_exame IN (
             'DNS1'
         ) THEN 'ns1_antigen'
+
+        -- PCR
+        WHEN detalhe_exame IN (
+            'PCRDE'
+        ) THEN 'denv_pcr'
+        WHEN detalhe_exame IN (
+            'CHIKVPCR-BIOMOL'
+        ) THEN 'chikv_pcr'
+        WHEN detalhe_exame IN (
+            'ZIKAPCRBIO'
+        ) THEN 'zika_pcr'
+
         ELSE 'UNKNOWN'
     END AS test_kit,
 
