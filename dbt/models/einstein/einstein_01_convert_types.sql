@@ -9,15 +9,15 @@ WITH source_data AS (
 
 )
 SELECT
-    "ACCESSION" AS test_id,
-    "SEXO" AS sex,
-    "IDADE"::INT AS age,
-    "EXAME" AS exame,
-    "DETALHE_EXAME" AS detalhe_exame,
-    "DH_COLETA"::DATE AS date_testing,
-    "MUNICÍPIO" AS location,
-    "ESTADO" AS state,
-    "PATOGENO" AS pathogen,
-    "RESULTADO" AS result,
+    "accession" AS test_id,
+    "sexo" AS sex,
+    "idade"::INT AS age,
+    "exame" AS exame,
+    "detalhe_exame" AS detalhe_exame,
+    TO_DATE("dh_coleta", 'DD/MM/YYYY') AS date_testing,
+    "municipio" AS location,
+    "estado" AS state,
+    "patogeno" AS pathogen,
+    "resultado" AS result,
     file_name
 FROM source_data

@@ -41,3 +41,4 @@ dagster_home/**/
 figures/
 
 
+*.ipynb
