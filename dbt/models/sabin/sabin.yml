@@ -9,3 +9,26 @@ sources:
         meta:
             dagster:
               asset_key: ["sabin_raw"]
+        description: Raw data from Sabin
+
+models:
+  - name: sabin_02_fix_types
+    description: Convert types
+    columns:
+      - name: sex
+        tests:
+          - not_accepted_values:
+              values: ['UNKNOWN']
+
+      - name: age
+        tests:
+          - accepted_range:
+              min_value: 0
+              max_value: 150
+
+      - name: test_kit
+        tests:
+          - not_null
+          - not_accepted_values:
+              values: ['UNKNOWN']
+              
