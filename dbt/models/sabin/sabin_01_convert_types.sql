@@ -4,11 +4,11 @@
     )
 }}
 
-WITH source_data AS {
+WITH source_data AS (
     SELECT
     *
     FROM {{ source('dagster', 'sabin_raw') }}
-},
+)
 SELECT
     "OS",
     "Código Posto" AS codigo_posto,
