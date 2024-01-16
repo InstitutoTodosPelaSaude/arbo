@@ -5,6 +5,11 @@ import time
 LABS = ['Einstein', 'Hilab', 'HlaGyn']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
+def delete_file_permanently(file_path):
+    os.remove(file_path)
+    st.toast(f"Arquivo {file_path.split('/')[-1]} excluído permanentemente")
+
+
 def delete_file_from_folder(path, filename):
     # move to _out
     os.rename(
@@ -14,6 +19,7 @@ def delete_file_from_folder(path, filename):
 
     st.toast(f"Arquivo {filename} movido para a lixeira")
 
+
 def restore_file_from_trash(file_path):
     # move to _out
     os.rename(
@@ -22,6 +28,7 @@ def restore_file_from_trash(file_path):
     )
 
     st.toast(f"Arquivo {file_path.split('/')[-1]} restaurado")
+
 
 def widgets_list_files_in_folder(path, container):
     files = os.listdir(path)
@@ -48,12 +55,21 @@ def widgets_list_files_in_folder(path, container):
     return files
 
 
+def folder_has_valid_files(path):
+    files = os.listdir(path)
+    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    return len(files) > 0
+
+
 def widgets_list_files_in_folder_checkbox(path, container):
 
     files = os.listdir(path)
     files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
 
     files_selected = []
+    if len(files) == 0:
+        return []
+    
     with container:
         
         for file in files:
@@ -97,12 +113,21 @@ def widgets_upload_file(selected_lab):
         with open(os.path.join(lab_folder_path, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-            
+
+def widgets_confirm_file_deletion():
+    CONFIRMATION_TEXT = "DELETAR"
+
+    user_text_input_delete_file = st.text_input(F"Deseja excluir os arquivos? Digite **{CONFIRMATION_TEXT}** para confirmar")
+
+    reconfirm_delete_bt = st.button("Confirmar exclusão", type='primary')
+    return reconfirm_delete_bt and user_text_input_delete_file == CONFIRMATION_TEXT
 
 st.title(":satellite: Central ARBO")
 
-st.markdown("## Upload de dados")
+# Upload de dados
+# ===============
 
+st.markdown("## Upload de dados")
 selected_lab = st.selectbox(
     'Laboratório', 
     LABS
@@ -112,19 +137,21 @@ widgets_upload_file(selected_lab)
 
 
 
-
 # File Explorer
 # =============
 
 st.divider()
 st.markdown("## Explorer\n")
 st.empty()
-for lab_folder in LABS:
-    lab_folder = lab_folder.lower()
-    lab_folder_path = os.path.join("/data", lab_folder)
+for lab_lower in LABS:
+    lab_lower = lab_lower.lower()
+    lab_trash_path = os.path.join("/data", lab_lower)
     # List files in the folder
-    container = st.expander(f":file_folder: {lab_folder}")
-    widgets_list_files_in_folder( lab_folder_path, container )
+    lab_folder_trash_container = st.expander(f":file_folder: {lab_lower}")
+    widgets_list_files_in_folder( lab_trash_path, lab_folder_trash_container )
+
+
+
 
 # Lixeira
 # =======
@@ -134,24 +161,54 @@ st.markdown("## Lixeira\n")
 st.empty()
 
 files_selected_in_trash = []
-for lab_folder in LABS:
-    lab_folder = lab_folder.lower()
-    lab_folder_path = os.path.join("/data", lab_folder, "_out")
+trash_is_empty = True
+for lab in LABS:
+    lab_lower = lab.lower()
+    lab_trash_path = os.path.join("/data", lab_lower, "_out")
 
     # List files in the folder
-    container = st.expander(f":file_folder: {lab_folder}")
-    files_selected = widgets_list_files_in_folder_checkbox( lab_folder_path, container )
+    if not folder_has_valid_files(lab_trash_path):
+        continue
+    
+    trash_is_empty = False
+    lab_folder_trash_container = st.expander(f":file_folder: {lab_lower}")
+
+    files_selected = widgets_list_files_in_folder_checkbox( lab_trash_path, lab_folder_trash_container )
     files_selected_in_trash += files_selected
+
+if trash_is_empty:
+    st.markdown("*A lixeira está vazia :)*")
+
 
 if files_selected_in_trash != []:
     # Adicionar delete e restore
-    col_button_delete, col_button_restore, _ = st.columns([.15, .15, .7])
-    confirm_bt = col_button_delete.button("Excluir", type='primary')
-    restore_bt = col_button_restore.button("Restaurar")
+    col_button_restore, col_button_delete, _ = st.columns([.15, .15, .7])
+    restore_bt = col_button_restore.button(
+        "Restaurar",
+        on_click = lambda fls=files_selected_in_trash: [restore_file_from_trash(file) for file in fls]
+    )
 
     if restore_bt:
-        started_restoring_files = True
-        for file in files_selected_in_trash:
-            restore_file_from_trash(file)
-
+        time.sleep(3)
         st.rerun()
+
+    confirm_delete_bt = col_button_delete.button(
+        "Excluir", 
+        type='primary'
+    )
+
+    if confirm_delete_bt:
+        st.session_state['is_deleting_files'] = True
+
+    if 'is_deleting_files' in st.session_state:
+        if st.session_state['is_deleting_files']:
+            if widgets_confirm_file_deletion():
+                for file in files_selected_in_trash:
+                    delete_file_permanently(file)
+
+                st.spinner(text="Deletando...",)
+                time.sleep(3)
+                st.rerun()
+
+    
+    
