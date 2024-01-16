@@ -108,11 +108,10 @@ def widgets_upload_file(selected_lab):
     if not confirm_bt:
         return
     
-    st.toast("Upload confirmado")
+    st.success(f"Upload confirmado de {len(uploaded_files)} arquivos")
     for uploaded_file in uploaded_files:
         with open(os.path.join(lab_folder_path, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
-
 
 def widgets_confirm_file_deletion():
     CONFIRMATION_TEXT = "DELETAR"
