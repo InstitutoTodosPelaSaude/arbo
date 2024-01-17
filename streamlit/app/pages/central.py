@@ -85,10 +85,12 @@ def widgets_list_files_in_folder_checkbox(path, container):
 
     return files_selected
 
+
 @st.cache_data
 def read_all_files_in_folder_as_df(path):
     files = os.listdir(path)
     files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    files.sort()
 
     dfs = []
     for file in files:
@@ -97,6 +99,7 @@ def read_all_files_in_folder_as_df(path):
         dfs.append( (file, df.to_csv().encode('utf-8')) )
     
     return dfs
+
 
 def widgets_download_files_in_folder(path, container):
     
@@ -176,7 +179,7 @@ widgets_upload_file(selected_lab)
 st.divider()
 st.markdown("## :1234: Matrizes")
 
-download_matrices_container = st.expander(":1234: Matrizes")
+download_matrices_container = st.expander(":file_folder: Arquivos")
 widgets_download_files_in_folder( "matrices", download_matrices_container )
 
 
