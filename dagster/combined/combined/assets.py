@@ -41,6 +41,10 @@ def export_to_xlsx(context):
     """
     Get the final combined data from the database and export to xlsx
     """
+    # Create data folder if not exists
+    pathlib.Path('data/combined').mkdir(parents=True, exist_ok=True)
+
+    # Export to xlsx
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
     df = pd.read_sql('select * from arboviroses."combined_05_location"', engine)
     df.to_excel('data/combined/combined.xlsx', index=False)
