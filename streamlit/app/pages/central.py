@@ -48,7 +48,7 @@ def widgets_list_files_in_folder(path, container):
             # col_download.button(":arrow_down:", key = f"download_{file}")
             col_delete.button(
                 ":wastebasket:", 
-                key = f"delete_{file}",
+                key = f"delete_{path}_{file}",
                 on_click = lambda file=file: delete_file_from_folder(path, file)
             )
 
@@ -76,7 +76,7 @@ def widgets_list_files_in_folder_checkbox(path, container):
             col_filename, col_checkbox = st.columns([.8, .2])
 
             col_filename.markdown(f":page_facing_up: {file}")
-            file_is_selected = col_checkbox.checkbox("", key = f"checkbox_{file}")
+            file_is_selected = col_checkbox.checkbox("", key = f"checkbox_{path}_{file}")
 
             if file_is_selected:
                 file_path = os.path.join(path, file)
@@ -112,6 +112,7 @@ def widgets_upload_file(selected_lab):
     for uploaded_file in uploaded_files:
         with open(os.path.join(lab_folder_path, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
+
 
 def widgets_confirm_file_deletion():
     CONFIRMATION_TEXT = "DELETAR"
