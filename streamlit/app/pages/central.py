@@ -34,6 +34,7 @@ def restore_file_from_trash(file_path):
 def widgets_list_files_in_folder(path, container):
     files = os.listdir(path)
     files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    files.sort()
     
     with container:
         if files == []:
@@ -44,12 +45,12 @@ def widgets_list_files_in_folder(path, container):
             col_filename, col_buttons = st.columns([.8, .2])
             col_filename.markdown(f":page_facing_up: {file}")
 
-            col_peek, col_download, col_delete = col_buttons.columns( [.3, .3, .3] )
-            #col_peek.button(":eye:", key = f"peek_{file}")
-            # col_download.button(":arrow_down:", key = f"download_{file}")
+            _, col_delete, _  = col_buttons.columns( [.3, .3, .3] )
+            
             col_delete.button(
                 ":wastebasket:", 
                 key = f"delete_{path}_{file}",
+                help = "Lixeira _out",
                 on_click = lambda file=file: delete_file_from_folder(path, file)
             )
 
@@ -74,7 +75,7 @@ def widgets_list_files_in_folder_checkbox(path, container):
     with container:
         
         for file in files:
-            col_filename, col_checkbox = st.columns([.8, .2])
+            col_filename, col_checkbox = st.columns([.9, .1])
 
             col_filename.markdown(f":page_facing_up: {file}")
             file_is_selected = col_checkbox.checkbox("", key = f"checkbox_{path}_{file}")
@@ -111,7 +112,9 @@ def widgets_download_files_in_folder(path, container):
 
     with container:
         for file_name, file in file_content_list:
-            col_filename, col_download = st.columns([.8, .2])
+            col_filename, col_buttons = st.columns([.8, .2])
+
+            _, col_download, _ = col_buttons.columns([.3, .3, .3])
 
             col_filename.markdown(f":page_facing_up: {file_name}")
             col_download.download_button(
@@ -119,6 +122,7 @@ def widgets_download_files_in_folder(path, container):
                 data = file,
                 file_name = file_name,
                 mime = "text/csv",
+                help = "Download",
                 key = f"download_{path}_{file_name}"
             )
 
@@ -159,6 +163,11 @@ def widgets_confirm_file_deletion():
 
     reconfirm_delete_bt = st.button("Confirmar exclusão", type='primary')
     return reconfirm_delete_bt and user_text_input_delete_file == CONFIRMATION_TEXT
+
+
+
+
+
 
 st.title(":satellite: Central ARBO")
 
