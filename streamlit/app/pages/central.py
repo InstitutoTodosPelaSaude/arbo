@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import time
+import pandas as pd
 
 LABS = ['Einstein', 'Hilab', 'HlaGyn']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
@@ -33,6 +34,7 @@ def restore_file_from_trash(file_path):
 def widgets_list_files_in_folder(path, container):
     files = os.listdir(path)
     files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    files.sort()
     
     with container:
         if files == []:
@@ -43,12 +45,12 @@ def widgets_list_files_in_folder(path, container):
             col_filename, col_buttons = st.columns([.8, .2])
             col_filename.markdown(f":page_facing_up: {file}")
 
-            col_peek, col_download, col_delete = col_buttons.columns( [.3, .3, .3] )
-            #col_peek.button(":eye:", key = f"peek_{file}")
-            # col_download.button(":arrow_down:", key = f"download_{file}")
+            _, col_delete, _  = col_buttons.columns( [.3, .3, .3] )
+            
             col_delete.button(
                 ":wastebasket:", 
-                key = f"delete_{file}",
+                key = f"delete_{path}_{file}",
+                help = "Lixeira _out",
                 on_click = lambda file=file: delete_file_from_folder(path, file)
             )
 
@@ -73,16 +75,56 @@ def widgets_list_files_in_folder_checkbox(path, container):
     with container:
         
         for file in files:
-            col_filename, col_checkbox = st.columns([.8, .2])
+            col_filename, col_checkbox = st.columns([.9, .1])
 
             col_filename.markdown(f":page_facing_up: {file}")
-            file_is_selected = col_checkbox.checkbox("", key = f"checkbox_{file}")
+            file_is_selected = col_checkbox.checkbox("", key = f"checkbox_{path}_{file}")
 
             if file_is_selected:
                 file_path = os.path.join(path, file)
                 files_selected.append(file_path)
 
     return files_selected
+
+
+@st.cache_data
+def read_all_files_in_folder_as_df(path):
+    files = os.listdir(path)
+    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    files.sort()
+
+    dfs = []
+    for file in files:
+        file_path = os.path.join(path, file)
+        df = pd.read_csv(file_path)
+        dfs.append( (file, df.to_csv().encode('utf-8')) )
+    
+    return dfs
+
+
+def widgets_download_files_in_folder(path, container):
+    
+    path = os.path.join("/data", path)
+    file_content_list = read_all_files_in_folder_as_df(path)    
+    
+    if len(file_content_list) == 0:
+        return []
+
+    with container:
+        for file_name, file in file_content_list:
+            col_filename, col_buttons = st.columns([.8, .2])
+
+            _, col_download, _ = col_buttons.columns([.3, .3, .3])
+
+            col_filename.markdown(f":page_facing_up: {file_name}")
+            col_download.download_button(
+                label = ":arrow_down:",
+                data = file,
+                file_name = file_name,
+                mime = "text/csv",
+                help = "Download",
+                key = f"download_{path}_{file_name}"
+            )
 
 
 def widgets_upload_file(selected_lab):
@@ -113,6 +155,7 @@ def widgets_upload_file(selected_lab):
         with open(os.path.join(lab_folder_path, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
 
+
 def widgets_confirm_file_deletion():
     CONFIRMATION_TEXT = "DELETAR"
 
@@ -121,12 +164,17 @@ def widgets_confirm_file_deletion():
     reconfirm_delete_bt = st.button("Confirmar exclusão", type='primary')
     return reconfirm_delete_bt and user_text_input_delete_file == CONFIRMATION_TEXT
 
+
+
+
+
+
 st.title(":satellite: Central ARBO")
 
 # Upload de dados
 # ===============
 
-st.markdown("## Upload de dados")
+st.markdown("## :arrow_up: Upload de dados")
 selected_lab = st.selectbox(
     'Laboratório', 
     LABS
@@ -135,12 +183,20 @@ selected_lab = selected_lab.lower()
 widgets_upload_file(selected_lab)
 
 
+# Download de dados
+# =================
+st.divider()
+st.markdown("## :1234: Matrizes")
+
+download_matrices_container = st.expander(":file_folder: Arquivos")
+widgets_download_files_in_folder( "matrices", download_matrices_container )
+
 
 # File Explorer
 # =============
 
 st.divider()
-st.markdown("## Explorer\n")
+st.markdown("## :blue_book: Explorer\n")
 st.empty()
 for lab_lower in LABS:
     lab_lower = lab_lower.lower()
@@ -156,7 +212,7 @@ for lab_lower in LABS:
 # =======
     
 st.divider()
-st.markdown("## Lixeira\n")
+st.markdown("## :put_litter_in_its_place: Lixeira\n")
 st.empty()
 
 files_selected_in_trash = []
