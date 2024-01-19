@@ -82,7 +82,21 @@ SELECT
     regexp_replace(upper(unaccent(location)), '[^\w\s]', '', 'g') AS location,
     regexp_replace(upper(unaccent(state)), '[^\w\s]', '', 'g') AS state,
 
-    -2 AS result, -- WIP
+    CASE
+        WHEN result = 'Detectado (Presença do material genético do Vírus Chikungunya)' THEN 1
+        WHEN result = 'Detectado (Presença do material genético do Vírus Dengue)' THEN 1
+        WHEN result = 'Não detectado (Ausência do material genético do Vírus Chikungunya)' THEN 0
+        WHEN result = 'Não detectado (Ausência do material genético do Vírus Dengue)' THEN 0
+        WHEN result = 'Não detectado (Ausência do material genético do Vírus Zika)' THEN 0
+        WHEN result = 'NÃO REAGENTE' THEN 0
+        WHEN result = 'Negativo' THEN 0
+        WHEN result = 'Positivo' THEN 1
+        WHEN result = 'REAGENTE' THEN 1
+        WHEN result = 'REAGENTE ' THEN 1
+        WHEN result = 'REAGENTE 1:200' THEN 1
+        WHEN result IS NULL THEN -1
+        ELSE regexp_replace(result , ',' , '.')::FLOAT -- replace comma with dot
+    END::FLOAT AS result,
 
     date_testing,
     file_name
