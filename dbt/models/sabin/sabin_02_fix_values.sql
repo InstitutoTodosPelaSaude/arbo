@@ -94,8 +94,11 @@ SELECT
         WHEN result = 'REAGENTE' THEN 1
         WHEN result = 'REAGENTE ' THEN 1
         WHEN result = 'REAGENTE 1:200' THEN 1
-        WHEN result IS NULL THEN -1
-        ELSE regexp_replace(result , ',' , '.')::FLOAT -- replace comma with dot
+        ELSE 
+            CASE 
+            WHEN regexp_replace(result , ',' , '.')::FLOAT < 0.80 THEN 0
+            ELSE 1
+        END
     END::FLOAT AS result,
 
     date_testing,
@@ -103,3 +106,4 @@ SELECT
 
 FROM source_data
 WHERE not detalhe_exame in ('OBSGERALINTERNA', 'FEBREGLC', 'FEBREMLC')
+AND result IS NOT NULL
