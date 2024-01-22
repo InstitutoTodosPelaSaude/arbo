@@ -39,3 +39,17 @@ models:
           - dbt_utils.not_accepted_values:
               values: ['UNKNOWN']
       
+  - name: sabin_03_deduplicate
+    description: Deduplicate data
+    columns:
+      - name: test_id
+        tests:
+          - relationships:
+              to: ref('sabin_02_fix_values')
+              field: test_id
+
+      - name: sample_id
+        tests:
+          - relationships:
+              to: ref('sabin_02_fix_values')
+              field: sample_id
