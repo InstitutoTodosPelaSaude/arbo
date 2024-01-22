@@ -94,11 +94,13 @@ SELECT
         WHEN result = 'REAGENTE' THEN 1
         WHEN result = 'REAGENTE ' THEN 1
         WHEN result = 'REAGENTE 1:200' THEN 1
-        ELSE 
+        -- 9999 or 99,99 or 99.99
+        WHEN result ~ '[0-9]+[,.]*[0-9]*' AND result ~ '^[0-9]' THEN
             CASE 
-            WHEN regexp_replace(result , ',' , '.')::FLOAT < 0.80 THEN 0
-            ELSE 1
-        END
+                WHEN regexp_replace(result , ',' , '.')::FLOAT < 0.80 THEN 0
+                ELSE 1
+            END
+        ELSE -2 -- UNKNOWN
     END::FLOAT AS result,
 
     date_testing,

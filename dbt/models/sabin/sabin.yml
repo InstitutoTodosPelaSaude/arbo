@@ -33,3 +33,9 @@ models:
         tests:
           - accepted_values:
               values: [-1, 0, 1]
+
+      - name: test_kit
+        tests:
+          - dbt_utils.not_accepted_values:
+              values: ['UNKNOWN']
+      
