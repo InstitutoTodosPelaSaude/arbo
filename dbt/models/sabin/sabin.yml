@@ -53,3 +53,20 @@ models:
           - relationships:
               to: ref('sabin_02_fix_values')
               field: sample_id
+
+  - name: sabin_04_pivot_results
+    description: Pivot results
+    columns:
+      - name: test_id
+        tests:
+          - relationships:
+              to: ref('sabin_03_deduplicate')
+              field: test_id
+      
+      - name: sample_id
+        tests:
+          - relationships:
+              to: ref('sabin_03_deduplicate')
+              field: sample_id
+      
+      
