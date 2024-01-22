@@ -39,7 +39,7 @@ models:
           - dbt_utils.not_accepted_values:
               values: ['UNKNOWN']
       
-  - name: sabin_03_deduplicate
+  - name: sabin_03_deduplicate_denguegi
     description: Deduplicate data
     columns:
       - name: test_id
@@ -56,6 +56,10 @@ models:
 
   - name: sabin_04_pivot_results
     description: Pivot results
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('sabin_03_deduplicate_denguegi')
+          
     columns:
       - name: test_id
         tests:
@@ -69,4 +73,19 @@ models:
               to: ref('sabin_03_deduplicate')
               field: sample_id
       
+  - name: sabin_06_deduplicate
+    description: Deduplicate data
+    columns:
+      - name: test_id
+        tests:
+          - relationships:
+              to: ref('sabin_04_pivot_results')
+              field: test_id
+
+      - name: sample_id
+        tests:
+          - relationships:
+              to: ref('sabin_04_pivot_results')
+              field: sample_id
+          - unique
       
