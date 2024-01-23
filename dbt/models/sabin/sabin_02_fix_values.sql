@@ -32,7 +32,8 @@ SELECT
         WHEN detalhe_exame IN (
             'PCRCHIK', 'PCRDE', 'VIRUSZICA'
 
-        ) THEN 'arbo_pcr_3'
+        ) AND exame ILIKE 'PCR para Zika, Chikungunya e Dengue'
+        THEN 'arbo_pcr_3'
         WHEN detalhe_exame IN (
             -- Dengue IgG
             'DENGIGG', 'DENGUEGI',
@@ -60,10 +61,13 @@ SELECT
         -- PCR
         WHEN detalhe_exame IN (
             'PCRDE'
-        ) THEN 'denv_pcr'
+        ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO VÍRUS DENGUE '
+        THEN 'denv_pcr'
+
         WHEN detalhe_exame IN (
             'CHIKVPCR-BIOMOL'
         ) THEN 'chikv_pcr'
+
         WHEN detalhe_exame IN (
             'ZIKAPCRBIO'
         ) THEN 'zika_pcr'
