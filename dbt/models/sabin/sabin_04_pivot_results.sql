@@ -20,7 +20,8 @@ SELECT
                 'DENGUEMIC',
                 'DENGIGM',
                 'DNS1',
-                'PCRDE'
+                'PCRDE',
+                'NS1ELISA'
             ], 
             'detalhe_exame', 
             'result', 
