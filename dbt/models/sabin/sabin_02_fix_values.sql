@@ -55,7 +55,8 @@ SELECT
         ) THEN 'igm_serum'
         
         WHEN detalhe_exame IN (
-            'DNS1'
+            'DNS1',
+            'NS1ELISA'
         ) THEN 'ns1_antigen'
 
         -- PCR
@@ -98,6 +99,7 @@ SELECT
         WHEN result = 'REAGENTE' THEN 1
         WHEN result = 'REAGENTE ' THEN 1
         WHEN result = 'REAGENTE 1:200' THEN 1
+        WHEN result = 'Reagente' THEN 1
         -- 9999 or 99,99 or 99.99
         WHEN result ~ '[0-9]+[,.]*[0-9]*' AND result ~ '^[0-9]' THEN
             CASE 

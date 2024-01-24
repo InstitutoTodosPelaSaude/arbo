@@ -21,7 +21,7 @@ models:
       - name: sex
         tests:
           - accepted_values:
-              values: ['F', 'M']
+              values: ['F', 'M', 'UNKNOWN']
 
       - name: age
         tests:
