@@ -87,7 +87,6 @@ def widgets_list_files_in_folder_checkbox(path, container):
     return files_selected
 
 
-@st.cache_data
 def read_all_files_in_folder_as_df(path):
     files = os.listdir(path)
     files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
