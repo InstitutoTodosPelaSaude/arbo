@@ -3,7 +3,7 @@ import os
 import time
 import pandas as pd
 
-LABS = ['Einstein', 'Hilab', 'HlaGyn']
+LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
 def delete_file_permanently(file_path):
