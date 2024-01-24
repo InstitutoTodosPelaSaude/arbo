@@ -1,0 +1,91 @@
+version: 2
+
+sources:
+  - name: dagster
+    description: Raw data from Sabin
+    schema: arboviroses
+    tables:
+      - name: sabin_raw
+        meta:
+            dagster:
+              asset_key: ["sabin_raw"]
+        description: Raw data from Sabin
+
+models:
+  - name: sabin_01_convert_types
+    description: Convert types
+
+  - name: sabin_02_fix_values
+    description: Convert types
+    columns:
+      - name: sex
+        tests:
+          - accepted_values:
+              values: ['F', 'M']
+
+      - name: age
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 150
+      
+      - name: result
+        tests:
+          - accepted_values:
+              values: [-1, 0, 1]
+
+      - name: test_kit
+        tests:
+          - dbt_utils.not_accepted_values:
+              values: ['UNKNOWN']
+      
+  - name: sabin_03_deduplicate_denguegi
+    description: Deduplicate data
+    columns:
+      - name: test_id
+        tests:
+          - relationships:
+              to: ref('sabin_02_fix_values')
+              field: test_id
+
+      - name: sample_id
+        tests:
+          - relationships:
+              to: ref('sabin_02_fix_values')
+              field: sample_id
+
+  - name: sabin_04_pivot_results
+    description: Pivot results
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('sabin_03_deduplicate_denguegi')
+          
+    columns:
+      - name: test_id
+        tests:
+          - relationships:
+              to: ref('sabin_03_deduplicate')
+              field: test_id
+      
+      - name: sample_id
+        tests:
+          - relationships:
+              to: ref('sabin_03_deduplicate')
+              field: sample_id
+      
+  - name: sabin_06_deduplicate
+    description: Deduplicate data
+    columns:
+      - name: test_id
+        tests:
+          - relationships:
+              to: ref('sabin_04_pivot_results')
+              field: test_id
+
+      - name: sample_id
+        tests:
+          - relationships:
+              to: ref('sabin_04_pivot_results')
+              field: sample_id
+          - unique
+      
