@@ -104,7 +104,7 @@ SELECT
                 WHEN regexp_replace(result , ',' , '.')::FLOAT < 0.80 THEN 0
                 ELSE 1
             END
-        ELSE -2 -- UNKNOWN
+        ELSE -1 -- UNKNOWN
     END::FLOAT AS result,
 
     date_testing,
