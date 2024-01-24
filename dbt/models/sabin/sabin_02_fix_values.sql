@@ -55,7 +55,8 @@ SELECT
         ) THEN 'igm_serum'
         
         WHEN detalhe_exame IN (
-            'DNS1'
+            'DNS1',
+            'NS1ELISA'
         ) THEN 'ns1_antigen'
 
         -- PCR
