@@ -5,6 +5,7 @@ import os
 import pathlib
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+import requests
 
 from .constants import dbt_manifest_path
 
@@ -15,7 +16,34 @@ DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
+
+
 @asset(compute_kind="python")
+def sabin_convert_xlsx_to_csv(context):
+    root_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
+    sabin_path = root_path / "data" / "sabin"
+
+    for file in os.listdir(sabin_path):
+        if not file.endswith('.xlsx'):
+            continue
+        
+        file_path = sabin_path / file
+        response = requests.post(
+            "http://xlsx2csv:2140/convert",
+            files={"file": open(file_path, "rb")},
+        )
+
+        if response.status_code != 200:
+            raise Exception(f"Error converting file {file_path}")
+        
+        with open(file_path.with_suffix('.csv'), 'wb') as f:
+            f.write(response.content)
+
+
+        context.log.info(f"Converted file {file_path}")
+
+
+@asset(compute_kind="python", deps=[sabin_convert_xlsx_to_csv])
 def sabin_raw(context):
     root_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
     sabin_path = root_path / "data" / "sabin"
