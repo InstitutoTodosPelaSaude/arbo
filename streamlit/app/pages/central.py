@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import time
 import pandas as pd
+from datetime import datetime
 
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
@@ -33,6 +34,7 @@ def restore_file_from_trash(file_path):
 
 def widgets_list_files_in_folder(path, container):
     files = os.listdir(path)
+
     files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
     files.sort()
     
@@ -92,11 +94,29 @@ def read_all_files_in_folder_as_df(path):
     files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
     files.sort()
 
+    dt_now = datetime.now()
     dfs = []
     for file in files:
         file_path = os.path.join(path, file)
+        
+        dt_creation = datetime.fromtimestamp(os.path.getctime(file_path))
+        duration = dt_now - dt_creation
+
+        # If less than 1 minute, use seconds
+        # If less than 1 hour, use minutes
+        # If less than 1 day, use hours
+        # If more than 1 day, use days
+        if duration.seconds < 60:
+            duration = f"{duration.seconds}s"
+        elif duration.seconds < 3600:
+            duration = f"{duration.seconds//60}m"
+        elif duration.seconds < 86400:
+            duration = f"{duration.seconds//3600}h"
+        else:
+            duration = f"{duration.days}d"
+
         df = pd.read_csv(file_path)
-        dfs.append( (file, df.to_csv().encode('utf-8')) )
+        dfs.append( (file, duration, df.to_csv().encode('utf-8')) )
     
     return dfs
 
@@ -104,18 +124,20 @@ def read_all_files_in_folder_as_df(path):
 def widgets_download_files_in_folder(path, container):
     
     path = os.path.join("/data", path)
-    file_content_list = read_all_files_in_folder_as_df(path)    
+    file_content_list = read_all_files_in_folder_as_df(path)
+
     
     if len(file_content_list) == 0:
         return []
 
     with container:
-        for file_name, file in file_content_list:
+        for file_name, file_dt_creation, file in file_content_list:
             col_filename, col_buttons = st.columns([.8, .2])
 
-            _, col_download, _ = col_buttons.columns([.3, .3, .3])
+            col_date, col_download, _ = col_buttons.columns([.3, .3, .3])
 
-            col_filename.markdown(f":page_facing_up: {file_name}")
+            col_filename.markdown(f":page_facing_up: {file_name: <60}")
+            col_date.markdown(f"*{file_dt_creation}*")
             col_download.download_button(
                 label = ":arrow_down:",
                 data = file,
