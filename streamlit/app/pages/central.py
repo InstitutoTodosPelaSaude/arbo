@@ -217,7 +217,7 @@ widgets_download_files_in_folder( "matrices", download_matrices_container )
 # =============
 
 st.divider()
-st.markdown("## :blue_book: Explorer\n")
+st.markdown("## :blue_book: A Processar\n")
 st.empty()
 for lab_lower in LABS:
     lab_lower = lab_lower.lower()
@@ -233,7 +233,7 @@ for lab_lower in LABS:
 # =======
     
 st.divider()
-st.markdown("## :put_litter_in_its_place: Lixeira\n")
+st.markdown("## :ballot_box_with_check: Processados\n")
 st.empty()
 
 files_selected_in_trash = []
