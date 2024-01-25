@@ -119,7 +119,7 @@ def read_all_files_in_folder_as_df(path):
             duration = f"{duration.days}d"
 
         df = pd.read_csv(file_path)
-        dfs.append( (file, duration, df.to_csv().encode('utf-8')) )
+        dfs.append( (file, duration, df.to_csv(index=False).encode('utf-8')) )
     
     return dfs
 
