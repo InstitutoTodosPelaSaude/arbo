@@ -109,12 +109,14 @@ def read_all_files_in_folder_as_df(path):
         # If less than 1 hour, use minutes
         # If less than 1 day, use hours
         # If more than 1 day, use days
-        if duration.seconds < 60:
-            duration = f"{duration.seconds}s"
-        elif duration.seconds < 3600:
-            duration = f"{duration.seconds//60}m"
-        elif duration.seconds < 86400:
-            duration = f"{duration.seconds//3600}h"
+        total_duration_in_seconds = duration.total_seconds()
+
+        if total_duration_in_seconds < 60:
+            duration = f"{total_duration_in_seconds:.0f}s"
+        elif total_duration_in_seconds < 3600:
+            duration = f"{total_duration_in_seconds//60:.0f}m"
+        elif total_duration_in_seconds < 86400:
+            duration = f"{total_duration_in_seconds//3600:.0f}h"
         else:
             duration = f"{duration.days}d"
 
