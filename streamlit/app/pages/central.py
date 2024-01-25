@@ -4,6 +4,9 @@ import time
 import pandas as pd
 from datetime import datetime
 
+import zipfile
+import io
+
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
@@ -146,6 +149,24 @@ def widgets_download_files_in_folder(path, container):
                 help = "Download",
                 key = f"download_{path}_{file_name}"
             )
+
+        # Zip all files together and add button download all
+
+        zip_file_name = f"{path.split('/')[-1]}.zip"
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
+            for file_name, _, file in file_content_list:
+                zip_file.writestr(file_name, file)
+
+        st.download_button(
+            label = ":arrow_double_down: Download All",
+            data = zip_buffer.getvalue(),
+            file_name = zip_file_name,
+            mime = "application/zip",
+            help = "Download todos",
+            key = f"download_all_{path}"
+        )
 
 
 def widgets_upload_file(selected_lab):
