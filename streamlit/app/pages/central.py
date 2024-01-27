@@ -10,6 +10,12 @@ import io
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
+def folder_has_valid_files(path):
+    files = os.listdir(path)
+    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    return len(files) > 0
+
+
 def delete_file_permanently(file_path):
     os.remove(file_path)
     st.toast(f"Arquivo {file_path.split('/')[-1]} excluído permanentemente")
@@ -33,63 +39,6 @@ def restore_file_from_trash(file_path):
     )
 
     st.toast(f"Arquivo {file_path.split('/')[-1]} restaurado")
-
-
-def widgets_list_files_in_folder(path, container):
-    files = os.listdir(path)
-
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    files.sort()
-    
-    with container:
-        if files == []:
-            st.markdown("*Nenhum arquivo encontrado*")
-            return files
-        
-        for file in files:
-            col_filename, col_buttons = st.columns([.8, .2])
-            col_filename.markdown(f":page_facing_up: {file}")
-
-            _, col_delete, _  = col_buttons.columns( [.3, .3, .3] )
-            
-            col_delete.button(
-                ":wastebasket:", 
-                key = f"delete_{path}_{file}",
-                help = "Lixeira _out",
-                on_click = lambda file=file: delete_file_from_folder(path, file)
-            )
-
-    return files
-
-
-def folder_has_valid_files(path):
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    return len(files) > 0
-
-
-def widgets_list_files_in_folder_checkbox(path, container):
-
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-
-    files_selected = []
-    if len(files) == 0:
-        return []
-    
-    with container:
-        
-        for file in files:
-            col_filename, col_checkbox = st.columns([.9, .1])
-
-            col_filename.markdown(f":page_facing_up: {file}")
-            file_is_selected = col_checkbox.checkbox("", key = f"checkbox_{path}_{file}")
-
-            if file_is_selected:
-                file_path = os.path.join(path, file)
-                files_selected.append(file_path)
-
-    return files_selected
 
 
 def read_all_files_in_folder_as_df(path):
@@ -124,6 +73,57 @@ def read_all_files_in_folder_as_df(path):
         dfs.append( (file, duration, df.to_csv(index=False).encode('utf-8')) )
     
     return dfs
+
+
+def widgets_list_files_in_folder(path, container):
+    files = os.listdir(path)
+
+    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    files.sort()
+    
+    with container:
+        if files == []:
+            st.markdown("*Nenhum arquivo encontrado*")
+            return files
+        
+        for file in files:
+            col_filename, col_buttons = st.columns([.8, .2])
+            col_filename.markdown(f":page_facing_up: {file}")
+
+            _, col_delete, _  = col_buttons.columns( [.3, .3, .3] )
+            
+            col_delete.button(
+                ":wastebasket:", 
+                key = f"delete_{path}_{file}",
+                help = "Lixeira _out",
+                on_click = lambda file=file: delete_file_from_folder(path, file)
+            )
+
+    return files
+
+
+def widgets_list_files_in_folder_checkbox(path, container):
+
+    files = os.listdir(path)
+    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+
+    files_selected = []
+    if len(files) == 0:
+        return []
+    
+    with container:
+        
+        for file in files:
+            col_filename, col_checkbox = st.columns([.9, .1])
+
+            col_filename.markdown(f":page_facing_up: {file}")
+            file_is_selected = col_checkbox.checkbox("", key = f"checkbox_{path}_{file}")
+
+            if file_is_selected:
+                file_path = os.path.join(path, file)
+                files_selected.append(file_path)
+
+    return files_selected
 
 
 def widgets_download_files_in_folder(path, container):
