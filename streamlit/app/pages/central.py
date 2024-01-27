@@ -118,7 +118,7 @@ def read_all_files_in_folder_as_df(path):
         elif total_duration_in_seconds < 86400:
             duration = f"{total_duration_in_seconds//3600:.0f}h"
         else:
-            duration = f"{duration.days}d"
+            duration = f"{duration.days}d {duration.seconds//3600:.0f}h"
 
         df = pd.read_csv(file_path)
         dfs.append( (file, duration, df.to_csv(index=False).encode('utf-8')) )
@@ -137,7 +137,7 @@ def widgets_download_files_in_folder(path, container):
 
     with container:
         for file_name, file_dt_creation, file in file_content_list:
-            col_filename, col_buttons = st.columns([.8, .2])
+            col_filename, col_buttons = st.columns([.7, .3])
 
             col_date, col_download, _ = col_buttons.columns([.3, .3, .3])
 
