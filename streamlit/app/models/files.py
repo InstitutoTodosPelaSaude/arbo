@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from datetime import datetime
+import io
+import zipfile
 
 def folder_has_valid_files(path, accepted_extensions=["csv", "xlsx"]):
     files = list_files_in_folder(path, accepted_extensions)
@@ -78,3 +80,16 @@ def read_all_files_in_folder_as_df(path, accepted_extensions=["csv", "xlsx"]):
         dfs.append( (file, duration, df.to_csv(index=False).encode('utf-8')) )
     
     return dfs
+
+
+def get_zipped_folder(path, accepted_extensions):
+    file_content_list = read_all_files_in_folder_as_df(path, accepted_extensions)
+
+    zip_file_name = f"{path.split('/')[-1]}.zip"
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
+        for file_name, _, file in file_content_list:
+            zip_file.writestr(file_name, file)
+
+    return zip_buffer.getvalue(), zip_file_name

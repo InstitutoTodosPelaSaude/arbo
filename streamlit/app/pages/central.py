@@ -14,7 +14,8 @@ from models.files import (
     delete_file_from_folder, 
     delete_file_permanently, 
     restore_file_from_trash, 
-    read_all_files_in_folder_as_df, 
+    read_all_files_in_folder_as_df,
+    get_zipped_folder,
     folder_has_valid_files
 )
 
@@ -72,7 +73,7 @@ def widgets_download_files_in_folder(path, container):
     
     path = os.path.join("/data", path)
     file_content_list = read_all_files_in_folder_as_df(path, ACCEPTED_EXTENSIONS)
-
+    zip_file_content, zip_file_name = get_zipped_folder(path, ACCEPTED_EXTENSIONS)
     
     if len(file_content_list) == 0:
         return []
@@ -94,18 +95,9 @@ def widgets_download_files_in_folder(path, container):
                 key = f"download_{path}_{file_name}"
             )
 
-        # Zip all files together and add button download all
-
-        zip_file_name = f"{path.split('/')[-1]}.zip"
-        zip_buffer = io.BytesIO()
-
-        with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
-            for file_name, _, file in file_content_list:
-                zip_file.writestr(file_name, file)
-
         st.download_button(
             label = ":arrow_double_down: Download All",
-            data = zip_buffer.getvalue(),
+            data = zip_file_content,
             file_name = zip_file_name,
             mime = "application/zip",
             help = "Download todos",
