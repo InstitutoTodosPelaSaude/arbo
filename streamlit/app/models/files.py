@@ -25,6 +25,10 @@ def delete_file_permanently(file_path):
     #st.toast(f"Arquivo {file_path.split('/')[-1]} excluído permanentemente")
 
 
+def create_file_from_content(path, filename, content):
+    with open(os.path.join(path, filename), "wb") as f:
+        f.write(content)
+
 def delete_file_from_folder(path, filename):
     # move to _out
     

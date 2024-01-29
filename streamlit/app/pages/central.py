@@ -11,7 +11,8 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from models.files import (
     list_files_in_folder,
-    delete_file_from_folder, 
+    delete_file_from_folder,
+    create_file_from_content,
     delete_file_permanently, 
     restore_file_from_trash, 
     read_all_files_in_folder_as_df,
@@ -130,8 +131,7 @@ def widgets_upload_file(selected_lab):
     
     st.success(f"Upload confirmado de {len(uploaded_files)} arquivos")
     for uploaded_file in uploaded_files:
-        with open(os.path.join(lab_folder_path, uploaded_file.name), "wb") as f:
-            f.write(uploaded_file.getbuffer())
+        create_file_from_content(lab_folder_path, uploaded_file.name, uploaded_file.getbuffer())
 
 
 def widgets_confirm_file_deletion():
