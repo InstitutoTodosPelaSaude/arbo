@@ -54,3 +54,15 @@ EDA/data/pyr_agegroups_weeks.xlsx
 EDA/scripts/casos_denv.tsv
 EDA/scripts/casosest_denv.tsv
 EDA/scripts/infodengue_casos_filtro.csv
+EDA/scripts/arbo_api_infodenv.html
+EDA/scripts/arbo_api_infodenv_files/libs/bootstrap/bootstrap-icons.css
+EDA/scripts/arbo_api_infodenv_files/libs/bootstrap/bootstrap-icons.woff
+EDA/scripts/arbo_api_infodenv_files/libs/bootstrap/bootstrap.min.css
+EDA/scripts/arbo_api_infodenv_files/libs/bootstrap/bootstrap.min.js
+EDA/scripts/arbo_api_infodenv_files/libs/clipboard/clipboard.min.js
+EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/anchor.min.js
+EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/popper.min.js
+EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/quarto-syntax-highlighting.css
+EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/quarto.js
+EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/tippy.css
+EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/tippy.umd.min.js
