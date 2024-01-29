@@ -45,3 +45,5 @@ figures/
 EDA/pyr_agegroups.xlsx
 EDA/data/combined_matrix_agegroup.tsv
 EDA/data/pyr_agegroups.xlsx
+EDA/data/combined_matrix_agegroup_months.tsv
+EDA/data/combined_matrix_agegroup_weeks.tsv
