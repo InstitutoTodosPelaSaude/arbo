@@ -1,79 +1,24 @@
 import streamlit as st
 import os
 import time
-import pandas as pd
-from datetime import datetime
 
 import zipfile
 import io
 
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from models.files import (
+    delete_file_from_folder, 
+    delete_file_permanently, 
+    restore_file_from_trash, 
+    read_all_files_in_folder_as_df, 
+    folder_has_valid_files
+)
+
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
-
-def folder_has_valid_files(path):
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    return len(files) > 0
-
-
-def delete_file_permanently(file_path):
-    os.remove(file_path)
-    st.toast(f"Arquivo {file_path.split('/')[-1]} excluído permanentemente")
-
-
-def delete_file_from_folder(path, filename):
-    # move to _out
-    os.rename(
-        os.path.join(path, filename),
-        os.path.join(path, "_out", filename)
-    )
-
-    st.toast(f"Arquivo {filename} movido para a lixeira")
-
-
-def restore_file_from_trash(file_path):
-    # move to _out
-    os.rename(
-        file_path,
-        file_path.replace("_out/", "")
-    )
-
-    st.toast(f"Arquivo {file_path.split('/')[-1]} restaurado")
-
-
-def read_all_files_in_folder_as_df(path):
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    files.sort()
-
-    dt_now = datetime.now()
-    dfs = []
-    for file in files:
-        file_path = os.path.join(path, file)
-        
-        dt_creation = datetime.fromtimestamp(os.path.getctime(file_path))
-        duration = dt_now - dt_creation
-
-        # If less than 1 minute, use seconds
-        # If less than 1 hour, use minutes
-        # If less than 1 day, use hours
-        # If more than 1 day, use days
-        total_duration_in_seconds = duration.total_seconds()
-
-        if total_duration_in_seconds < 60:
-            duration = f"{total_duration_in_seconds:.0f}s"
-        elif total_duration_in_seconds < 3600:
-            duration = f"{total_duration_in_seconds//60:.0f}m"
-        elif total_duration_in_seconds < 86400:
-            duration = f"{total_duration_in_seconds//3600:.0f}h"
-        else:
-            duration = f"{duration.days}d {duration.seconds//3600:.0f}h"
-
-        df = pd.read_csv(file_path)
-        dfs.append( (file, duration, df.to_csv(index=False).encode('utf-8')) )
-    
-    return dfs
-
 
 def widgets_list_files_in_folder(path, container):
     files = os.listdir(path)
@@ -129,7 +74,7 @@ def widgets_list_files_in_folder_checkbox(path, container):
 def widgets_download_files_in_folder(path, container):
     
     path = os.path.join("/data", path)
-    file_content_list = read_all_files_in_folder_as_df(path)
+    file_content_list = read_all_files_in_folder_as_df(path, ACCEPTED_EXTENSIONS)
 
     
     if len(file_content_list) == 0:
@@ -266,7 +211,7 @@ for lab in LABS:
     lab_trash_path = os.path.join("/data", lab_lower, "_out")
 
     # List files in the folder
-    if not folder_has_valid_files(lab_trash_path):
+    if not folder_has_valid_files(lab_trash_path, ACCEPTED_EXTENSIONS):
         continue
     
     trash_is_empty = False
