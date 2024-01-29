@@ -2,9 +2,6 @@ import streamlit as st
 import os
 import time
 
-import zipfile
-import io
-
 from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -41,7 +38,7 @@ def widgets_list_files_in_folder(path, container):
                 ":wastebasket:", 
                 key = f"delete_{path}_{file}",
                 help = "Lixeira _out",
-                on_click = lambda file=file: delete_file_from_folder(path, file)
+                on_click = lambda file=file: widgets_delete_file_from_folder(path, file)
             )
 
     return files
@@ -143,9 +140,20 @@ def widgets_confirm_file_deletion():
     return reconfirm_delete_bt and user_text_input_delete_file == CONFIRMATION_TEXT
 
 
+def widgets_delete_file_permanently(file):
+    if delete_file_permanently(file):
+        st.toast(f"Arquivo {file.split('/')[-1]} excluído permanentemente")
+    else:
+        st.error(f"Erro ao excluir arquivo {file.split('/')[-1]}")
+    
+def widgets_delete_file_from_folder(path, filename):
+    delete_file_from_folder(path, filename)
+    st.toast(f"Arquivo {filename} movido para a lixeira")
 
-
-
+def widgets_restore_file_from_trash(file):
+    restore_file_from_trash(file)
+    st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
+    
 
 st.title(":satellite: Central ARBO")
 
@@ -218,7 +226,7 @@ if files_selected_in_trash != []:
     col_button_restore, col_button_delete, _ = st.columns([.15, .15, .7])
     restore_bt = col_button_restore.button(
         "Restaurar",
-        on_click = lambda fls=files_selected_in_trash: [restore_file_from_trash(file) for file in fls]
+        on_click = lambda fls=files_selected_in_trash: [widgets_restore_file_from_trash(file) for file in fls]
     )
 
     if restore_bt:
@@ -237,7 +245,7 @@ if files_selected_in_trash != []:
         if st.session_state['is_deleting_files']:
             if widgets_confirm_file_deletion():
                 for file in files_selected_in_trash:
-                    delete_file_permanently(file)
+                    widgets_delete_file_permanently(file)
 
                 st.spinner(text="Deletando...",)
                 time.sleep(3)

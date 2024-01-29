@@ -22,12 +22,12 @@ def delete_file_permanently(file_path):
         return True
     else:
         return False
-    #st.toast(f"Arquivo {file_path.split('/')[-1]} excluído permanentemente")
 
 
 def create_file_from_content(path, filename, content):
     with open(os.path.join(path, filename), "wb") as f:
         f.write(content)
+
 
 def delete_file_from_folder(path, filename):
     # move to _out
@@ -40,8 +40,6 @@ def delete_file_from_folder(path, filename):
         os.path.join(path, "_out", filename)
     )
 
-    # st.toast(f"Arquivo {filename} movido para a lixeira")
-
 
 def restore_file_from_trash(file_path):
     # move to _out
@@ -49,7 +47,6 @@ def restore_file_from_trash(file_path):
         file_path,
         file_path.replace("_out/", "")
     )
-    # st.toast(f"Arquivo {file_path.split('/')[-1]} restaurado")
 
 
 def read_all_files_in_folder_as_df(path, accepted_extensions=["csv", "xlsx"]):
