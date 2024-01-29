@@ -3,9 +3,15 @@ import pandas as pd
 from datetime import datetime
 
 def folder_has_valid_files(path, accepted_extensions=["csv", "xlsx"]):
+    files = list_files_in_folder(path, accepted_extensions)
+    return len(files) > 0
+
+
+def list_files_in_folder(path, accepted_extensions=["csv", "xlsx"]):
     files = os.listdir(path)
     files = [ file for file in files if file.endswith(tuple(accepted_extensions)) ]
-    return len(files) > 0
+    files.sort()
+    return files
 
 
 def delete_file_permanently(file_path):

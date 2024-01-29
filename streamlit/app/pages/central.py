@@ -10,6 +10,7 @@ import sys
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from models.files import (
+    list_files_in_folder,
     delete_file_from_folder, 
     delete_file_permanently, 
     restore_file_from_trash, 
@@ -21,11 +22,8 @@ LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
 def widgets_list_files_in_folder(path, container):
-    files = os.listdir(path)
+    files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    files.sort()
-    
     with container:
         if files == []:
             st.markdown("*Nenhum arquivo encontrado*")
@@ -49,8 +47,7 @@ def widgets_list_files_in_folder(path, container):
 
 def widgets_list_files_in_folder_checkbox(path, container):
 
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
     files_selected = []
     if len(files) == 0:
