@@ -51,3 +51,6 @@ EDA/pyr_agegroups_months.xlsx
 EDA/pyr_agegroups_weeks.xlsx
 EDA/data/pyr_agegroups_months.xlsx
 EDA/data/pyr_agegroups_weeks.xlsx
+EDA/scripts/casos_denv.tsv
+EDA/scripts/casosest_denv.tsv
+EDA/scripts/infodengue_casos_filtro.csv
