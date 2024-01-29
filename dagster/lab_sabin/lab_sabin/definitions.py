@@ -3,12 +3,12 @@ import os
 from dagster import Definitions
 from dagster_dbt import DbtCliResource
 
-from .assets import arboviroses_dbt_assets, sabin_raw
+from .assets import arboviroses_dbt_assets, sabin_raw, sabin_convert_xlsx_to_csv
 from .constants import dbt_project_dir
 from .schedules import schedules
 
 defs = Definitions(
-    assets=[arboviroses_dbt_assets, sabin_raw],
+    assets=[arboviroses_dbt_assets, sabin_raw, sabin_convert_xlsx_to_csv],
     schedules=schedules,
     resources={
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
