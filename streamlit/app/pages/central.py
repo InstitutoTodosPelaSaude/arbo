@@ -1,86 +1,28 @@
 import streamlit as st
 import os
 import time
-import pandas as pd
-from datetime import datetime
 
-import zipfile
-import io
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from models.files import (
+    list_files_in_folder,
+    delete_file_from_folder,
+    create_file_from_content,
+    delete_file_permanently, 
+    restore_file_from_trash, 
+    read_all_files_in_folder_as_df,
+    get_zipped_folder,
+    folder_has_valid_files
+)
 
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
-def folder_has_valid_files(path):
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    return len(files) > 0
-
-
-def delete_file_permanently(file_path):
-    os.remove(file_path)
-    st.toast(f"Arquivo {file_path.split('/')[-1]} excluído permanentemente")
-
-
-def delete_file_from_folder(path, filename):
-    # move to _out
-    os.rename(
-        os.path.join(path, filename),
-        os.path.join(path, "_out", filename)
-    )
-
-    st.toast(f"Arquivo {filename} movido para a lixeira")
-
-
-def restore_file_from_trash(file_path):
-    # move to _out
-    os.rename(
-        file_path,
-        file_path.replace("_out/", "")
-    )
-
-    st.toast(f"Arquivo {file_path.split('/')[-1]} restaurado")
-
-
-def read_all_files_in_folder_as_df(path):
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    files.sort()
-
-    dt_now = datetime.now()
-    dfs = []
-    for file in files:
-        file_path = os.path.join(path, file)
-        
-        dt_creation = datetime.fromtimestamp(os.path.getctime(file_path))
-        duration = dt_now - dt_creation
-
-        # If less than 1 minute, use seconds
-        # If less than 1 hour, use minutes
-        # If less than 1 day, use hours
-        # If more than 1 day, use days
-        total_duration_in_seconds = duration.total_seconds()
-
-        if total_duration_in_seconds < 60:
-            duration = f"{total_duration_in_seconds:.0f}s"
-        elif total_duration_in_seconds < 3600:
-            duration = f"{total_duration_in_seconds//60:.0f}m"
-        elif total_duration_in_seconds < 86400:
-            duration = f"{total_duration_in_seconds//3600:.0f}h"
-        else:
-            duration = f"{duration.days}d {duration.seconds//3600:.0f}h"
-
-        df = pd.read_csv(file_path)
-        dfs.append( (file, duration, df.to_csv(index=False).encode('utf-8')) )
-    
-    return dfs
-
-
 def widgets_list_files_in_folder(path, container):
-    files = os.listdir(path)
+    files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
-    files.sort()
-    
     with container:
         if files == []:
             st.markdown("*Nenhum arquivo encontrado*")
@@ -96,7 +38,7 @@ def widgets_list_files_in_folder(path, container):
                 ":wastebasket:", 
                 key = f"delete_{path}_{file}",
                 help = "Lixeira _out",
-                on_click = lambda file=file: delete_file_from_folder(path, file)
+                on_click = lambda file=file: widgets_delete_file_from_folder(path, file)
             )
 
     return files
@@ -104,8 +46,7 @@ def widgets_list_files_in_folder(path, container):
 
 def widgets_list_files_in_folder_checkbox(path, container):
 
-    files = os.listdir(path)
-    files = [ file for file in files if file.endswith(tuple(ACCEPTED_EXTENSIONS)) ]
+    files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
     files_selected = []
     if len(files) == 0:
@@ -129,8 +70,8 @@ def widgets_list_files_in_folder_checkbox(path, container):
 def widgets_download_files_in_folder(path, container):
     
     path = os.path.join("/data", path)
-    file_content_list = read_all_files_in_folder_as_df(path)
-
+    file_content_list = read_all_files_in_folder_as_df(path, ACCEPTED_EXTENSIONS)
+    zip_file_content, zip_file_name = get_zipped_folder(path, ACCEPTED_EXTENSIONS)
     
     if len(file_content_list) == 0:
         return []
@@ -152,18 +93,9 @@ def widgets_download_files_in_folder(path, container):
                 key = f"download_{path}_{file_name}"
             )
 
-        # Zip all files together and add button download all
-
-        zip_file_name = f"{path.split('/')[-1]}.zip"
-        zip_buffer = io.BytesIO()
-
-        with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
-            for file_name, _, file in file_content_list:
-                zip_file.writestr(file_name, file)
-
         st.download_button(
             label = ":arrow_double_down: Download All",
-            data = zip_buffer.getvalue(),
+            data = zip_file_content,
             file_name = zip_file_name,
             mime = "application/zip",
             help = "Download todos",
@@ -196,8 +128,7 @@ def widgets_upload_file(selected_lab):
     
     st.success(f"Upload confirmado de {len(uploaded_files)} arquivos")
     for uploaded_file in uploaded_files:
-        with open(os.path.join(lab_folder_path, uploaded_file.name), "wb") as f:
-            f.write(uploaded_file.getbuffer())
+        create_file_from_content(lab_folder_path, uploaded_file.name, uploaded_file.getbuffer())
 
 
 def widgets_confirm_file_deletion():
@@ -209,9 +140,20 @@ def widgets_confirm_file_deletion():
     return reconfirm_delete_bt and user_text_input_delete_file == CONFIRMATION_TEXT
 
 
+def widgets_delete_file_permanently(file):
+    if delete_file_permanently(file):
+        st.toast(f"Arquivo {file.split('/')[-1]} excluído permanentemente")
+    else:
+        st.error(f"Erro ao excluir arquivo {file.split('/')[-1]}")
+    
+def widgets_delete_file_from_folder(path, filename):
+    delete_file_from_folder(path, filename)
+    st.toast(f"Arquivo {filename} movido para a lixeira")
 
-
-
+def widgets_restore_file_from_trash(file):
+    restore_file_from_trash(file)
+    st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
+    
 
 st.title(":satellite: Central ARBO")
 
@@ -266,7 +208,7 @@ for lab in LABS:
     lab_trash_path = os.path.join("/data", lab_lower, "_out")
 
     # List files in the folder
-    if not folder_has_valid_files(lab_trash_path):
+    if not folder_has_valid_files(lab_trash_path, ACCEPTED_EXTENSIONS):
         continue
     
     trash_is_empty = False
@@ -284,7 +226,7 @@ if files_selected_in_trash != []:
     col_button_restore, col_button_delete, _ = st.columns([.15, .15, .7])
     restore_bt = col_button_restore.button(
         "Restaurar",
-        on_click = lambda fls=files_selected_in_trash: [restore_file_from_trash(file) for file in fls]
+        on_click = lambda fls=files_selected_in_trash: [widgets_restore_file_from_trash(file) for file in fls]
     )
 
     if restore_bt:
@@ -303,7 +245,7 @@ if files_selected_in_trash != []:
         if st.session_state['is_deleting_files']:
             if widgets_confirm_file_deletion():
                 for file in files_selected_in_trash:
-                    delete_file_permanently(file)
+                    widgets_delete_file_permanently(file)
 
                 st.spinner(text="Deletando...",)
                 time.sleep(3)
