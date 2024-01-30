@@ -11,7 +11,7 @@ class DagsterDatabaseInterface:
         return DagsterDatabaseInterface.__instance
 
     def __init__(self):
-        user = os.getenv("DB_DAGSTER_USER") + '_dagster'
+        user = os.getenv("DB_DAGSTER_USER")
         password = os.getenv("DB_DAGSTER_PASSWORD")
         host = os.getenv("DB_DAGSTER_HOST")
         port = os.getenv("DB_DAGSTER_PORT")
