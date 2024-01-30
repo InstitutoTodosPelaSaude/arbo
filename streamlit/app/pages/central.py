@@ -29,6 +29,7 @@ ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 def get_dagster_database_connection():
     return DagsterDatabaseInterface.get_instance()
 
+
 def format_timestamp(timestamp):
     return timestamp.strftime("%d %b %H:%M")
 
@@ -193,17 +194,26 @@ def widgets_show_last_runs_for_each_pipeline():
     df_runs_info['pipeline'] = df_runs_info['pipeline'].str.replace('"', '')
 
     matrices_and_combined = ['matrices', 'combined']
-    matrices_and_combined_containers = zip(matrices_and_combined, st.columns(len(matrices_and_combined)))
-
     labs = ['lab_'+lab.lower() for lab in LABS]
-    labs_containers = zip(labs, st.columns(len(labs)))
 
-    all_containers = {**dict(matrices_and_combined_containers), **dict(labs_containers)}
+    matrices_and_combined_containers = zip(
+        matrices_and_combined, 
+        st.columns(len(matrices_and_combined))
+    )
+    labs_containers = zip(
+        labs, 
+        st.columns(len(labs))
+    )
+
+    all_containers = {
+        **dict(matrices_and_combined_containers), 
+        **dict(labs_containers)
+    }
 
     for pipeline, container in all_containers.items():
         with container:
             with st.container(border=True):
-                st.markdown(f"**{pipeline.capitalize()}**")
+                st.markdown(f"**{pipeline.replace('lab_', '').capitalize()}**")
 
                 pipe_last_run_info = df_runs_info.query(f"pipeline=='{pipeline}'")
                 pipe_last_run_info_dict = pipe_last_run_info.to_dict(orient='records')[0]
@@ -258,7 +268,7 @@ for lab_lower in LABS:
 # =======
     
 st.divider()
-st.markdown("## :ballot_box_with_check: Processados\n")
+st.markdown("## :ok: Processados\n")
 st.empty()
 
 files_selected_in_trash = []
@@ -312,8 +322,8 @@ if files_selected_in_trash != []:
                 st.rerun()
 
 
-# Últimos runs
+# Últimas runs
 # ============
 st.divider()
-st.markdown("## :chart_with_upwards_trend: Últimos runs")
+st.markdown("## :arrows_counterclockwise:  Últimas runs")
 widgets_show_last_runs_for_each_pipeline()
