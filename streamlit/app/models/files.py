@@ -59,7 +59,7 @@ def read_all_files_in_folder_as_df(path, accepted_extensions=["csv", "xlsx"]):
     for file in files:
         file_path = os.path.join(path, file)
         
-        dt_creation = datetime.fromtimestamp(os.path.getctime(file_path))
+        dt_creation = datetime.fromtimestamp(os.path.getmtime(file_path))
         duration = dt_now - dt_creation
 
         # If less than 1 minute, use seconds
@@ -76,7 +76,7 @@ def read_all_files_in_folder_as_df(path, accepted_extensions=["csv", "xlsx"]):
             duration = f"{total_duration_in_seconds//3600:.0f}h"
         else:
             duration = f"{duration.days}d {duration.seconds//3600:.0f}h"
-
+        
         df = pd.read_csv(file_path)
         dfs.append( (file, duration, df.to_csv(index=False).encode('utf-8')) )
     

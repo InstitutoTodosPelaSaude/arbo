@@ -107,14 +107,14 @@ def widgets_download_files_in_folder(path, container):
                 key = f"download_{path}_{file_name}"
             )
 
-        st.download_button(
-            label = ":arrow_double_down: Download All",
-            data = zip_file_content,
-            file_name = zip_file_name,
-            mime = "application/zip",
-            help = "Download todos",
-            key = f"download_all_{path}"
-        )
+    st.download_button(
+        label = ":arrow_double_down: Download All",
+        data = zip_file_content,
+        file_name = zip_file_name,
+        mime = "application/zip",
+        help = "Download todos",
+        key = f"download_all_{path}"
+    )
 
 
 def widgets_upload_file(selected_lab):
@@ -322,8 +322,8 @@ if files_selected_in_trash != []:
                 st.rerun()
 
 
-# Últimas runs
+# Última run
 # ============
 st.divider()
-st.markdown("## :arrows_counterclockwise:  Últimas runs")
+st.markdown("## :arrows_counterclockwise:  Última run")
 widgets_show_last_runs_for_each_pipeline()
