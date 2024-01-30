@@ -166,12 +166,37 @@ def widgets_restore_file_from_trash(file):
     restore_file_from_trash(file)
     st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
 
+
 def widgets_show_last_runs_for_each_pipeline():
 
     runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
-    df_runs_info = pd.DataFrame(runs_info, columns=["run_id", "pipeline", "status", "start_timestamp", "end_timestamp"])
+    STATUS_TO_EMOJI = { 'FAILURE': ':x:', 'SUCCESS': ':white_check_mark:' }
 
-    st.dataframe(df_runs_info)
+    df_runs_info = pd.DataFrame(runs_info, columns=["run_id", "pipeline", "status", "start_timestamp", "end_timestamp"])
+    df_runs_info['pipeline'] = df_runs_info['pipeline'].str.replace('"', '')
+
+    df_runs_matrices_and_combined = df_runs_info.query("not pipeline.str.startswith('lab')", engine="python")
+    df_runs_labs = df_runs_info.query("pipeline.str.startswith('lab')", engine="python")
+
+    st.dataframe(df_runs_matrices_and_combined, height=300)
+
+    labs = [lab.lower() for lab in LABS]
+    labs_containers = zip(labs, st.columns(len(labs)))
+
+    for lab, lab_container in labs_containers:
+        with lab_container:
+            st.markdown(f"**{lab.capitalize()}**")
+
+            lab_last_run_info = df_runs_info.query(f"pipeline=='lab_{lab}'")
+            lab_last_run_info_dict = lab_last_run_info.to_dict(orient='records')[0]
+
+            lab_last_run_status = lab_last_run_info_dict['status']
+            lab_last_run_start_time = lab_last_run_info_dict['start_timestamp']
+
+            col_status, col_start_time = st.columns([.2, .8])
+            col_status.markdown(f"{STATUS_TO_EMOJI[lab_last_run_status]}")
+            col_start_time.markdown(f"{lab_last_run_start_time}")
+
 
 dagster_database = get_dagster_database_connection()
 
