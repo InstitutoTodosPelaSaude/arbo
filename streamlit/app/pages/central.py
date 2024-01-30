@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import time
+import pandas as pd
 
 from pathlib import Path
 import sys
@@ -17,8 +18,17 @@ from models.files import (
     folder_has_valid_files
 )
 
+from models.database import DagsterDatabaseInterface
+
+
+
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
+
+# @st.cache_resource
+def get_dagster_database_connection():
+    return DagsterDatabaseInterface.get_instance()
+
 
 def widgets_list_files_in_folder(path, container):
     files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
@@ -146,17 +156,29 @@ def widgets_delete_file_permanently(file):
     else:
         st.error(f"Erro ao excluir arquivo {file.split('/')[-1]}")
     
+
 def widgets_delete_file_from_folder(path, filename):
     delete_file_from_folder(path, filename)
     st.toast(f"Arquivo {filename} movido para a lixeira")
 
+
 def widgets_restore_file_from_trash(file):
     restore_file_from_trash(file)
     st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
-    
+
+def widgets_show_last_runs_for_each_pipeline():
+
+    runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
+    df_runs_info = pd.DataFrame(runs_info, columns=["run_id", "pipeline", "status", "start_timestamp", "end_timestamp"])
+
+    st.dataframe(df_runs_info)
+
+dagster_database = get_dagster_database_connection()
+
+data = dagster_database.get_last_run_for_each_pipeline()
+
 
 st.title(":satellite: Central ARBO")
-
 # Upload de dados
 # ===============
 
@@ -251,5 +273,9 @@ if files_selected_in_trash != []:
                 time.sleep(3)
                 st.rerun()
 
-    
-    
+
+# Últimos runs
+# ============
+st.divider()
+st.markdown("## :chart_with_upwards_trend: Últimos runs")
+widgets_show_last_runs_for_each_pipeline()
