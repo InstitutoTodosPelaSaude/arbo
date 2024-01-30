@@ -172,7 +172,12 @@ def widgets_restore_file_from_trash(file):
 
 def widgets_show_last_runs_for_each_pipeline():
 
-    runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
+    try:
+        runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
+    except Exception as e:
+        st.error(f"Erro ao buscar informações dos runs, banco de dados indisponível")
+        return
+
     STATUS_TO_EMOJI = { 'FAILURE': ':x:', 'SUCCESS': ':white_check_mark:' }
 
     df_runs_info = pd.DataFrame(
@@ -209,11 +214,6 @@ def widgets_show_last_runs_for_each_pipeline():
                 col_status, col_start_time = st.columns([.2, .8])
                 col_status.markdown(f"{STATUS_TO_EMOJI[pipe_last_run_status]}")
                 col_start_time.markdown(f"{format_timestamp(pipe_last_run_start_time)}")
-
-
-dagster_database = get_dagster_database_connection()
-
-data = dagster_database.get_last_run_for_each_pipeline()
 
 
 st.title(":satellite: Central ARBO")

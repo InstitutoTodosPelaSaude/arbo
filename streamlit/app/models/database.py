@@ -1,4 +1,5 @@
 import psycopg2
+import os
 
 class DagsterDatabaseInterface:
 
@@ -10,13 +11,19 @@ class DagsterDatabaseInterface:
         return DagsterDatabaseInterface.__instance
 
     def __init__(self):
+        user = os.getenv("DB_DAGSTER_USER") + '_dagster'
+        password = os.getenv("DB_DAGSTER_PASSWORD")
+        host = os.getenv("DB_DAGSTER_HOST")
+        port = os.getenv("DB_DAGSTER_PORT")
+        database = os.getenv("DB_DAGSTER_DATABASE")
         self.connection = psycopg2.connect(
-            user="dagster",
-            password="dagster",
-            host="172.30.106.164",
-            port="5433",
-            database="dagster"
+            user=user,
+            password=password,
+            host=host,
+            port=port,
+            database=database
         )
+        
         self.cursor = self.connection.cursor()
 
     def __query(self, query):
