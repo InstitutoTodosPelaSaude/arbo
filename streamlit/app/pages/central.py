@@ -3,6 +3,8 @@ import os
 import time
 import pandas as pd
 
+import matplotlib.pyplot as plt
+
 from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -201,6 +203,30 @@ def widgets_add_lab_info(lab, container):
         lab_latest_date = lab_latest_date_dict[lab]
         st.markdown(f"Dados até {format_timestamp(lab_latest_date, False)}")
 
+def widgets_add_lab_epiweek_count(lab, container):
+
+    if lab in ['Matrices', 'Combined']:
+        return
+
+    chart_data = {'41': 10, '42': 20, '43': 30, '44': 40, '45': 50}
+    df_chart_data = pd.DataFrame(chart_data.items(), columns=['Epiweek', 'Count'])
+    fig = plt.figure( figsize=(10, 1) )
+    # remove border
+    fig.gca().spines['top'].set_visible(False)
+    fig.gca().spines['right'].set_visible(False)
+    fig.gca().spines['left'].set_visible(False)
+    ax = df_chart_data.plot(x='Epiweek', y='Count', kind='bar', ax=fig.gca())
+    # remove y-label
+    ax.set_ylabel('')
+    ax.set_xlabel('')
+    # remove legend
+    ax.get_legend().remove()
+    # increase x-ticks font size
+    ax.tick_params(axis='x', labelsize=20)
+    # remove y-ticks
+    ax.set_yticks([])
+
+    container.pyplot(fig)
 
 def widgets_show_last_runs_for_each_pipeline():
 
@@ -257,12 +283,15 @@ def widgets_show_last_runs_for_each_pipeline():
             pipe_status_date = f"{STATUS_TO_EMOJI[pipe_last_run_status]} "
             pipe_status_date += f"{format_timestamp(pipe_last_run_start_time)}"
             
-            col_name, col_status, col_last_info, _ = st.columns([.2, .3, .3, .2])
+            col_name, col_status, col_last_info, col_epiweek_count = st.columns([.15, .2, .2, .45])
 
             col_name.markdown(f"**{pipeline_name}**")
             col_status.markdown(pipe_status_date)
     
             widgets_add_lab_info(pipeline_name, col_last_info)
+            widgets_add_lab_epiweek_count(pipeline_name, col_epiweek_count)
+
+
 
 
 st.title(":satellite: Central ARBO")
