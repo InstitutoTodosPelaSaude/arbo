@@ -208,14 +208,31 @@ def widgets_add_lab_epiweek_count(lab, container):
     if lab in ['Matrices', 'Combined']:
         return
 
-    chart_data = {'41': 10, '42': 20, '43': 30, '44': 40, '45': 50}
-    df_chart_data = pd.DataFrame(chart_data.items(), columns=['Epiweek', 'Count'])
+    lab = lab.upper()
+    lab_epiweeks_count = get_dw_database_connection().get_number_of_tests_per_lab_in_latest_epiweeks()
+    lab_epiweeks_count = lab_epiweeks_count.items()
+    lab_epiweeks_count = [ [*lab_epiweek.split('-'), count ] for lab_epiweek, count in lab_epiweeks_count ]
+    lab_epiweeks_count_df = pd.DataFrame(lab_epiweeks_count, columns=['Lab', 'Epiweek', 'Count'])
+    lab_epiweeks_count_df['Lab'] = lab_epiweeks_count_df['Lab'].str.upper()
+    lab_epiweeks_count_df = lab_epiweeks_count_df.query(f"Lab=='{lab}'")
+
+    # container.write(lab_epiweeks_count_df)
+
+    df_chart_data = lab_epiweeks_count_df
     fig = plt.figure( figsize=(10, 1) )
     # remove border
     fig.gca().spines['top'].set_visible(False)
     fig.gca().spines['right'].set_visible(False)
     fig.gca().spines['left'].set_visible(False)
-    ax = df_chart_data.plot(x='Epiweek', y='Count', kind='bar', ax=fig.gca())
+    ax = df_chart_data.plot(
+        x='Epiweek', 
+        y='Count', 
+        kind='bar', 
+        ax=fig.gca(), 
+        color='#00a6ed',
+        # bar width
+        width=0.5
+    )
     # remove y-label
     ax.set_ylabel('')
     ax.set_xlabel('')
@@ -226,6 +243,26 @@ def widgets_add_lab_epiweek_count(lab, container):
     # remove y-ticks
     ax.set_yticks([])
 
+    # add the value on top of each bar
+    tem_dados = False
+    for p in ax.patches:
+        if p.get_height() <= 0:
+            continue
+        tem_dados = True
+        ax.annotate(
+            f"{p.get_height()}",
+            (p.get_x() + p.get_width() / 2., p.get_height()),
+            ha='center',
+            va='center',
+            fontsize=16,
+            color='black',
+            xytext=(0, 10),
+            textcoords='offset points'
+        )
+
+    if not tem_dados:
+         container.markdown(f"*Sem dados*")
+         return
     container.pyplot(fig)
 
 def widgets_show_last_runs_for_each_pipeline():

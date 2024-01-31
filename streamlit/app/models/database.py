@@ -124,6 +124,68 @@ class DWDatabaseInterface:
 
         records = self.__query(query)
         return records
+    
+    def get_list_of_all_labs(self):
+        query = """
+            SELECT DISTINCT lab_id
+            FROM "arboviroses"."combined_01_join_labs"
+        """
+
+        records = self.__query(query)
+        return records
+    
+    def get_number_of_tests_per_lab_and_epiweek_in_this_year(self):
+        query = """
+            SELECT
+                lab_id, 
+                epiweek_number, 
+                COUNT(*)
+            FROM
+                arboviroses.combined_05_location
+            WHERE EXTRACT(YEAR FROM date_testing) = EXTRACT(YEAR FROM CURRENT_DATE)
+            GROUP BY lab_id, epiweek_number
+        """
+
+        records = self.__query(query)
+        return records
+    
+    def get_epiweek_number_of_latest_epiweeks(self):
+        query = """
+            SELECT 
+                unnest(
+                    ARRAY[week_num-4, week_num-3, week_num-2, week_num-1, week_num] 
+                )
+                AS epiweek_number_5
+            FROM arboviroses.epiweeks
+            WHERE 
+            CURRENT_DATE<=end_date 
+            AND CURRENT_DATE>=start_date
+        """
+
+        records = self.__query(query)
+        return records
+    
+    def get_number_of_tests_per_lab_in_latest_epiweeks(self):
+        epiweeks = self.get_epiweek_number_of_latest_epiweeks()
+        lab_counts_by_epiweek = self.get_number_of_tests_per_lab_and_epiweek_in_this_year()
+        labs = self.get_list_of_all_labs()
+        join_lab_and_epiweek = lambda lab, epiweek: f"{lab}-{epiweek:02d}"
+
+        lab_counts_by_epiweek = { 
+            join_lab_and_epiweek(lab, epiweek): count
+            for lab, epiweek, count 
+            in lab_counts_by_epiweek
+        }
+
+        epiweeks = [ epiweek[0] for epiweek in epiweeks ]
+        labs = [ lab[0] for lab in labs ]
+
+        for lab in labs:
+            for epiweek in epiweeks:
+                if join_lab_and_epiweek(lab, epiweek) not in lab_counts_by_epiweek:
+                    lab_counts_by_epiweek[join_lab_and_epiweek(lab, epiweek)] = 0
+
+        return lab_counts_by_epiweek
 
     def __del__(self):
         self.connection.close()
