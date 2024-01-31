@@ -26,17 +26,19 @@ from models.database import DWDatabaseInterface
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
-# @st.cache_resource
+@st.cache_resource
 def get_dagster_database_connection():
     return DagsterDatabaseInterface.get_instance()
 
-# @st.cache_resource
+@st.cache_resource
 def get_dw_database_connection():
     return DWDatabaseInterface.get_instance()
 
 
-def format_timestamp(timestamp):
-    return timestamp.strftime("%d %b %H:%M")
+def format_timestamp(timestamp, include_hour=True):
+    if include_hour:
+        return timestamp.strftime("%d %b %H:%M")
+    return timestamp.strftime("%d %b")
 
 
 def widgets_list_files_in_folder(path, container):
@@ -187,6 +189,19 @@ def widgets_restore_file_from_trash(file):
     st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
 
 
+def widgets_add_lab_info(lab, container):
+    lab_latest_date = get_dw_database_connection().get_latest_date_of_lab_data()
+    lab_latest_date_dict = dict(lab_latest_date)
+
+    lab = lab.upper()
+    if lab not in lab_latest_date_dict:
+        return
+
+    with container:
+        lab_latest_date = lab_latest_date_dict[lab]
+        st.markdown(f"Dados até {format_timestamp(lab_latest_date, False)}")
+
+
 def widgets_show_last_runs_for_each_pipeline():
 
     try:
@@ -228,8 +243,11 @@ def widgets_show_last_runs_for_each_pipeline():
 
     for pipeline, container in all_containers.items():
         with container:
-            with st.container(border=True):
-                st.markdown(f"**{pipeline.replace('lab_', '').capitalize()}**")
+            border_container = st.container(border=True)
+            pipeline_name = pipeline.replace('lab_', '').capitalize()
+
+            with border_container:
+                st.markdown(f"**{pipeline_name}**")
 
                 pipe_last_run_info = df_runs_info.query(f"pipeline=='{pipeline}'")
                 pipe_last_run_info_dict = pipe_last_run_info.to_dict(orient='records')[0]
@@ -240,6 +258,8 @@ def widgets_show_last_runs_for_each_pipeline():
                 col_status, col_start_time = st.columns([.2, .8])
                 col_status.markdown(f"{STATUS_TO_EMOJI[pipe_last_run_status]}")
                 col_start_time.markdown(f"{format_timestamp(pipe_last_run_start_time)}")
+        
+            widgets_add_lab_info(pipeline_name, border_container)
 
 
 st.title(":satellite: Central ARBO")

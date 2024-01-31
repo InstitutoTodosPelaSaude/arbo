@@ -114,6 +114,16 @@ class DWDatabaseInterface:
 
         records = self.__query(query)
         return records
+    
+    def get_latest_date_of_lab_data(self):
+        query = """
+            SELECT lab_id, MAX(date_testing) AS last_date
+            FROM "arboviroses"."combined_01_join_labs"
+            GROUP BY lab_id
+        """
+
+        records = self.__query(query)
+        return records
 
     def __del__(self):
         self.connection.close()
