@@ -66,3 +66,5 @@ EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/quarto-syntax-highlighting.
 EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/quarto.js
 EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/tippy.css
 EDA/scripts/arbo_api_infodenv_files/libs/quarto-html/tippy.umd.min.js
+EDA/data/matrix_agegroups_weeks_FLUA_posrate.tsv
+EDA/heatmap_FLUA_demog.xlsx
