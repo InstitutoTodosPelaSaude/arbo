@@ -19,6 +19,7 @@ from models.files import (
 )
 
 from models.database import DagsterDatabaseInterface
+from models.database import DWDatabaseInterface
 
 
 
@@ -29,6 +30,10 @@ ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 def get_dagster_database_connection():
     return DagsterDatabaseInterface.get_instance()
 
+# @st.cache_resource
+def get_dw_database_connection():
+    return DWDatabaseInterface.get_instance()
+
 
 def format_timestamp(timestamp):
     return timestamp.strftime("%d %b %H:%M")
@@ -37,6 +42,9 @@ def format_timestamp(timestamp):
 def widgets_list_files_in_folder(path, container):
     files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
+    files_already_processed = get_dw_database_connection().get_list_of_files_already_processed()
+    files_already_processed = set([file[0] for file in files_already_processed])
+    
     with container:
         if files == []:
             st.markdown("*Nenhum arquivo encontrado*")
@@ -44,7 +52,15 @@ def widgets_list_files_in_folder(path, container):
         
         for file in files:
             col_filename, col_buttons = st.columns([.8, .2])
-            col_filename.markdown(f":page_facing_up: {file}")
+
+            summarized_file_path = path.split('/')[-1] + '/' + file
+
+            if summarized_file_path in files_already_processed:
+                col_filename.markdown(f":page_facing_up: {file} :white_check_mark:")
+            else:
+                col_filename.markdown(f":page_facing_up: {file}")
+
+            
 
             _, col_delete, _  = col_buttons.columns( [.3, .3, .3] )
             

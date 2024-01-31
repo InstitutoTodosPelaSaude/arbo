@@ -6,16 +6,19 @@ class DagsterDatabaseInterface:
     # define static method for singleton pattern
     @staticmethod
     def get_instance():
-        if not hasattr(DagsterDatabaseInterface, "__instance"):
-            DagsterDatabaseInterface.__instance = DagsterDatabaseInterface()
-        return DagsterDatabaseInterface.__instance
-
-    def __init__(self):
         user = os.getenv("DB_DAGSTER_USER")
         password = os.getenv("DB_DAGSTER_PASSWORD")
         host = os.getenv("DB_DAGSTER_HOST")
         port = os.getenv("DB_DAGSTER_PORT")
         database = os.getenv("DB_DAGSTER_DATABASE")
+
+        if not hasattr(DagsterDatabaseInterface, "__instance"):
+            DagsterDatabaseInterface.__instance = DagsterDatabaseInterface( 
+                user, password, host, port, database 
+            )
+        return DagsterDatabaseInterface.__instance
+
+    def __init__(self, user, password, host, port, database):
         self.connection = psycopg2.connect(
             user=user,
             password=password,
@@ -70,3 +73,47 @@ class DagsterDatabaseInterface:
     def __del__(self):
         self.connection.close()
 
+
+class DWDatabaseInterface:
+
+    # define static method for singleton pattern
+    @staticmethod
+    def get_instance():
+        user = os.getenv("DB_USER")
+        password = os.getenv("DB_PASSWORD")
+        host = os.getenv("DB_HOST")
+        port = os.getenv("DB_PORT")
+        database = os.getenv("DB_NAME")
+
+        if not hasattr(DWDatabaseInterface, "__instance"):
+            DWDatabaseInterface.__instance = DWDatabaseInterface( 
+                user, password, host, port, database 
+            )
+        return DWDatabaseInterface.__instance
+
+    def __init__(self, user, password, host, port, database):
+        self.connection = psycopg2.connect(
+            user=user,
+            password=password,
+            host=host,
+            port=port,
+            database=database
+        )
+        
+        self.cursor = self.connection.cursor()
+
+    def __query(self, query):
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def get_list_of_files_already_processed(self):
+        query = """
+            SELECT DISTINCT LOWER(lab_id) || '/' || file_name AS file_path
+            FROM "arboviroses"."combined_01_join_labs"
+        """
+
+        records = self.__query(query)
+        return records
+
+    def __del__(self):
+        self.connection.close()
