@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import time
+import pandas as pd
 
 from pathlib import Path
 import sys
@@ -17,12 +18,33 @@ from models.files import (
     folder_has_valid_files
 )
 
+from models.database import DagsterDatabaseInterface
+from models.database import DWDatabaseInterface
+
+
+
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
+
+# @st.cache_resource
+def get_dagster_database_connection():
+    return DagsterDatabaseInterface.get_instance()
+
+# @st.cache_resource
+def get_dw_database_connection():
+    return DWDatabaseInterface.get_instance()
+
+
+def format_timestamp(timestamp):
+    return timestamp.strftime("%d %b %H:%M")
+
 
 def widgets_list_files_in_folder(path, container):
     files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
+    files_already_processed = get_dw_database_connection().get_list_of_files_already_processed()
+    files_already_processed = set([file[0] for file in files_already_processed])
+    
     with container:
         if files == []:
             st.markdown("*Nenhum arquivo encontrado*")
@@ -30,7 +52,15 @@ def widgets_list_files_in_folder(path, container):
         
         for file in files:
             col_filename, col_buttons = st.columns([.8, .2])
-            col_filename.markdown(f":page_facing_up: {file}")
+
+            summarized_file_path = path.split('/')[-1] + '/' + file
+
+            if summarized_file_path in files_already_processed:
+                col_filename.markdown(f":page_facing_up: {file} :heavy_check_mark: ")
+            else:
+                col_filename.markdown(f":page_facing_up: {file} ")
+
+            
 
             _, col_delete, _  = col_buttons.columns( [.3, .3, .3] )
             
@@ -93,14 +123,14 @@ def widgets_download_files_in_folder(path, container):
                 key = f"download_{path}_{file_name}"
             )
 
-        st.download_button(
-            label = ":arrow_double_down: Download All",
-            data = zip_file_content,
-            file_name = zip_file_name,
-            mime = "application/zip",
-            help = "Download todos",
-            key = f"download_all_{path}"
-        )
+    st.download_button(
+        label = ":arrow_double_down: Download All",
+        data = zip_file_content,
+        file_name = zip_file_name,
+        mime = "application/zip",
+        help = "Download todos",
+        key = f"download_all_{path}"
+    )
 
 
 def widgets_upload_file(selected_lab):
@@ -146,17 +176,73 @@ def widgets_delete_file_permanently(file):
     else:
         st.error(f"Erro ao excluir arquivo {file.split('/')[-1]}")
     
+
 def widgets_delete_file_from_folder(path, filename):
     delete_file_from_folder(path, filename)
     st.toast(f"Arquivo {filename} movido para a lixeira")
 
+
 def widgets_restore_file_from_trash(file):
     restore_file_from_trash(file)
     st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
-    
+
+
+def widgets_show_last_runs_for_each_pipeline():
+
+    try:
+        runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
+    except Exception as e:
+        st.error(f"Erro ao buscar informações dos runs, banco de dados indisponível")
+        return
+
+    STATUS_TO_EMOJI = { 'FAILURE': ':x:', 'SUCCESS': ':white_check_mark:' }
+
+    df_runs_info = pd.DataFrame(
+        runs_info, 
+        columns=[
+            "run_id", 
+            "pipeline", 
+            "status", 
+            "start_timestamp", 
+            "end_timestamp"
+        ]
+    )
+    df_runs_info['pipeline'] = df_runs_info['pipeline'].str.replace('"', '')
+
+    matrices_and_combined = ['matrices', 'combined']
+    labs = ['lab_'+lab.lower() for lab in LABS]
+
+    matrices_and_combined_containers = zip(
+        matrices_and_combined, 
+        st.columns(len(matrices_and_combined))
+    )
+    labs_containers = zip(
+        labs, 
+        st.columns(len(labs))
+    )
+
+    all_containers = {
+        **dict(matrices_and_combined_containers), 
+        **dict(labs_containers)
+    }
+
+    for pipeline, container in all_containers.items():
+        with container:
+            with st.container(border=True):
+                st.markdown(f"**{pipeline.replace('lab_', '').capitalize()}**")
+
+                pipe_last_run_info = df_runs_info.query(f"pipeline=='{pipeline}'")
+                pipe_last_run_info_dict = pipe_last_run_info.to_dict(orient='records')[0]
+
+                pipe_last_run_status = pipe_last_run_info_dict['status']
+                pipe_last_run_start_time = pipe_last_run_info_dict['start_timestamp']
+
+                col_status, col_start_time = st.columns([.2, .8])
+                col_status.markdown(f"{STATUS_TO_EMOJI[pipe_last_run_status]}")
+                col_start_time.markdown(f"{format_timestamp(pipe_last_run_start_time)}")
+
 
 st.title(":satellite: Central ARBO")
-
 # Upload de dados
 # ===============
 
@@ -198,7 +284,7 @@ for lab_lower in LABS:
 # =======
     
 st.divider()
-st.markdown("## :ballot_box_with_check: Processados\n")
+st.markdown("## :ok: Processados\n")
 st.empty()
 
 files_selected_in_trash = []
@@ -251,5 +337,9 @@ if files_selected_in_trash != []:
                 time.sleep(3)
                 st.rerun()
 
-    
-    
+
+# Última run
+# ============
+st.divider()
+st.markdown("## :arrows_counterclockwise:  Última run")
+widgets_show_last_runs_for_each_pipeline()
