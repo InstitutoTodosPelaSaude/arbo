@@ -3,6 +3,8 @@ import os
 import time
 import pandas as pd
 
+import matplotlib.pyplot as plt
+
 from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -26,17 +28,19 @@ from models.database import DWDatabaseInterface
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
-# @st.cache_resource
+@st.cache_resource
 def get_dagster_database_connection():
     return DagsterDatabaseInterface.get_instance()
 
-# @st.cache_resource
+@st.cache_resource
 def get_dw_database_connection():
     return DWDatabaseInterface.get_instance()
 
 
-def format_timestamp(timestamp):
-    return timestamp.strftime("%d %b %H:%M")
+def format_timestamp(timestamp, include_hour=True):
+    if include_hour:
+        return timestamp.strftime("%d %b %H:%M")
+    return timestamp.strftime("%d %b")
 
 
 def widgets_list_files_in_folder(path, container):
@@ -187,6 +191,81 @@ def widgets_restore_file_from_trash(file):
     st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
 
 
+def widgets_add_lab_info(lab, container):
+    lab_latest_date = get_dw_database_connection().get_latest_date_of_lab_data()
+    lab_latest_date_dict = dict(lab_latest_date)
+
+    lab = lab.upper()
+    if lab not in lab_latest_date_dict:
+        return
+
+    with container:
+        lab_latest_date = lab_latest_date_dict[lab]
+        st.markdown(f"Dados até {format_timestamp(lab_latest_date, False)}")
+
+def widgets_add_lab_epiweek_count_plot(lab, container):
+
+    if lab in ['Matrices', 'Combined']:
+        return
+
+    lab = lab.upper()
+    lab_epiweeks_count = get_dw_database_connection().get_number_of_tests_per_lab_in_latest_epiweeks()
+    lab_epiweeks_count = lab_epiweeks_count.items()
+    lab_epiweeks_count = [ [*lab_epiweek.split('-'), count ] for lab_epiweek, count in lab_epiweeks_count ]
+    lab_epiweeks_count_df = pd.DataFrame(lab_epiweeks_count, columns=['Lab', 'Epiweek', 'Count'])
+    lab_epiweeks_count_df['Lab'] = lab_epiweeks_count_df['Lab'].str.upper()
+    lab_epiweeks_count_df = lab_epiweeks_count_df.query(f"Lab=='{lab}'")
+
+    # container.write(lab_epiweeks_count_df)
+
+    df_chart_data = lab_epiweeks_count_df
+    fig = plt.figure( figsize=(10, 1) )
+    # remove border
+    fig.gca().spines['top'].set_visible(False)
+    fig.gca().spines['right'].set_visible(False)
+    fig.gca().spines['left'].set_visible(False)
+    ax = df_chart_data.plot(
+        x='Epiweek', 
+        y='Count', 
+        kind='bar', 
+        ax=fig.gca(), 
+        color='#00a6ed',
+        # bar width
+        width=0.5
+    )
+    # remove y-label
+    ax.set_ylabel('')
+    ax.set_xlabel('')
+    # remove legend
+    ax.get_legend().remove()
+    # increase x-ticks font size
+    ax.tick_params(axis='x', labelsize=20)
+    # remove y-ticks
+    ax.set_yticks([])
+
+    # add the value on top of each bar
+    tem_dados = False
+    for p in ax.patches:
+        if p.get_height() <= 0:
+            continue
+        tem_dados = True
+        ax.annotate(
+            f"{p.get_height()}",
+            (p.get_x() + p.get_width() / 2., p.get_height()),
+            ha='center',
+            va='center',
+            fontsize=16,
+            color='black',
+            xytext=(0, 10),
+            textcoords='offset points'
+        )
+
+    if not tem_dados:
+         container.markdown(f"*Sem dados*")
+         return
+    container.pyplot(fig)
+
+
 def widgets_show_last_runs_for_each_pipeline():
 
     try:
@@ -212,34 +291,31 @@ def widgets_show_last_runs_for_each_pipeline():
     matrices_and_combined = ['matrices', 'combined']
     labs = ['lab_'+lab.lower() for lab in LABS]
 
-    matrices_and_combined_containers = zip(
-        matrices_and_combined, 
-        st.columns(len(matrices_and_combined))
-    )
-    labs_containers = zip(
-        labs, 
-        st.columns(len(labs))
-    )
+    for pipeline in labs+matrices_and_combined:
+        #with container:
+        border_container = st.container(border=True)
+        pipeline_name = pipeline.replace('lab_', '').capitalize()
 
-    all_containers = {
-        **dict(matrices_and_combined_containers), 
-        **dict(labs_containers)
-    }
+        with border_container:
 
-    for pipeline, container in all_containers.items():
-        with container:
-            with st.container(border=True):
-                st.markdown(f"**{pipeline.replace('lab_', '').capitalize()}**")
+            pipe_last_run_info = df_runs_info.query(f"pipeline=='{pipeline}'")
+            pipe_last_run_info_dict = pipe_last_run_info.to_dict(orient='records')[0]
 
-                pipe_last_run_info = df_runs_info.query(f"pipeline=='{pipeline}'")
-                pipe_last_run_info_dict = pipe_last_run_info.to_dict(orient='records')[0]
+            pipe_last_run_status = pipe_last_run_info_dict['status']
+            pipe_last_run_start_time = pipe_last_run_info_dict['start_timestamp']
 
-                pipe_last_run_status = pipe_last_run_info_dict['status']
-                pipe_last_run_start_time = pipe_last_run_info_dict['start_timestamp']
+            pipe_status_date = f"{STATUS_TO_EMOJI[pipe_last_run_status]} "
+            pipe_status_date += f"{format_timestamp(pipe_last_run_start_time)}"
+            
+            col_name, col_status, col_last_info, col_epiweek_count = st.columns([.15, .2, .2, .45])
 
-                col_status, col_start_time = st.columns([.2, .8])
-                col_status.markdown(f"{STATUS_TO_EMOJI[pipe_last_run_status]}")
-                col_start_time.markdown(f"{format_timestamp(pipe_last_run_start_time)}")
+            col_name.markdown(f"**{pipeline_name}**")
+            col_status.markdown(pipe_status_date)
+    
+            widgets_add_lab_info(pipeline_name, col_last_info)
+            widgets_add_lab_epiweek_count_plot(pipeline_name, col_epiweek_count)
+
+
 
 
 st.title(":satellite: Central ARBO")
