@@ -56,9 +56,9 @@ def widgets_list_files_in_folder(path, container):
             summarized_file_path = path.split('/')[-1] + '/' + file
 
             if summarized_file_path in files_already_processed:
-                col_filename.markdown(f":page_facing_up: {file} :white_check_mark:")
+                col_filename.markdown(f":page_facing_up: {file} :heavy_check_mark: ")
             else:
-                col_filename.markdown(f":page_facing_up: {file}")
+                col_filename.markdown(f":page_facing_up: {file} ")
 
             
 
