@@ -203,7 +203,7 @@ def widgets_add_lab_info(lab, container):
         lab_latest_date = lab_latest_date_dict[lab]
         st.markdown(f"Dados até {format_timestamp(lab_latest_date, False)}")
 
-def widgets_add_lab_epiweek_count(lab, container):
+def widgets_add_lab_epiweek_count_plot(lab, container):
 
     if lab in ['Matrices', 'Combined']:
         return
@@ -265,6 +265,7 @@ def widgets_add_lab_epiweek_count(lab, container):
          return
     container.pyplot(fig)
 
+
 def widgets_show_last_runs_for_each_pipeline():
 
     try:
@@ -290,21 +291,7 @@ def widgets_show_last_runs_for_each_pipeline():
     matrices_and_combined = ['matrices', 'combined']
     labs = ['lab_'+lab.lower() for lab in LABS]
 
-    matrices_and_combined_containers = zip(
-        matrices_and_combined, 
-        st.columns(len(matrices_and_combined))
-    )
-    labs_containers = zip(
-        labs, 
-        st.columns(len(labs))
-    )
-
-    all_containers = {
-        **dict(matrices_and_combined_containers), 
-        **dict(labs_containers)
-    }
-
-    for pipeline in matrices_and_combined+labs:
+    for pipeline in labs+matrices_and_combined:
         #with container:
         border_container = st.container(border=True)
         pipeline_name = pipeline.replace('lab_', '').capitalize()
@@ -326,7 +313,7 @@ def widgets_show_last_runs_for_each_pipeline():
             col_status.markdown(pipe_status_date)
     
             widgets_add_lab_info(pipeline_name, col_last_info)
-            widgets_add_lab_epiweek_count(pipeline_name, col_epiweek_count)
+            widgets_add_lab_epiweek_count_plot(pipeline_name, col_epiweek_count)
 
 
 
