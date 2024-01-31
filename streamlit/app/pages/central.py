@@ -241,25 +241,28 @@ def widgets_show_last_runs_for_each_pipeline():
         **dict(labs_containers)
     }
 
-    for pipeline, container in all_containers.items():
-        with container:
-            border_container = st.container(border=True)
-            pipeline_name = pipeline.replace('lab_', '').capitalize()
+    for pipeline in matrices_and_combined+labs:
+        #with container:
+        border_container = st.container(border=True)
+        pipeline_name = pipeline.replace('lab_', '').capitalize()
 
-            with border_container:
-                st.markdown(f"**{pipeline_name}**")
+        with border_container:
 
-                pipe_last_run_info = df_runs_info.query(f"pipeline=='{pipeline}'")
-                pipe_last_run_info_dict = pipe_last_run_info.to_dict(orient='records')[0]
+            pipe_last_run_info = df_runs_info.query(f"pipeline=='{pipeline}'")
+            pipe_last_run_info_dict = pipe_last_run_info.to_dict(orient='records')[0]
 
-                pipe_last_run_status = pipe_last_run_info_dict['status']
-                pipe_last_run_start_time = pipe_last_run_info_dict['start_timestamp']
+            pipe_last_run_status = pipe_last_run_info_dict['status']
+            pipe_last_run_start_time = pipe_last_run_info_dict['start_timestamp']
 
-                col_status, col_start_time = st.columns([.2, .8])
-                col_status.markdown(f"{STATUS_TO_EMOJI[pipe_last_run_status]}")
-                col_start_time.markdown(f"{format_timestamp(pipe_last_run_start_time)}")
-        
-            widgets_add_lab_info(pipeline_name, border_container)
+            pipe_status_date = f"{STATUS_TO_EMOJI[pipe_last_run_status]} "
+            pipe_status_date += f"{format_timestamp(pipe_last_run_start_time)}"
+            
+            col_name, col_status, col_last_info, _ = st.columns([.2, .3, .3, .2])
+
+            col_name.markdown(f"**{pipeline_name}**")
+            col_status.markdown(pipe_status_date)
+    
+            widgets_add_lab_info(pipeline_name, col_last_info)
 
 
 st.title(":satellite: Central ARBO")
