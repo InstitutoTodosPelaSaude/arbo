@@ -1,19 +1,37 @@
-from dagster import AssetExecutionContext, asset, MaterializeResult, MetadataValue
+from dagster import (
+    AssetExecutionContext, 
+    asset, 
+    sensor,
+    define_asset_job,
+    RunRequest, 
+    SkipReason, 
+    SensorEvaluationContext,
+    MaterializeResult, 
+    MetadataValue,
+    DefaultSensorStatus
+)
 from textwrap import dedent
-
 from dagster_dbt import (
     DbtCliResource, 
     dbt_assets,
     DagsterDbtTranslator,
-    DagsterDbtTranslatorSettings
+    DagsterDbtTranslatorSettings,
+    get_asset_key_for_model
 )
+from dagster.core.storage.pipeline_run import RunsFilter
+from dagster.core.storage.dagster_run import FINISHED_STATUSES
 import pandas as pd
 import os
 import pathlib
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+import shutil
 
 from .constants import dbt_manifest_path
+
+ROOT_PATH = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
+EINSTEIN_FILES_FOLDER = ROOT_PATH / "data" / "einstein"
+EINSTEIN_FILES_EXTENSION = '.xlsx'
 
 load_dotenv()
 DB_HOST = os.getenv('DB_HOST')
@@ -31,18 +49,15 @@ def einstein_raw(context):
     """
     Read all excel files from data/einstein folder and save to db
     """
-    root_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
-    einstein_path = root_path / "data" / "einstein"
-
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
     einstein_df = pd.DataFrame()
-    for file in os.listdir(einstein_path):
-        if not file.endswith('.xlsx'):
+    for file in os.listdir(EINSTEIN_FILES_FOLDER):
+        if not file.endswith(EINSTEIN_FILES_EXTENSION):
             continue
 
-        print(einstein_path / file)
-        df = pd.read_excel(einstein_path / file, dtype = str, sheet_name='itps_dengue')
+        print(EINSTEIN_FILES_FOLDER / file)
+        df = pd.read_excel(EINSTEIN_FILES_FOLDER / file, dtype = str, sheet_name='itps_dengue')
         df['file_name'] = file
         einstein_df = pd.concat([einstein_df, df], ignore_index=True)
         
@@ -72,3 +87,62 @@ def einstein_raw(context):
 )
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
+
+@asset(
+    compute_kind="python", 
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "einstein_06_final")]
+)
+def einstein_remove_used_files(context):
+    """
+    Remove the files that were used in the dbt process
+    """
+    raw_data_table = 'einstein_raw'
+    files_in_folder = [file for file in os.listdir(EINSTEIN_FILES_FOLDER) if file.endswith(EINSTEIN_FILES_EXTENSION)]
+
+    # Get the files that were used in the dbt process
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+    used_files = pd.read_sql_query(f"SELECT DISTINCT file_name FROM arboviroses.{raw_data_table}", engine).file_name.to_list()
+    engine.dispose()
+
+    # Remove the files that were used
+    path_to_move = EINSTEIN_FILES_FOLDER / "_out"
+    for used_file in used_files:
+        if used_file in files_in_folder:
+            context.log.info(f"Moving file {used_file} to {path_to_move}")
+            shutil.move(EINSTEIN_FILES_FOLDER / used_file, path_to_move / used_file)
+    
+    # Log the unmoved files
+    files_in_folder = os.listdir(EINSTEIN_FILES_FOLDER)
+    context.log.info(f"Files that were not moved: {files_in_folder}")
+
+einstein_all_assets_job = define_asset_job(name="einstein_all_assets_job")
+
+@sensor(
+    job=einstein_all_assets_job,
+    default_status=DefaultSensorStatus.RUNNING
+)
+def new_einstein_file_sensor(context: SensorEvaluationContext):
+    """
+    Check if there are new files in the einstein folder and run the job if there are.
+    The job will only run if the last run is finished to avoid running multiple times.
+    """
+    # Check if there are new files in the einstein folder
+    files = os.listdir(EINSTEIN_FILES_FOLDER)
+    valid_files = [file for file in files if file.endswith(EINSTEIN_FILES_EXTENSION)]
+    if len(valid_files) == 0:
+        return
+
+    # Get the last run status of the job
+    job_to_look = 'einstein_all_assets_job'
+    last_run = context.instance.get_runs(
+        filters=RunsFilter(job_name=job_to_look)
+    )
+    last_run_status = None
+    if len(last_run) > 0:
+        last_run_status = last_run[0].status
+
+    # If there are no runs running, run the job
+    if last_run_status in FINISHED_STATUSES or last_run_status is None:
+        yield RunRequest()
+    else:
+        yield SkipReason(f"There are files in the einstein folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")

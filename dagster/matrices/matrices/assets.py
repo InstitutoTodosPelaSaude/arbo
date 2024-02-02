@@ -1,4 +1,12 @@
-from dagster import AssetExecutionContext, asset
+from dagster import (
+    AssetExecutionContext, 
+    asset,
+    asset_sensor,
+    AssetKey,
+    define_asset_job,
+    DefaultSensorStatus,
+    RunRequest
+)
 from dagster_dbt import (
     DbtCliResource, 
     dbt_assets, 
@@ -136,3 +144,12 @@ def export_matrices_to_tsv():
 
         df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
 
+matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
+
+@asset_sensor(
+    asset_key=AssetKey('combined_05_location'),
+    job=matrices_all_assets_job,
+    default_status=DefaultSensorStatus.RUNNING
+)
+def run_matrices_sensor(context):
+    return RunRequest()
