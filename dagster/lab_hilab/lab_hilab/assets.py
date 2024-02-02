@@ -5,7 +5,8 @@ from dagster import (
     define_asset_job, 
     RunRequest, 
     SkipReason, 
-    SensorEvaluationContext
+    SensorEvaluationContext,
+    DefaultSensorStatus
 )
 from dagster_dbt import (
     DbtCliResource, 
@@ -100,7 +101,8 @@ def hilab_remove_used_files(context):
 hilab_all_assets_job = define_asset_job(name="hilab_all_assets_job")
 
 @sensor(
-    job=hilab_all_assets_job
+    job=hilab_all_assets_job,
+    default_status=DefaultSensorStatus.RUNNING
 )
 def new_hilab_file_sensor(context: SensorEvaluationContext):
     """
