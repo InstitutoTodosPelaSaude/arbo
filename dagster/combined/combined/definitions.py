@@ -3,7 +3,12 @@ import os
 from dagster import Definitions
 from dagster_dbt import DbtCliResource
 
-from .assets import arboviroses_dbt_assets, export_to_xlsx
+from .assets import (
+    arboviroses_dbt_assets, 
+    export_to_xlsx,
+    combined_all_assets_job,
+    run_combined_sensor
+)
 from .constants import dbt_project_dir
 from .schedules import schedules
 
@@ -13,4 +18,6 @@ defs = Definitions(
     resources={
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
     },
+    jobs=[combined_all_assets_job],
+    sensors=[run_combined_sensor]
 )

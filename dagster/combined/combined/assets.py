@@ -1,4 +1,12 @@
-from dagster import AssetExecutionContext, asset
+from dagster import (
+    AssetExecutionContext, 
+    asset,
+    multi_asset_sensor,
+    define_asset_job,
+    AssetKey,
+    RunRequest,
+    DefaultSensorStatus
+)
 from dagster_dbt import (
     DbtCliResource, 
     dbt_assets, 
@@ -55,3 +63,15 @@ def export_to_xlsx(context):
         # 'laboratories': df['laboratory'].nunique(),
     })
 
+combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
+
+@multi_asset_sensor(
+    monitored_assets=[AssetKey("einstein_06_final"), AssetKey("hilab_05_final"), AssetKey("hlagyn_05_final"), AssetKey("sabin_07_final")],
+    job=combined_all_assets_job,
+    default_status=DefaultSensorStatus.RUNNING
+)
+def run_combined_sensor(context):
+    asset_events = context.latest_materialization_records_by_key()
+    if any(asset_events.values()):
+        context.advance_all_cursors()
+        return RunRequest()
