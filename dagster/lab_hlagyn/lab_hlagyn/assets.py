@@ -11,6 +11,8 @@ from dagster import (
 from dagster_dbt import (
     DbtCliResource, 
     dbt_assets,
+    DagsterDbtTranslator,
+    DagsterDbtTranslatorSettings,
     get_asset_key_for_model
 )
 from dagster.core.storage.pipeline_run import RunsFilter
@@ -34,6 +36,10 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
+
+dagster_dbt_translator = DagsterDbtTranslator(
+    settings=DagsterDbtTranslatorSettings(enable_asset_checks=True)
+)
 
 @asset(compute_kind="python")
 def hlagyn_raw(context):
@@ -61,7 +67,10 @@ def hlagyn_raw(context):
 
     context.add_output_metadata({'num_rows': hlagyn_df.shape[0]})
 
-@dbt_assets(manifest=dbt_manifest_path, select='hlagyn')
+@dbt_assets(manifest=dbt_manifest_path, 
+            select='hlagyn',
+            dagster_dbt_translator=dagster_dbt_translator
+)
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
