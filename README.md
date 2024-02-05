@@ -14,7 +14,7 @@ No diretório ```postgres``` faça as seguintes alterações:
 
 1. Crie um arquivo ```.env``` e preencha as informações com base no modelo ```.env.example```. Estas serão as credenciais do usuário root do banco.
 
-2. Crie um arquivo ```create_database.sql``` com base no modelo ```create_database_example.sq``` e altere as credenciais dos usuários _itps_dev_ e _dagster_. Este arquivo será executado na criação do banco e irá criar os usuários e as tabelas necessárias para o projeto.
+2. Crie um arquivo ```create_database.sql``` com base no modelo ```create_database_example.sql``` e altere as credenciais dos usuários _itps_dev_ e _dagster_. Este arquivo será executado na criação do banco e irá criar os usuários e as tabelas necessárias para o projeto.
 
 3. Inicie os contêiners do ```docker-compose.yml```
     ```sh
@@ -51,3 +51,24 @@ No diretório ```dbt``` faça as seguintes alterações:
     ```
 
 3. Acesse a interface em ```localhost:80```.
+
+# Estrutura do projeto
+
+## Serviços
+| Serviço               | Descrição                                         |
+| :---:                 | :---:                                             |
+| Postgres              | Banco de dados que armazena todas as etapas de            processamento de dados, além do histórico de processamento das pipelines do Dagster|
+| Dagster + DBT         | Ferramenta de orquestração de tarefas, responsável por executar as etapas de processamento de dados e as automações implementadas  |
+| Streamlit             | Frontend da aplicação Arbo, proporciona a interação com a pipeline e visualização de gráficos sincronizados ao banco de dados da pipeline |
+| Nginx                 | Proxy reverso responsável pelo controle das rotas e autenticação                                                                |
+| xlsx2csv              | API para converter arquivos XLSX para CSV sem comprometer o formato das datas                                                         |
+
+## Arquivos de configuração
+
+
+| Arquivo           | Objetivo                        | Serviços que usam |
+| :---:             | :---:                           | :---:             |
+| postgres/.env     | criada a partir do postgres/.env.example, configura o user e senha do banco de dados.                              | Postgres          |
+| postgres/create_database.sql | criada a partir do postgres/create_database_example.sql, deve ser configurada as credenciais dos usuários itps_dev e dagster para o banco de dados              | Postgres          |
+| dbt/profiles.yml  | criada a partir do dbt/profiles_example.yml, configura a conexão do banco de dados pelo DBT, assim como seleciona o banco de produção ou desenvolvimento                                       | DBT
+| .env              | criada a partir do arquivo .env.example, configura o banco de dados a ser acessado pelos códigos Python e pelo Dagster. Além disso, também configura as credenciais de acesso na autenticação do frontend| Dagster+DBT, Nginx, Streamlit           |
