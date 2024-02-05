@@ -136,7 +136,7 @@ def new_sabin_file_sensor(context: SensorEvaluationContext):
     """
     # Check if there are new files in the sabin folder
     files = os.listdir(SABIN_FILES_FOLDER)
-    valid_files = [file for file in files if file.endswith(SABIN_RAW_FILES_EXTENSION)]
+    valid_files = [file for file in files if file.endswith(SABIN_RAW_FILES_EXTENSION) or file.endswith(SABIN_CONVERTED_FILES_EXTENSION)]
     if len(valid_files) == 0:
         return
 
