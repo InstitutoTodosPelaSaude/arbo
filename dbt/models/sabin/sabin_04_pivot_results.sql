@@ -21,7 +21,8 @@ SELECT
                 'DENGIGM',
                 'DNS1',
                 'PCRDE',
-                'NS1ELISA'
+                'NS1ELISA',
+                'NS1IMUNOCRO'
             ], 
             'detalhe_exame', 
             'result', 
