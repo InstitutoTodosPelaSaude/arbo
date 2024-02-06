@@ -9,3 +9,42 @@ sources:
         meta:
           dagster:
             asset_key: ["hlagyn_raw"]
+
+models:
+  - name: hlagyn_01_convert_types
+    description: Convert types
+  - name: hlagyn_02_fix_values
+    description: Convert types
+    columns:
+      - name: dengue_result
+        tests:
+          - accepted_values:
+              values: [-1, 0, 1]
+      - name: zika_result
+        tests:
+          - accepted_values:
+              values: [-1, 0, 1]
+      - name: chikungunya_result
+        tests:
+          - accepted_values:
+              values: [-1, 0, 1]
+      
+      - name: age
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 150
+      
+  - name: hlagyn_03_fill_results
+    description: Fill results
+
+  - name: hlagyn_04_deduplicate
+    columns:
+      - name: sample_id
+        tests:
+          - not_null
+          - unique
+
+    description: Deduplicate data
+  - name: hlagyn_05_final
+    description: Final model
