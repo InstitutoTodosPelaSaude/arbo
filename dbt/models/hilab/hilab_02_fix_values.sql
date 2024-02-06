@@ -104,3 +104,4 @@ SELECT
 FROM source_data
 -- This column is used to filter out duplicate rows
 WHERE row_number = 1
+AND exame NOT LIKE 'COVID%'
