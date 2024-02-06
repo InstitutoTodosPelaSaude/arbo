@@ -45,9 +45,9 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     compute_kind="python", 
     deps=[get_asset_key_for_model([arboviroses_dbt_assets], "combined_05_location")]
 )
-def export_to_xlsx(context):
+def export_to_tsv(context):
     """
-    Get the final combined data from the database and export to xlsx
+    Get the final combined data from the database and export to tsv
     """
     # Create data folder if not exists
     pathlib.Path('data/combined').mkdir(parents=True, exist_ok=True)
@@ -55,7 +55,7 @@ def export_to_xlsx(context):
     # Export to xlsx
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
     df = pd.read_sql('select * from arboviroses."combined_05_location"', engine)
-    df.to_excel('data/combined/combined.xlsx', index=False)
+    df.to_csv('data/combined/combined.tsv', sep='\t', index=False)
     engine.dispose()
 
     context.add_output_metadata({

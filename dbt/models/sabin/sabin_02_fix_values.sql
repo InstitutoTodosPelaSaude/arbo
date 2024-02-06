@@ -56,7 +56,8 @@ SELECT
         
         WHEN detalhe_exame IN (
             'DNS1',
-            'NS1ELISA'
+            'NS1ELISA',
+            'NS1IMUNOCRO'
         ) THEN 'ns1_antigen'
 
         -- PCR
@@ -115,3 +116,4 @@ SELECT
 FROM source_data
 WHERE not detalhe_exame in ('OBSGERALINTERNA', 'FEBREGLC', 'FEBREMLC')
 AND result IS NOT NULL
+AND NOT result IN ('INDETERMINADO')

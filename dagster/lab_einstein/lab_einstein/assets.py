@@ -51,15 +51,12 @@ def einstein_raw(context):
     """
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
-    einstein_df = pd.DataFrame()
-    for file in os.listdir(EINSTEIN_FILES_FOLDER):
-        if not file.endswith(EINSTEIN_FILES_EXTENSION):
-            continue
+    # Choose one of the files and run the process
+    einstein_files = [file for file in os.listdir(EINSTEIN_FILES_FOLDER) if file.endswith(EINSTEIN_FILES_EXTENSION)]
+    assert len(einstein_files) > 0, f"No files found in the folder {EINSTEIN_FILES_FOLDER} with extension {EINSTEIN_FILES_EXTENSION}"
 
-        print(EINSTEIN_FILES_FOLDER / file)
-        df = pd.read_excel(EINSTEIN_FILES_FOLDER / file, dtype = str, sheet_name='itps_dengue')
-        df['file_name'] = file
-        einstein_df = pd.concat([einstein_df, df], ignore_index=True)
+    einstein_df = pd.read_excel(EINSTEIN_FILES_FOLDER / einstein_files[0], dtype = str, sheet_name='itps_dengue')
+    einstein_df['file_name'] = einstein_files[0]
         
     # Save to db
     einstein_df.to_sql('einstein_raw', engine, schema='arboviroses', if_exists='replace', index=False)

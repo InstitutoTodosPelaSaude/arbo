@@ -72,15 +72,12 @@ def sabin_convert_xlsx_to_csv(context):
 def sabin_raw(context):
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
-    sabin_df = pd.DataFrame()
-    for file in os.listdir(SABIN_FILES_FOLDER):
-        if not file.endswith(SABIN_CONVERTED_FILES_EXTENSION):
-            continue
+    # Choose one of the files to get the columns
+    sabin_files = [file for file in os.listdir(SABIN_FILES_FOLDER) if file.endswith(SABIN_CONVERTED_FILES_EXTENSION)]
+    assert len(sabin_files) > 0, f"No files found in {SABIN_FILES_FOLDER} with extension {SABIN_CONVERTED_FILES_EXTENSION}"
 
-        df = pd.read_csv(SABIN_FILES_FOLDER / file, dtype = str)
-        
-        df['file_name'] = file
-        sabin_df = pd.concat([sabin_df, df], ignore_index=True)
+    sabin_df = pd.read_csv(SABIN_FILES_FOLDER / sabin_files[0], dtype = str)
+    sabin_df['file_name'] = sabin_files[0]
 
     # Save to db
     sabin_df.to_sql('sabin_raw', engine, schema='arboviroses', if_exists='replace', index=False)
@@ -136,7 +133,7 @@ def new_sabin_file_sensor(context: SensorEvaluationContext):
     """
     # Check if there are new files in the sabin folder
     files = os.listdir(SABIN_FILES_FOLDER)
-    valid_files = [file for file in files if file.endswith(SABIN_RAW_FILES_EXTENSION)]
+    valid_files = [file for file in files if file.endswith(SABIN_RAW_FILES_EXTENSION) or file.endswith(SABIN_CONVERTED_FILES_EXTENSION)]
     if len(valid_files) == 0:
         return
 
