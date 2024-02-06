@@ -20,7 +20,7 @@ SELECT
     --"Metodologia" AS metodologia, 
     "Cidade" AS location,
     "UF" AS state_code,
-    file_name,
+    file_name
     --"Método" AS metodo,
     --"Id cliente" AS patient_id
 FROM source_data
