@@ -14,5 +14,7 @@ jobs:
         run: echo "Configuring SSH credentials "
       - run: echo -e '\x1dclose\x0d' | telnet ${{ secrets.HOST_IP }} 80
       - run: |
-          echo ${{ secrets.SSH_PRIVATE_KEY }} > private.key
+          echo "$SSH_KEY" > private.key
       - run: ssh -i private.key ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
