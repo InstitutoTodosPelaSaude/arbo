@@ -15,15 +15,7 @@ jobs:
       - run: echo -e '\x1dclose\x0d' | telnet ${{ secrets.HOST_IP }} 80
       - run: sleep 5
       - run: |
-            mkdir -p ~/.ssh/
-            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
-      - run: |
-          cat >>~/.ssh/config <<END
-          Host staging
-            HostName ${{ secrets.HOST_IP }}
-            User ${{ secrets.HOST_USER }}
-            IdentityFile ~/.ssh/id_rsa
-            StrictHostKeyChecking no
-          END
-      - run: ssh ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
+          sudo chmod 600 ~/.ssh/private.key
+      - run: ssh -i ~/.ssh/private.key ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
