@@ -8,5 +8,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: configure SSH credentials
-      - run: ping -c 10 ${{ secrets.HOST_IP }}
+        run: ping -c 10 ${{ secrets.HOST_IP }}
       
