@@ -11,5 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: configure SSH credentials
+        run: echo "Configuring SSH credentials"
       - run: ping -c 10 ${{ secrets.HOST_IP }}
       - run: sleep 5
