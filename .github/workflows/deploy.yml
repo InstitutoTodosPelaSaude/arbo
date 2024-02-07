@@ -16,6 +16,7 @@ jobs:
       - run: sleep 5
       - run: |
             mkdir -p ~/.ssh/
-            echo "{{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/staging.key
+            echo "{{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/staging.key
+      - run: echo "Host remotehost\n\tStrictHostKeyChecking no\n" >> /home/user/.ssh/config
       - run: ssh ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
