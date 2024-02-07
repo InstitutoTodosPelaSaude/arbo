@@ -1,0 +1,12 @@
+name: Deploy code to server
+on: 
+  push:
+    branches:
+      - master
+jobs:
+  deploy-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: configure SSH credentials
+      - run: ping -c 10 ${{ secrets.HOST_IP }}
+      
