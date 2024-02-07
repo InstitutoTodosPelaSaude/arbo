@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: configure SSH credentials
-        run: echo "Configuring SSH credentials"
+        run: echo "Configuring SSH credentials "
       - run: echo -e '\x1dclose\x0d' | telnet ${{ secrets.HOST_IP }} 80
       - run: sleep 5
       - run: |
