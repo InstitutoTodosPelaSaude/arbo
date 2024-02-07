@@ -3,7 +3,9 @@ on:
   push:
     branches:
       - master
+      - dev-ci
   workflow_dispatch:
+  
 jobs:
   deploy-ci:
     runs-on: ubuntu-latest
