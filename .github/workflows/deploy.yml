@@ -13,9 +13,6 @@ jobs:
       - name: configure SSH credentials
         run: echo "Configuring SSH credentials "
       - run: echo -e '\x1dclose\x0d' | telnet ${{ secrets.HOST_IP }} 80
-      - run: sleep 5
       - run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
-          sudo chmod 600 ~/.ssh/private.key
-      - run: ssh -i ~/.ssh/private.key ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
+          echo ${{ secrets.SSH_PRIVATE_KEY }} > private.key
+      - run: ssh -i private.key ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
