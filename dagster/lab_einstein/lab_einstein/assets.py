@@ -57,6 +57,12 @@ def einstein_raw(context):
 
     einstein_df = pd.read_excel(EINSTEIN_FILES_FOLDER / einstein_files[0], dtype = str, sheet_name='itps_dengue')
     einstein_df['file_name'] = einstein_files[0]
+
+    # Get only the date on 'dh_coleta' column and format it to 'dd/mm/yyyy'
+    try: # Try to get the date in the format 'dd/mm/yyyy'
+        einstein_df['dh_coleta'] = pd.to_datetime(einstein_df['dh_coleta'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')
+    except: # If it's not in the format 'dd/mm/yyyy', try to get the date in the format 'yyyy-mm-dd'
+        einstein_df['dh_coleta'] = pd.to_datetime(einstein_df['dh_coleta'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d/%m/%Y')
         
     # Save to db
     einstein_df.to_sql('einstein_raw', engine, schema='arboviroses', if_exists='replace', index=False)
