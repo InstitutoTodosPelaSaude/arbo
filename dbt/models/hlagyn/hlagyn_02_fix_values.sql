@@ -47,7 +47,7 @@ SELECT
         )
     ) AS sample_id,
     test_id,
-    patient_id,
+    NULL AS patient_id,
     
     age,
     CASE
