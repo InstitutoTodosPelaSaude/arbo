@@ -9,6 +9,10 @@ on:
 jobs:
   deploy-ci:
     runs-on: ubuntu-latest
+    env:
+      SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_HOST: ${{ secrets.HOST_IP }}
+      SSH_USER: ${{ secrets.HOST_USER }}
     steps:
       - name: configure SSH credentials
         run: echo "Configuring SSH credentials "
@@ -21,7 +25,4 @@ jobs:
           echo "Host $SSH_HOST\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
           ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
       - run: ssh $SSH_USER@$SSH_HOST 'echo Hello!'
-        env:
-          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_HOST: ${{ secrets.HOST_IP }}
-          SSH_USER: ${{ secrets.HOST_USER }}
+        
