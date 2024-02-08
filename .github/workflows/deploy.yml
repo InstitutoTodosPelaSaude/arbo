@@ -25,5 +25,5 @@ jobs:
           sudo chmod 600 ~/.ssh/id_rsa
           echo "Host $SSH_HOST\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
           ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
-      - run: ssh $SSH_USER@$SSH_HOST 'Testing SSH connection'
+      - run: ssh $SSH_USER@$SSH_HOST "echo 'Testing SSH connection'"
       - run: ssh $SSH_USER@$SSH_HOST -r 'cd $REPOSITORY_PATH; docker compose down; docker compose up --build'
