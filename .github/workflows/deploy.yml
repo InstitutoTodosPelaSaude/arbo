@@ -18,6 +18,7 @@ jobs:
           mkdir ~/.ssh/
           touch ~/.ssh/known_hosts
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          sudo chmod 600 private.key
       - run: ssh -i private.key ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
