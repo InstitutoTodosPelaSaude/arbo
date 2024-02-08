@@ -26,4 +26,4 @@ jobs:
           echo "Host $SSH_HOST\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
           ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
       - run: ssh $SSH_USER@$SSH_HOST "echo 'Testing SSH connection'"
-      - run: ssh $SSH_USER@$SSH_HOST -t 'cd $REPOSITORY_PATH; docker compose down; docker compose up --build'
+      - run: ssh $SSH_USER@$SSH_HOST -T 'cd $REPOSITORY_PATH; docker compose down; docker compose up --build'
