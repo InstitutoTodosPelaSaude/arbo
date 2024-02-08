@@ -14,12 +14,14 @@ jobs:
         run: echo "Configuring SSH credentials "
       - run: echo -e '\x1dclose\x0d' | telnet ${{ secrets.HOST_IP }} 80
       - run: |
-          echo "$SSH_KEY" > private.key
           mkdir ~/.ssh/
           touch ~/.ssh/known_hosts
-          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          sudo chmod 600 private.key
-      - run: ssh -i private.key ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          echo "Host $SSH_HOST\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+      - run: ssh  $SSH_USER@$SSH_HOST 'echo Hello!'
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.HOST_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.HOST_IP }}
+          SSH_USER: ${{ secrets.HOST_USER }}
