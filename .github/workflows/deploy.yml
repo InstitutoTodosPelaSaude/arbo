@@ -15,6 +15,8 @@ jobs:
       - run: echo -e '\x1dclose\x0d' | telnet ${{ secrets.HOST_IP }} 80
       - run: |
           echo "$SSH_KEY" > private.key
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
       - run: ssh -i private.key ${{ secrets.HOST_USER }}@${{ secrets.HOST_IP }} 'echo Hello!'
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.HOST_KNOWN_HOSTS }}
