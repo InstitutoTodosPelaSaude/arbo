@@ -76,7 +76,7 @@ combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
 )
 def run_combined_sensor(context: SensorEvaluationContext):
     # Get the last run status of the job
-    job_to_look = 'combined_05_location'
+    job_to_look = 'combined_all_assets_job'
     last_run = context.instance.get_runs(
         filters=RunsFilter(job_name=job_to_look)
     )
