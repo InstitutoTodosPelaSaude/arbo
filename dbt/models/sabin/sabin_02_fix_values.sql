@@ -39,6 +39,7 @@ SELECT
             'DENGIGG', 'DENGUEGI',
             -- Zika IgG
             'ZIKAGINDICE',
+            'ZIKAIGG2',
             -- Chikungunya IgG
             'RCHIKUNGMELISAIGG'
 
@@ -50,6 +51,7 @@ SELECT
             'DENGIGM',
             -- Zika IgM
             'ZIKAM1',
+            'ZIKAM2',
             -- Chikungunya IgM
             'RCHIKUNGMELISAIGM'
         ) THEN 'igm_serum'
@@ -91,9 +93,13 @@ SELECT
     CASE
         WHEN result = 'Detectado (Presença do material genético do Vírus Chikungunya)' THEN 1
         WHEN result = 'Detectado (Presença do material genético do Vírus Dengue)' THEN 1
+        WHEN result = 'NÃO DETECTADO RNA DO VÍRUS DA DENGUE' THEN 0
+        WHEN result = 'Não detectado (Ausência de material genético do vírus Chikungunya)' THEN 0
         WHEN result = 'Não detectado (Ausência do material genético do Vírus Chikungunya)' THEN 0
         WHEN result = 'Não detectado (Ausência do material genético do Vírus Dengue)' THEN 0
         WHEN result = 'Não detectado (Ausência do material genético do Vírus Zika)' THEN 0
+        WHEN result = 'NÃO DETECTADO' THEN 0
+        WHEN result = 'DETECTÁVEL' THEN 1
         WHEN result = 'NÃO REAGENTE' THEN 0
         WHEN result = 'Negativo' THEN 0
         WHEN result = 'Positivo' THEN 1
@@ -116,4 +122,11 @@ SELECT
 FROM source_data
 WHERE not detalhe_exame in ('OBSGERALINTERNA', 'FEBREGLC', 'FEBREMLC')
 AND result IS NOT NULL
-AND NOT result IN ('INDETERMINADO')
+AND NOT result IN ('INDETERMINADO', '*')
+-- WIP: remove this filter
+AND NOT detalhe_exame IN (
+        'ADOLFOLUTZPDF', 
+        'DEVORO',
+        'RCHIKUNGMIMUNOG', 
+        'RCHIKUGMIMUNOM'
+    )
