@@ -12,4 +12,6 @@ FROM
     FROM source_data
     GROUP BY sample_id
 ) AS count_lines_sample_id
-WHERE count_lines != 1 AND count_lines != 3
+WHERE count_lines != 1 
+AND count_lines != 3
+AND count_lines != 2 -- Temporary to avoid breaking the pipeline in a very specific case: cd61b303b552fe

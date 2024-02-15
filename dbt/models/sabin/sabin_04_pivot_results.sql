@@ -35,6 +35,8 @@ SELECT
                 'VIRUSZICA',
                 'ZIKAGINDICE',
                 'ZIKAM1',
+                'ZIKAM2',
+                'ZIKAIGG2',
                 'ZIKAPCRBIO'
             ], 
             'detalhe_exame', 
