@@ -48,18 +48,14 @@ def hlagyn_raw(context):
     """
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
-    hlagyn_df = pd.DataFrame()
-    for file in os.listdir(HLAGYN_FILES_FOLDER):
-        if not file.endswith(HLAGYN_FILES_EXTENSION):
-            continue
+    hlagyn_files = [file for file in os.listdir(HLAGYN_FILES_FOLDER) if file.endswith(HLAGYN_FILES_EXTENSION)]
+    assert len(hlagyn_files) > 0, f"No files found in the folder {HLAGYN_FILES_FOLDER} with extension {HLAGYN_FILES_EXTENSION}"
 
-        df = pd.read_excel(HLAGYN_FILES_FOLDER / file, dtype = str)
-        if 'Unnamed: 0' in df.columns: 
-            # Some files have an empty row in the beginning
-            df = pd.read_excel(HLAGYN_FILES_FOLDER / file, skiprows=1, dtype = str)
-
-        df['file_name'] = file
-        hlagyn_df = pd.concat([hlagyn_df, df], ignore_index=True)
+    hlagyn_df = pd.read_excel(HLAGYN_FILES_FOLDER / hlagyn_files[0], dtype = str)
+    if 'Unnamed: 0' in hlagyn_df.columns: 
+        # Some files have an empty row in the beginning
+        hlagyn_df = pd.read_excel(HLAGYN_FILES_FOLDER / hlagyn_files[0], skiprows=1, dtype = str)
+    hlagyn_df['file_name'] = hlagyn_files[0]
         
     # Save to db
     hlagyn_df.to_sql('hlagyn_raw', engine, schema='arboviroses', if_exists='replace', index=False)
