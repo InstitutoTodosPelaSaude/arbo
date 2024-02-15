@@ -48,14 +48,11 @@ def hilab_raw(context):
     """
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
-    hilab_df = pd.DataFrame()
-    for file in os.listdir(HILAB_FILES_FOLDER):
-        if not file.endswith(HILAB_FILES_EXTENSION):
-            continue
+    hilab_files = [file for file in os.listdir(HILAB_FILES_FOLDER) if file.endswith(HILAB_FILES_EXTENSION)]
+    assert len(hilab_files) > 0, f"No files found in the folder {HILAB_FILES_FOLDER} with extension {HILAB_FILES_EXTENSION}"
 
-        df = pd.read_csv(HILAB_FILES_FOLDER / file)
-        df['file_name'] = file
-        hilab_df = pd.concat([hilab_df, df], ignore_index=True)
+    hilab_df = pd.read_csv(HILAB_FILES_FOLDER / hilab_files[0])
+    hilab_df['file_name'] = hilab_files[0]
         
     # Save to db
     hilab_df.to_sql('hilab_raw', engine, schema='arboviroses', if_exists='replace', index=False)
