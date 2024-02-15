@@ -9,6 +9,7 @@ on:
 jobs:
   deploy-ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     env:
       SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_HOST: ${{ secrets.HOST_IP }}
