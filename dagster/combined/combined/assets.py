@@ -5,7 +5,9 @@ from dagster import (
     define_asset_job,
     AssetKey,
     RunRequest,
-    DefaultSensorStatus
+    DefaultSensorStatus,
+    SensorEvaluationContext,
+    SkipReason
 )
 from dagster_dbt import (
     DbtCliResource, 
@@ -14,6 +16,8 @@ from dagster_dbt import (
     DagsterDbtTranslator,
     DagsterDbtTranslatorSettings
 )
+from dagster.core.storage.pipeline_run import RunsFilter
+from dagster.core.storage.dagster_run import FINISHED_STATUSES
 import pandas as pd
 import os
 import pathlib
@@ -70,7 +74,21 @@ combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
     job=combined_all_assets_job,
     default_status=DefaultSensorStatus.RUNNING
 )
-def run_combined_sensor(context):
+def run_combined_sensor(context: SensorEvaluationContext):
+    # Get the last run status of the job
+    job_to_look = 'combined_05_location'
+    last_run = context.instance.get_runs(
+        filters=RunsFilter(job_name=job_to_look)
+    )
+    last_run_status = None
+    if len(last_run) > 0:
+        last_run_status = last_run[0].status
+
+    # Check if the last run is finished
+    if last_run_status not in FINISHED_STATUSES and last_run_status is not None:
+        return SkipReason(f"Last run status is {last_run_status}")
+
+    # Check if there are new files in the einstein folder and run the job if there are
     asset_events = context.latest_materialization_records_by_key()
     if any(asset_events.values()):
         context.advance_all_cursors()
