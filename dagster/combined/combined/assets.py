@@ -87,6 +87,18 @@ def run_combined_sensor(context: SensorEvaluationContext):
     # Check if the last run is finished
     if last_run_status not in FINISHED_STATUSES and last_run_status is not None:
         return SkipReason(f"Last run status is {last_run_status}")
+    
+    # Check if all upstream jobs are finished (avoid running multiple times)
+    upstream_jobs = ['einstein_all_assets_job', 'hilab_all_assets_job', 'hlagyn_all_assets_job', 'sabin_all_assets_job']
+    for job in upstream_jobs:
+        last_run = context.instance.get_runs(
+            filters=RunsFilter(job_name=job)
+        )
+        last_run_status = None
+        if len(last_run) > 0:
+            last_run_status = last_run[0].status
+        if last_run_status not in FINISHED_STATUSES and last_run_status is not None:
+            return SkipReason(f"Upstream job {job} is not finished. Last run status is {last_run_status}")
 
     # Check if there are new files in the einstein folder and run the job if there are
     asset_events = context.latest_materialization_records_by_key()

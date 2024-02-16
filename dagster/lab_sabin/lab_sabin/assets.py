@@ -16,7 +16,7 @@ from dagster_dbt import (
     get_asset_key_for_model
 )
 from dagster.core.storage.pipeline_run import RunsFilter
-from dagster.core.storage.dagster_run import FINISHED_STATUSES
+from dagster.core.storage.dagster_run import FINISHED_STATUSES, DagsterRunStatus
 import pandas as pd
 import os
 import pathlib
@@ -78,6 +78,7 @@ def sabin_raw(context):
 
     sabin_df = pd.read_csv(SABIN_FILES_FOLDER / sabin_files[0], dtype = str)
     sabin_df['file_name'] = sabin_files[0]
+    context.log.info(f"Reading file {sabin_files[0]}")
 
     # Save to db
     sabin_df.to_sql('sabin_raw', engine, schema='arboviroses', if_exists='replace', index=False)
@@ -148,6 +149,10 @@ def new_sabin_file_sensor(context: SensorEvaluationContext):
 
     # If there are no runs running, run the job
     if last_run_status in FINISHED_STATUSES or last_run_status is None:
+        # Do not run if the last status is an error
+        if last_run_status == DagsterRunStatus.FAILURE:
+            return SkipReason(f"Last run status is an error status: {last_run_status}")
+
         yield RunRequest()
     else:
         yield SkipReason(f"There are files in the sabin folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")

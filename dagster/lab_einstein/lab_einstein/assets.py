@@ -19,7 +19,7 @@ from dagster_dbt import (
     get_asset_key_for_model
 )
 from dagster.core.storage.pipeline_run import RunsFilter
-from dagster.core.storage.dagster_run import FINISHED_STATUSES
+from dagster.core.storage.dagster_run import FINISHED_STATUSES, DagsterRunStatus
 import pandas as pd
 import os
 import pathlib
@@ -57,6 +57,7 @@ def einstein_raw(context):
 
     einstein_df = pd.read_excel(EINSTEIN_FILES_FOLDER / einstein_files[0], dtype = str, sheet_name='itps_dengue')
     einstein_df['file_name'] = einstein_files[0]
+    context.log.info(f"Reading file {einstein_files[0]}")
 
     # Get only the date on 'dh_coleta' column and format it to 'dd/mm/yyyy' 
     try: # Try to get the date in the format 'dd/mm/yyyy'
@@ -146,6 +147,10 @@ def new_einstein_file_sensor(context: SensorEvaluationContext):
 
     # If there are no runs running, run the job
     if last_run_status in FINISHED_STATUSES or last_run_status is None:
+        # Do not run if the last status is an error
+        if last_run_status == DagsterRunStatus.FAILURE:
+            return SkipReason(f"Last run status is an error status: {last_run_status}")
+        
         yield RunRequest()
     else:
         yield SkipReason(f"There are files in the einstein folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")
