@@ -56,6 +56,7 @@ def hlagyn_raw(context):
         # Some files have an empty row in the beginning
         hlagyn_df = pd.read_excel(HLAGYN_FILES_FOLDER / hlagyn_files[0], skiprows=1, dtype = str)
     hlagyn_df['file_name'] = hlagyn_files[0]
+    context.log.info(f"Reading file {hlagyn_files[0]}")
         
     # Save to db
     hlagyn_df.to_sql('hlagyn_raw', engine, schema='arboviroses', if_exists='replace', index=False)

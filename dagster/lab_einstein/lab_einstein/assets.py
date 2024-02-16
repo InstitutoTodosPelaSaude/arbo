@@ -57,6 +57,7 @@ def einstein_raw(context):
 
     einstein_df = pd.read_excel(EINSTEIN_FILES_FOLDER / einstein_files[0], dtype = str, sheet_name='itps_dengue')
     einstein_df['file_name'] = einstein_files[0]
+    context.log.info(f"Reading file {einstein_files[0]}")
 
     # Get only the date on 'dh_coleta' column and format it to 'dd/mm/yyyy' 
     try: # Try to get the date in the format 'dd/mm/yyyy'

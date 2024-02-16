@@ -78,6 +78,7 @@ def sabin_raw(context):
 
     sabin_df = pd.read_csv(SABIN_FILES_FOLDER / sabin_files[0], dtype = str)
     sabin_df['file_name'] = sabin_files[0]
+    context.log.info(f"Reading file {sabin_files[0]}")
 
     # Save to db
     sabin_df.to_sql('sabin_raw', engine, schema='arboviroses', if_exists='replace', index=False)

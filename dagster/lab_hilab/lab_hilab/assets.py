@@ -53,6 +53,7 @@ def hilab_raw(context):
 
     hilab_df = pd.read_csv(HILAB_FILES_FOLDER / hilab_files[0])
     hilab_df['file_name'] = hilab_files[0]
+    context.log.info(f"Reading file {hilab_files[0]}")
         
     # Save to db
     hilab_df.to_sql('hilab_raw', engine, schema='arboviroses', if_exists='replace', index=False)
