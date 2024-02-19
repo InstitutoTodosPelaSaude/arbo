@@ -1,6 +1,8 @@
 import psycopg2
 import os
 
+from psycopg2 import InterfaceError, OperationalError
+
 class DagsterDatabaseInterface:
 
     # define static method for singleton pattern
@@ -19,19 +21,35 @@ class DagsterDatabaseInterface:
         return DagsterDatabaseInterface.__instance
 
     def __init__(self, user, password, host, port, database):
-        self.connection = psycopg2.connect(
-            user=user,
-            password=password,
-            host=host,
-            port=port,
-            database=database
-        )
-        
+        self.__connect_to_database(user, password, host, port, database)
         self.cursor = self.connection.cursor()
 
+    def __connect_to_database(self, user, password, host, port, database):
+
+        try:
+            self.connection = psycopg2.connect(
+                user=user,
+                password=password,
+                host=host,
+                port=port,
+                database=database
+            )
+        except OperationalError as e:
+            pass
+            return False
+
     def __query(self, query):
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
+        try:
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except InterfaceError as e:
+            pass
+            return []
+        except OperationalError as e:
+            pass
+            return []
+
+        
     
     def get_last_run_for_each_pipeline(self):
         query = """
@@ -92,17 +110,29 @@ class DWDatabaseInterface:
         return DWDatabaseInterface.__instance
 
     def __init__(self, user, password, host, port, database):
-        self.connection = psycopg2.connect(
-            user=user,
-            password=password,
-            host=host,
-            port=port,
-            database=database
-        )
-        
-        self.cursor = self.connection.cursor()
+        if self.__connect_to_database(user, password, host, port, database):
+            self.cursor = self.connection.cursor()
+        else:
+            self.cursor = None
+
+    def __connect_to_database(self, user, password, host, port, database):
+
+        try:
+            self.connection = psycopg2.connect(
+                user=user,
+                password=password,
+                host=host,
+                port=port,
+                database=database
+            )
+        except OperationalError as e:
+            pass
+            return False
 
     def __query(self, query):
+        if self.cursor is None:
+            return None
+        
         self.cursor.execute(query)
         return self.cursor.fetchall()
     

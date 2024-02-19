@@ -47,8 +47,12 @@ def widgets_list_files_in_folder(path, container):
     files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
     files_already_processed = get_dw_database_connection().get_list_of_files_already_processed()
-    files_already_processed = set([file[0] for file in files_already_processed])
-    
+    if files_already_processed != None:
+        files_already_processed = set([file[0] for file in files_already_processed])
+    else:
+        files_already_processed = set()
+        st.session_state['able_to_get_list_of_files'] = False
+
     with container:
         if files == []:
             st.markdown("*Nenhum arquivo encontrado*")
@@ -274,7 +278,7 @@ def widgets_show_last_runs_for_each_pipeline():
         st.error(f"Erro ao buscar informações dos runs, banco de dados indisponível")
         return
 
-    STATUS_TO_EMOJI = { 'FAILURE': ':x:', 'SUCCESS': ':white_check_mark:' }
+    STATUS_TO_EMOJI = { 'FAILURE': ':x:', 'SUCCESS': ':white_check_mark:', 'CANCELED': ':x:' }
 
     df_runs_info = pd.DataFrame(
         runs_info, 
@@ -353,6 +357,8 @@ for lab_lower in LABS:
     lab_folder_trash_container = st.expander(f":file_folder: {lab_lower}")
     widgets_list_files_in_folder( lab_trash_path, lab_folder_trash_container )
 
+if st.session_state['able_to_get_list_of_files'] == False:
+    st.warning(":warning: Erro ao buscar lista de já arquivos já processados")
 
 
 
