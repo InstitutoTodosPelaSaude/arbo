@@ -438,6 +438,11 @@ widgets_show_last_runs_for_each_pipeline()
 
 # Clear Cache
 st.divider()
-st.markdown("#### Utils")
-if st.button("Limpar Cache"):
+
+col_1, col_2, col_pad = st.columns([.2, .4, .4])
+
+if col_1.button("Clear Cache"):
     st.cache_resource.clear()
+
+if col_2.button("Rerun"):
+    st.rerun()
