@@ -54,6 +54,9 @@ class DagsterDatabaseInterface (PostgresqlDatabaseInterface):
             )
         return DagsterDatabaseInterface.__instance
     
+    def __init__(self, user, password, host, port, database):
+        super().__init__(user, password, host, port, database)
+
     def get_last_run_for_each_pipeline(self):
         query = """
             SELECT

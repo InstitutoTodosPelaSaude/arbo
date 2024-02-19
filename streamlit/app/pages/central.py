@@ -4,6 +4,7 @@ import time
 import pandas as pd
 
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 from pathlib import Path
 import sys
@@ -272,13 +273,16 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
 
 def widgets_show_last_runs_for_each_pipeline():
 
-    try:
-        runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
-    except Exception as e:
-        st.error(f"Erro ao buscar informações dos runs, banco de dados indisponível")
+    
+    runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
+    if runs_info == None:
+        st.error(f"Erro ao buscar informações dos runs.")
         return
 
-    STATUS_TO_EMOJI = { 'FAILURE': ':x:', 'SUCCESS': ':white_check_mark:', 'CANCELED': ':x:' }
+    STATUS_TO_EMOJI = defaultdict(lambda: ':question:')
+    STATUS_TO_EMOJI['FAILURE'] = ':x:'
+    STATUS_TO_EMOJI['SUCCESS'] = ':white_check_mark:'
+    STATUS_TO_EMOJI['CANCELED'] = ':x:'
 
     df_runs_info = pd.DataFrame(
         runs_info, 
