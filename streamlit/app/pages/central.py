@@ -28,10 +28,12 @@ from models.database import DWDatabaseInterface
 
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
+st.session_state['able_to_get_list_of_files'] = True
 
 @st.cache_resource
 def get_dagster_database_connection():
     return DagsterDatabaseInterface.get_instance()
+
 
 @st.cache_resource
 def get_dw_database_connection():
@@ -208,6 +210,7 @@ def widgets_add_lab_info(lab, container):
         lab_latest_date = lab_latest_date_dict[lab]
         st.markdown(f"Dados até {format_timestamp(lab_latest_date, False)}")
 
+
 def widgets_add_lab_epiweek_count_plot(lab, container):
 
     if lab in ['Matrices', 'Combined']:
@@ -273,7 +276,6 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
 
 def widgets_show_last_runs_for_each_pipeline():
 
-    
     runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
     if runs_info == None:
         st.error(f"Erro ao buscar informações dos runs.")
@@ -389,6 +391,7 @@ for lab in LABS:
     files_selected = widgets_list_files_in_folder_checkbox( lab_trash_path, lab_folder_trash_container )
     files_selected_in_trash += files_selected
 
+
 if trash_is_empty:
     st.markdown("*A lixeira está vazia :)*")
 
@@ -429,3 +432,12 @@ if files_selected_in_trash != []:
 st.divider()
 st.markdown("## :arrows_counterclockwise:  Última run")
 widgets_show_last_runs_for_each_pipeline()
+
+# Utils
+# =====
+
+# Clear Cache
+st.divider()
+st.markdown("#### Utils")
+if st.button("Limpar Cache"):
+    st.cache_resource.clear()

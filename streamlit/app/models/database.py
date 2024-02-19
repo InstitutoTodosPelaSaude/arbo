@@ -22,6 +22,7 @@ class PostgresqlDatabaseInterface(abc.ABC):
                 port=port,
                 database=database
             )
+            return True
         except OperationalError as e:
             pass
             return False
