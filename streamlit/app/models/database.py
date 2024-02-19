@@ -2,27 +2,15 @@ import psycopg2
 import os
 
 from psycopg2 import InterfaceError, OperationalError
+import abc
 
-class DagsterDatabaseInterface:
-
-    # define static method for singleton pattern
-    @staticmethod
-    def get_instance():
-        user = os.getenv("DB_DAGSTER_USER")
-        password = os.getenv("DB_DAGSTER_PASSWORD")
-        host = os.getenv("DB_DAGSTER_HOST")
-        port = os.getenv("DB_DAGSTER_PORT")
-        database = os.getenv("DB_DAGSTER_DATABASE")
-
-        if not hasattr(DagsterDatabaseInterface, "__instance"):
-            DagsterDatabaseInterface.__instance = DagsterDatabaseInterface( 
-                user, password, host, port, database 
-            )
-        return DagsterDatabaseInterface.__instance
-
+class PostgresqlDatabaseInterface(abc.ABC):
+    
     def __init__(self, user, password, host, port, database):
-        self.__connect_to_database(user, password, host, port, database)
-        self.cursor = self.connection.cursor()
+        if self.__connect_to_database(user, password, host, port, database):
+            self.cursor = self.connection.cursor()
+        else:
+            self.cursor = None
 
     def __connect_to_database(self, user, password, host, port, database):
 
@@ -38,18 +26,33 @@ class DagsterDatabaseInterface:
             pass
             return False
 
-    def __query(self, query):
-        try:
-            self.cursor.execute(query)
-            return self.cursor.fetchall()
-        except InterfaceError as e:
-            pass
-            return []
-        except OperationalError as e:
-            pass
-            return []
-
+    def query(self, query):
+        if self.cursor is None:
+            return None
         
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def __del__(self):
+        self.connection.close()
+
+
+class DagsterDatabaseInterface (PostgresqlDatabaseInterface):
+
+    # define static method for singleton pattern
+    @staticmethod
+    def get_instance():
+        user = os.getenv("DB_DAGSTER_USER")
+        password = os.getenv("DB_DAGSTER_PASSWORD")
+        host = os.getenv("DB_DAGSTER_HOST")
+        port = os.getenv("DB_DAGSTER_PORT")
+        database = os.getenv("DB_DAGSTER_DATABASE")
+
+        if not hasattr(DagsterDatabaseInterface, "__instance"):
+            DagsterDatabaseInterface.__instance = DagsterDatabaseInterface( 
+                user, password, host, port, database 
+            )
+        return DagsterDatabaseInterface.__instance
     
     def get_last_run_for_each_pipeline(self):
         query = """
@@ -85,14 +88,10 @@ class DagsterDatabaseInterface:
             WHERE row_num = 1
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
 
-    def __del__(self):
-        self.connection.close()
-
-
-class DWDatabaseInterface:
+class DWDatabaseInterface (PostgresqlDatabaseInterface):
 
     # define static method for singleton pattern
     @staticmethod
@@ -108,41 +107,17 @@ class DWDatabaseInterface:
                 user, password, host, port, database 
             )
         return DWDatabaseInterface.__instance
-
-    def __init__(self, user, password, host, port, database):
-        if self.__connect_to_database(user, password, host, port, database):
-            self.cursor = self.connection.cursor()
-        else:
-            self.cursor = None
-
-    def __connect_to_database(self, user, password, host, port, database):
-
-        try:
-            self.connection = psycopg2.connect(
-                user=user,
-                password=password,
-                host=host,
-                port=port,
-                database=database
-            )
-        except OperationalError as e:
-            pass
-            return False
-
-    def __query(self, query):
-        if self.cursor is None:
-            return None
-        
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
     
+    def __init__(self, user, password, host, port, database):
+        super().__init__(user, password, host, port, database)
+
     def get_list_of_files_already_processed(self):
         query = """
             SELECT DISTINCT LOWER(lab_id) || '/' || file_name AS file_path
             FROM "arboviroses"."combined_01_join_labs"
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_latest_date_of_lab_data(self):
@@ -152,7 +127,7 @@ class DWDatabaseInterface:
             GROUP BY lab_id
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_list_of_all_labs(self):
@@ -161,7 +136,7 @@ class DWDatabaseInterface:
             FROM "arboviroses"."combined_01_join_labs"
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_number_of_tests_per_lab_and_epiweek_in_this_year(self):
@@ -176,7 +151,7 @@ class DWDatabaseInterface:
             GROUP BY lab_id, epiweek_number
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_epiweek_number_of_latest_epiweeks(self):
@@ -192,7 +167,7 @@ class DWDatabaseInterface:
             AND CURRENT_DATE>=start_date
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_number_of_tests_per_lab_in_latest_epiweeks(self):
@@ -216,6 +191,3 @@ class DWDatabaseInterface:
                     lab_counts_by_epiweek[join_lab_and_epiweek(lab, epiweek)] = 0
 
         return lab_counts_by_epiweek
-
-    def __del__(self):
-        self.connection.close()
