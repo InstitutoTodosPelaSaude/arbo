@@ -200,6 +200,9 @@ def widgets_restore_file_from_trash(file):
 
 def widgets_add_lab_info(lab, container):
     lab_latest_date = get_dw_database_connection().get_latest_date_of_lab_data()
+    if lab_latest_date == None:
+        st.error(f"Erro ao buscar última data dos laboratórios.")
+        return
     lab_latest_date_dict = dict(lab_latest_date)
 
     lab = lab.upper()
@@ -218,6 +221,10 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
 
     lab = lab.upper()
     lab_epiweeks_count = get_dw_database_connection().get_number_of_tests_per_lab_in_latest_epiweeks()
+    if lab_epiweeks_count == None:
+        st.error(f"Erro ao buscar informações dos epiweeks")
+        return
+    
     lab_epiweeks_count = lab_epiweeks_count.items()
     lab_epiweeks_count = [ [*lab_epiweek.split('-'), count ] for lab_epiweek, count in lab_epiweeks_count ]
     lab_epiweeks_count_df = pd.DataFrame(lab_epiweeks_count, columns=['Lab', 'Epiweek', 'Count'])

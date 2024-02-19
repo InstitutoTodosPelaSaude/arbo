@@ -2,6 +2,7 @@ import psycopg2
 import os
 
 from psycopg2 import InterfaceError, OperationalError
+from psycopg2.errors import UndefinedTable, InFailedSqlTransaction
 import abc
 
 class PostgresqlDatabaseInterface(abc.ABC):
@@ -27,12 +28,31 @@ class PostgresqlDatabaseInterface(abc.ABC):
             pass
             return False
 
+    def __get_cursor(self):
+        try:
+            return self.connection.cursor()
+        except InterfaceError as e:
+            return None
+
     def query(self, query):
         if self.cursor is None:
             return None
         
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
+        if self.cursor.closed:
+            self.cursor = self.__get_cursor()
+
+        if self.cursor is None:
+            return None
+        
+        try: 
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except (UndefinedTable, InFailedSqlTransaction) as e:
+            return None
+        except InterfaceError as e:
+            # reconnect to database
+            self.cursor.close()
+            return None
 
     def __del__(self):
         self.connection.close()
@@ -177,6 +197,10 @@ class DWDatabaseInterface (PostgresqlDatabaseInterface):
     def get_number_of_tests_per_lab_in_latest_epiweeks(self):
         epiweeks = self.get_epiweek_number_of_latest_epiweeks()
         lab_counts_by_epiweek = self.get_number_of_tests_per_lab_and_epiweek_in_this_year()
+        
+        if lab_counts_by_epiweek is None:
+            return None
+        
         labs = self.get_list_of_all_labs()
         join_lab_and_epiweek = lambda lab, epiweek: f"{lab}-{epiweek:02d}"
 
