@@ -19,7 +19,8 @@ SELECT
     "Sexo" AS sex,
     "Descricao" AS exame,
     "Parametro" AS detalhe_exame,
-    "Resultado" AS result,
+    -- Normalize "Resultado"
+    UNACCENT(UPPER(TRIM("Resultado"))) AS result,
     -- "DataAssinatura", 
     "file_name"
 FROM source_data
