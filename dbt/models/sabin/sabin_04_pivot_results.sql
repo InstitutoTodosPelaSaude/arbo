@@ -20,7 +20,7 @@ SELECT
                 'DENGUEMIC',
                 'DENGIGM',
                 'DNS1',
-                'PCRDE',
+                'DENGUEMI',
                 'NS1ELISA',
                 'NS1IMUNOCRO'
             ], 
@@ -70,7 +70,9 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'MAYROVIGG',
+                'MAYVIGM',
+                'RESMAYARO'
             ], 
             'detalhe_exame', 
             'result', 
