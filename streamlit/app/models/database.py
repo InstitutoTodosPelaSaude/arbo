@@ -26,6 +26,7 @@ class DagsterDatabaseInterface:
             port=port,
             database=database
         )
+        self.connection.set_session(autocommit=True)
         
         self.cursor = self.connection.cursor()
 
@@ -99,6 +100,7 @@ class DWDatabaseInterface:
             port=port,
             database=database
         )
+        self.connection.set_session(autocommit=True)
         
         self.cursor = self.connection.cursor()
 
