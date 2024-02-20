@@ -34,7 +34,7 @@ SELECT
 
         ) AND exame ILIKE 'PCR para Zika, Chikungunya e Dengue'
         THEN 'arbo_pcr_3'
-
+        	
         WHEN detalhe_exame IN (
             -- Dengue IgG
             'DENGIGG', 'DENGUEGI',
@@ -71,7 +71,7 @@ SELECT
         -- PCR
         WHEN detalhe_exame IN (
             'PCRDE'
-        ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO VIRUS DENGUE '
+        ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO V_RUS DENGUE ' 
         THEN 'denv_pcr'
 
         WHEN detalhe_exame IN (
