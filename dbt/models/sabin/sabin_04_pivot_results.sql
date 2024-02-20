@@ -80,7 +80,7 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'DEVORO'
             ], 
             'detalhe_exame', 
             'result', 

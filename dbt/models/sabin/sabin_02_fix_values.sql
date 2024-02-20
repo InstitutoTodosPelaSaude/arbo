@@ -76,6 +76,10 @@ SELECT
             'ZIKAPCRBIO'
         ) THEN 'zika_pcr'
 
+        WHEN detalhe_exame IN (
+            'DEVORO'
+        ) THEN 'orov_pcr'
+
         ELSE 'UNKNOWN'
     END AS test_kit,
 
@@ -126,7 +130,6 @@ AND NOT result IN ('INDETERMINADO', '*')
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
         'ADOLFOLUTZPDF', 
-        'DEVORO',
         'RCHIKUNGMIMUNOG', 
         'RCHIKUGMIMUNOM'
     )
