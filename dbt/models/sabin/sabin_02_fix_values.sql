@@ -34,6 +34,7 @@ SELECT
 
         ) AND exame ILIKE 'PCR para Zika, Chikungunya e Dengue'
         THEN 'arbo_pcr_3'
+
         WHEN detalhe_exame IN (
             -- Dengue IgG
             'DENGIGG', 'DENGUEGI',
@@ -41,19 +42,24 @@ SELECT
             'ZIKAGINDICE',
             'ZIKAIGG2',
             -- Chikungunya IgG
-            'RCHIKUNGMELISAIGG'
-
+            'RCHIKUNGMELISAIGG',
+            -- Mayaro IgG
+            'MAYROVIGG'
         ) THEN 'igg_serum'
+
         WHEN detalhe_exame IN (
             -- Dengue IgM
             'DENGUEMELISA',
             'DENGUEMIC',
             'DENGIGM',
+            'DENGUEMI',
             -- Zika IgM
             'ZIKAM1',
             'ZIKAM2',
             -- Chikungunya IgM
-            'RCHIKUNGMELISAIGM'
+            'RCHIKUNGMELISAIGM',
+            -- Mayaro IgM
+            'MAYVIGM'
         ) THEN 'igm_serum'
         
         WHEN detalhe_exame IN (
@@ -79,6 +85,10 @@ SELECT
         WHEN detalhe_exame IN (
             'DEVORO'
         ) THEN 'orov_pcr'
+
+        WHEN detalhe_exame IN (
+            'RESMAYARO'
+        ) THEN 'mayv_pcr'
 
         ELSE 'UNKNOWN'
     END AS test_kit,
@@ -129,7 +139,13 @@ AND result IS NOT NULL
 AND NOT result IN ('INDETERMINADO', '*')
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
-        'ADOLFOLUTZPDF', 
-        'RCHIKUNGMIMUNOG', 
-        'RCHIKUGMIMUNOM'
+        'ADOLFOLUTZPDF',
+        
+        -- Redundância de exames Chikungunya ELISA IgM e IgG
+        'RCHIKUNGMIMUNOG',
+        'RCHIKUGMIMUNOM',
+        -- Febre Amarela (Yellow Fever)
+        'YF',
+        -- Febre do Nilo Ocidental
+        'FLAVIRUS'
     )
