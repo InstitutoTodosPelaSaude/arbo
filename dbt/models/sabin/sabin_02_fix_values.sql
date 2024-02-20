@@ -71,7 +71,7 @@ SELECT
         -- PCR
         WHEN detalhe_exame IN (
             'PCRDE'
-        ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO VÍRUS DENGUE '
+        ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO VIRUS DENGUE '
         THEN 'denv_pcr'
 
         WHEN detalhe_exame IN (
@@ -105,28 +105,46 @@ SELECT
     regexp_replace(upper(unaccent(state)), '[^\w\s]', '', 'g') AS state,
 
     CASE
-        WHEN result = 'Detectado (Presença do material genético do Vírus Chikungunya)' THEN 1
-        WHEN result = 'Detectado (Presença do material genético do Vírus Dengue)' THEN 1
-        WHEN result = 'NÃO DETECTADO RNA DO VÍRUS DA DENGUE' THEN 0
-        WHEN result = 'Não detectado (Ausência de material genético do vírus Chikungunya)' THEN 0
-        WHEN result = 'Não detectado (Ausência do material genético do Vírus Chikungunya)' THEN 0
-        WHEN result = 'Não detectado (Ausência do material genético do Vírus Dengue)' THEN 0
-        WHEN result = 'Não detectado (Ausência do material genético do Vírus Zika)' THEN 0
-        WHEN result = 'NÃO DETECTADO' THEN 0
-        WHEN result = 'DETECTÁVEL' THEN 1
-        WHEN result = 'NÃO REAGENTE' THEN 0
-        WHEN result = 'Negativo' THEN 0
-        WHEN result = 'Positivo' THEN 1
+
+        WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS DENGUE)' THEN 1
+        WHEN result = 'DETECTADO (PRESENCA DE MATERIAL GENETICO DO VIRUS DENGUE).' THEN 1
+        WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS ZIKA)' THEN 1
+        WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 1
+        WHEN result = 'NAO DETECTADO (AUSENCIA DE MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 0
+        WHEN result = 'NAO DETECTADO (AUSENCIA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 0
+        WHEN result = 'NAO DETECTADO (AUSENCIA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 0
+        WHEN result = 'NAO DETECTADO (AUSENCIA DO MATERIAL GENETICO DO VIRUS DENGUE)' THEN 0
+        WHEN result = 'NAO DETECTADO (AUSENCIA DO MATERIAL GENETICO DO VIRUS ZIKA)' THEN 0
+        WHEN result = 'NAO DETECTADO RNA DO VIRUS MAYARO' THEN 0
+        WHEN result = 'NAO DETECTADO RNA DO VIRUS DA DENGUE' THEN 0
+        
+        WHEN result = 'DETECTAVEL' THEN 1
+        WHEN result = 'INDETECTAVEL' THEN 0
+
+        WHEN result = 'NAO DETECTADO' THEN 0
+        WHEN result = 'NAO REAGENTE' THEN 0
+        
+        WHEN result = 'NEGATIVO' THEN 0
+        WHEN result = 'POSITIVO' THEN 1
+        
         WHEN result = 'REAGENTE' THEN 1
-        WHEN result = 'REAGENTE ' THEN 1
         WHEN result = 'REAGENTE 1:200' THEN 1
-        WHEN result = 'Reagente' THEN 1
+
         -- 9999 or 99,99 or 99.99
         WHEN result ~ '[0-9]+[,.]*[0-9]*' AND result ~ '^[0-9]' THEN
             CASE 
                 WHEN regexp_replace(result , ',' , '.')::FLOAT < 0.80 THEN 0
                 ELSE 1
             END
+
+        -- Historical data 2023
+        -- Avoid using this logic for new data
+        WHEN result = 'NAO REAGEN' THEN 0
+        WHEN result = 'NAO REAGENT' THEN 0
+        WHEN result = 'NAO RREAGENTE' THEN 0
+        WHEN result = 'REAGEN' THEN 1
+        WHEN result = 'REAGENTE3' THEN 1
+        
         ELSE -2 -- UNKNOWN
     END::FLOAT AS result,
 
@@ -136,7 +154,11 @@ SELECT
 FROM source_data
 WHERE not detalhe_exame in ('OBSGERALINTERNA', 'FEBREGLC', 'FEBREMLC')
 AND result IS NOT NULL
-AND NOT result IN ('INDETERMINADO', '*')
+AND NOT result IN (
+    'INDETERMINADO', 
+    '*', 
+    'E'
+)
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
         'ADOLFOLUTZPDF',
