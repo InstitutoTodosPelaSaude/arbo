@@ -1,5 +1,24 @@
-version: 2
+version: 3
 
+CommonColumns: &commoncolumns
+  - name: sample_id
+    description: '{{ doc("sample_id") }}'
+  - name: date_testing
+    description: '{{ doc("date_testing") }}'
+  - name: file_name
+    description: '{{ doc("file_name") }}'
+  - name: sex
+    description: '{{ doc("sex") }}'
+  - name: age
+    description: '{{ doc("age") }}'
+  - name: test_id
+    description: '{{ doc("test_id") }}'
+  - name: location
+    description: '{{ doc("location") }}'
+  - name: state
+    description: '{{ doc("state") }}'
+
+  
 sources:
   - name: dagster
     description: Raw data from Einstein
@@ -35,16 +54,18 @@ sources:
 models:
   - name: einstein_02_fix_values
     description: Fix values and add the sample_id column in the raw table
-    columns:
-      - name: sex
-      - name: age
+    columns: 
+        <<: *commoncolumns
+      - name: detalhe_exame
+        description: '{{ doc("detalhe_exame") }}'
       - name: test_kit
+        description: '{{ doc("test_kit") }}'
         tests:
           - not_null
           - accepted_values:
               values: ['arbo_pcr_3', 'igg_serum', 'igm_serum', 'ns1_antigen']
-      
       - name: result
+        description: '{{ doc("result") }}'
         tests:
           - not_null
           - accepted_values:
@@ -52,14 +73,33 @@ models:
 
   - name: einstein_03_pivot_results
     description: '{{ doc("pivot_results") }}'
+    columns:
+      - name: DENV_test_result
+        description: '{{ doc("DENV_test_result_pivot") }}'
+      - name: ZIKV_test_result
+        description: '{{ doc("ZIKV_test_result_pivot") }}'
+      - name: CHIKV_test_result
+        description: '{{ doc("CHIKV_test_result_pivot") }}'
+      - name: YFV_test_result
+        description: '{{ doc("YFV_test_result_pivot") }}'
+      - name: MAYV_test_result
+        description: '{{ doc("MAYV_test_result_pivot") }}'
+      - name: OROV_test_result
+        description: '{{ doc("OROV_test_result_pivot") }}'
+      - name: WNV_test_result
+        description: '{{ doc("WNV_test_result_pivot") }}'
 
   - name: einstein_04_fill_results
     description: '{{ doc("fill_results") }}'
+    columns:
+      - name: qty_original_lines
+        description: The number of lines in the original file that generated a line in this table. It can be used to check if the pivot was done correctly.
 
   - name: einstein_05_deduplicate
     description: Deduplicate columns using the sample_id
     columns:
       - name: sample_id
+        description: The ID of the sample. It is generated using a hash of test_id+detalhe_exame+exame.
         tests:
           - unique
 

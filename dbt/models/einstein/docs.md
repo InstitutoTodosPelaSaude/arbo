@@ -62,3 +62,73 @@ Final table:
 Raw table from Einstein Lab. Exactly as it was received.
 
 {% enddocs %}
+
+
+
+{% docs sample_id %}
+    The ID of the sample. It is generated using a hash of test_id+detalhe_exame+exame.
+{% enddocs %}
+
+{% docs date_testing %}
+    Date of the sample collection.
+{% enddocs %}
+
+{% docs file_name %}
+    The name of the file where the sample was collected.
+{% enddocs %}
+
+{% docs sex %}
+    Gender of the patient. Values M, F. Optional
+{% enddocs %}
+
+{% docs age %}
+    Age of the patient. Values between 0 and 120. Optional
+{% enddocs %}
+
+{% docs test_kit %}
+    The name of the test performed.
+{% enddocs %}
+
+{% docs result %}
+    The result of the test. Values 0, 1.
+{% enddocs %}
+
+{% docs test_id %}
+    Original ID of the test assigned by the lab.
+{% enddocs %}
+
+{% docs location %}
+    The city where the sample was collected.
+{% enddocs %}
+
+{% docs state %}
+    The UF where the sample was collected.
+{% enddocs %}
+
+{% docs detalhe_exame %}
+    Extra information about the test. Used to generate the sample_id and determine the test_kit.
+{% enddocs %}
+
+
+{% docs DENV_test_result_pivot %}
+    Test result for Dengue virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+{% docs ZIKV_test_result_pivot %}
+    Test result for Zika virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+{% docs CHIKV_test_result_pivot %}
+    Test result for Chikungunya virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+{% docs YFV_test_result_pivot %}
+    Test result for Yellow Fever virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+{% docs MAYV_test_result_pivot %}
+    Test result for Mayaro virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+{% docs OROV_test_result_pivot %}
+    Test result for Oropouche virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+{% docs WNV_test_result_pivot %}
+    Test result for West Nile virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+
