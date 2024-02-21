@@ -105,6 +105,10 @@ Raw table from Einstein Lab. Exactly as it was received.
     The UF where the sample was collected.
 {% enddocs %}
 
+{% docs exame %}
+    Information about the test. Used to generate the sample_id and determine the test_kit.
+{% enddocs %}
+
 {% docs detalhe_exame %}
     Extra information about the test. Used to generate the sample_id and determine the test_kit.
 {% enddocs %}
@@ -130,5 +134,28 @@ Raw table from Einstein Lab. Exactly as it was received.
 {% enddocs %}
 {% docs WNV_test_result_pivot %}
     Test result for West Nile virus. Values 0 (negative), 1 (positive) or -1 (not tested). 
+{% enddocs %}
+
+
+{% docs DENV_test_result %}
+    Test result for Dengue virus. Values Neg, Pos or NT. . 
+{% enddocs %}
+{% docs ZIKV_test_result %}
+    Test result for Zika virus. Values Neg, Pos or NT. . 
+{% enddocs %}
+{% docs CHIKV_test_result %}
+    Test result for Chikungunya virus. Values Neg, Pos or NT. . 
+{% enddocs %}
+{% docs YFV_test_result %}
+    Test result for Yellow Fever virus. Values Neg, Pos or NT. . 
+{% enddocs %}
+{% docs MAYV_test_result %}
+    Test result for Mayaro virus. Values Neg, Pos or NT. . 
+{% enddocs %}
+{% docs OROV_test_result %}
+    Test result for Oropouche virus. Values Neg, Pos or NT. . 
+{% enddocs %}
+{% docs WNV_test_result %}
+    Test result for West Nile virus. Values Neg, Pos or NT. . 
 {% enddocs %}
 
