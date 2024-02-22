@@ -170,5 +170,9 @@ AND NOT detalhe_exame IN (
         -- Febre Amarela (Yellow Fever)
         'YF',
         -- Febre do Nilo Ocidental
-        'FLAVIRUS'
+        'FLAVIRUS',
+
+        -- TODO: Usar os exames abaixo
+        'CHIKUNGMIMUN',
+        'CHIKUNGGIMUN'
     )
