@@ -30,20 +30,58 @@ ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 
 @st.cache_resource
 def get_dagster_database_connection():
+    """
+    Get the connection to the Dagster database.
+
+    Returns:
+        DagsterDatabaseInterface: The connection to the Dagster database.
+    """
     return DagsterDatabaseInterface.get_instance()
 
 @st.cache_resource
 def get_dw_database_connection():
+    """
+    Get the connection to the Data Warehouse where the processed data is stored.
+    
+    Returns:
+        DWDatabaseInterface: The connection to the Data Warehouse.
+    """
     return DWDatabaseInterface.get_instance()
 
 
 def format_timestamp(timestamp, include_hour=True):
+    """
+    Format a timestamp to a string.
+    Two formats are available:
+    - If include_hour is True, the format is "dd mmm HH:MM"
+    - If include_hour is False, the format is "dd mmm"
+
+    This function is used to format the timestamp in a more human-readable way.
+
+    Args:
+        timestamp (datetime.datetime): The timestamp to format.
+        include_hour (bool, optional): If the hour is included in the final string. Defaults to True.
+
+    Returns:
+        str: The formatted timestamp.
+    """
     if include_hour:
         return timestamp.strftime("%d %b %H:%M")
     return timestamp.strftime("%d %b")
 
 
 def widgets_list_files_in_folder(path, container):
+    """
+    Get the list of files in a folder and display them in the Streamlit app.
+
+    Args:
+        path (str): The path to the folder.
+        container (streamlit.container): The container to display the widgets.
+
+    Returns:
+        list[str]: The list of files in the folder.
+    """
+
     files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
     files_already_processed = get_dw_database_connection().get_list_of_files_already_processed()
@@ -79,6 +117,16 @@ def widgets_list_files_in_folder(path, container):
 
 
 def widgets_list_files_in_folder_checkbox(path, container):
+    """
+    Displays a list of files in the folder and adds a checkbox to each file.
+
+    Args:
+        path (str): The path to the folder.
+        container (streamlit.container): The container to display the widgets.
+
+    Returns:
+        list[str]: The list of files selected by the user.
+    """
 
     files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
@@ -102,6 +150,14 @@ def widgets_list_files_in_folder_checkbox(path, container):
 
 
 def widgets_download_files_in_folder(path, container):
+    """
+    List the files in a folder with a download button.
+    Also adds a button to download everything as a zip file.
+
+    Args:
+        path (str): The path to the folder.
+        container (streamlit.container): The container to display the widgets.
+    """
     
     path = os.path.join("/data", path)
     file_content_list = read_all_files_in_folder_as_df(path, ACCEPTED_EXTENSIONS)
@@ -138,8 +194,14 @@ def widgets_download_files_in_folder(path, container):
 
 
 def widgets_upload_file(selected_lab):
-    # Upload file to the server
-    # =========================
+    """
+    Adds the file uploader widget for a specific lab.
+    The uploaded files are saved in the lab folder.
+    
+    Args:
+        selected_lab (str): The selected lab.
+    """
+    
     uploaded_files = st.file_uploader(
         "Selecione os arquivos", 
         accept_multiple_files = True,
@@ -166,6 +228,13 @@ def widgets_upload_file(selected_lab):
 
 
 def widgets_confirm_file_deletion():
+    """
+    Adds a text input to confirm the file deletion.
+    Used to avoid accidental deletions.
+
+    Returns:
+        bool: True if the user confirmed the deletion, False otherwise.
+    """
     CONFIRMATION_TEXT = "DELETAR"
 
     user_text_input_delete_file = st.text_input(F"Deseja excluir os arquivos? Digite **{CONFIRMATION_TEXT}** para confirmar")
@@ -175,6 +244,12 @@ def widgets_confirm_file_deletion():
 
 
 def widgets_delete_file_permanently(file):
+    """
+    Calls the delete_file_permanently function and displays a toast message with the result.
+
+    Args:
+        file (file): The file to delete.
+    """
     if delete_file_permanently(file):
         st.toast(f"Arquivo {file.split('/')[-1]} excluído permanentemente")
     else:
@@ -182,16 +257,36 @@ def widgets_delete_file_permanently(file):
     
 
 def widgets_delete_file_from_folder(path, filename):
+    """
+    Calls the delete_file_from_folder function and displays a toast message with the result.
+
+    Args:
+        path (str): The path to the folder.
+        filename (str): The name of the file to delete.
+    """
     delete_file_from_folder(path, filename)
     st.toast(f"Arquivo {filename} movido para a lixeira")
 
 
 def widgets_restore_file_from_trash(file):
+    """
+    Calls the restore_file_from_trash function and displays a toast message with the result.
+
+    Args:
+        file (str): The file to restore.
+    """
     restore_file_from_trash(file)
     st.toast(f"Arquivo {file.split('/')[-1]} restaurado")
 
 
 def widgets_add_lab_info(lab, container):
+    """
+    Adds the date of the most recent record in the lab data.
+
+    Args:
+        lab (str): The lab name.
+        container (streamlit.container): The container to display the information.
+    """
     lab_latest_date = get_dw_database_connection().get_latest_date_of_lab_data()
     lab_latest_date_dict = dict(lab_latest_date)
 
@@ -203,7 +298,15 @@ def widgets_add_lab_info(lab, container):
         lab_latest_date = lab_latest_date_dict[lab]
         st.markdown(f"Dados até {format_timestamp(lab_latest_date, False)}")
 
+
 def widgets_add_lab_epiweek_count_plot(lab, container):
+    """
+    Adds a bar plot with the number of tests per epiweek for a specific lab.
+
+    Args:
+        lab (str): The lab name.
+        container (streamlit.container): The container to display the plot.
+    """
 
     if lab in ['Matrices', 'Combined']:
         return
@@ -267,6 +370,11 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
 
 
 def widgets_show_last_runs_for_each_pipeline():
+    """
+    Create cards showing information about the last run for each pipeline (labs + matrices + combined)
+    with the status and the start timestamp.
+    For labs, also add the latest date of the data and a bar plot with the number of tests per epiweek. 
+    """
 
     try:
         runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
