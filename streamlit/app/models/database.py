@@ -28,15 +28,14 @@ class DagsterDatabaseInterface:
 
     def __init__(self, user, password, host, port, database):
         """
-        Initialize the class.
-        Currently, it connects to a PostgreSQL database.
+        Initializes a Database object and establishes a connection to the PostgreSQL database.
 
         Args:
-            user (str): Database user.
-            password (str): Database password.
-            host (str): Database host.
-            port (str): Database port.
-            database (str): Database name.
+            user (str): The username for the database connection.
+            password (str): The password for the database connection.
+            host (str): The host address of the database server.
+            port (int): The port number of the database server.
+            database (str): The name of the database to connect to.
         """
         self.connection = psycopg2.connect(
             user=user,
@@ -50,25 +49,25 @@ class DagsterDatabaseInterface:
         self.cursor = self.connection.cursor()
 
     def __query(self, query):
-            """
-            Executes the given SQL query and returns the result.
+        """
+        Executes the given SQL query and returns the result.
 
-            Args:
-                query (str): The SQL query to execute.
+        Args:
+            query (str): The SQL query to execute.
 
-            Returns:
-                list: The result of the query as a list of tuples.
-            """
-            self.cursor.execute(query)
-            return self.cursor.fetchall()
+        Returns:
+            list: The result of the query as a list of tuples.
+        """
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
     
     def get_last_run_for_each_pipeline(self):
         """
         Retrieves the last run for each pipeline from the logs table.
 
         Returns:
-            records (list): A list of dictionaries containing the details of the last run for each pipeline. Each dictionary
-            contains the following keys:
+            records (list): A list of tuples containing the details of the last run for each pipeline. Each tuple
+            contains the following values:
                 - "run_id" (str): The ID of the run.
                 - "pipeline" (str): The name of the pipeline.
                 - "status" (str): The status of the run.
@@ -120,6 +119,15 @@ class DWDatabaseInterface:
     # define static method for singleton pattern
     @staticmethod
     def get_instance():
+        """
+        Returns the instance of the DWDatabaseInterface class.
+
+        This method follows the singleton design pattern to ensure that only one instance of the
+        DWDatabaseInterface class is created and returned.
+
+        Returns:
+            DWDatabaseInterface: The instance of the DWDatabaseInterface class.
+        """
         user = os.getenv("DB_USER")
         password = os.getenv("DB_PASSWORD")
         host = os.getenv("DB_HOST")
@@ -133,6 +141,16 @@ class DWDatabaseInterface:
         return DWDatabaseInterface.__instance
 
     def __init__(self, user, password, host, port, database):
+        """
+        Initializes a Database object and establishes a connection to the PostgreSQL database.
+
+        Args:
+            user (str): The username for the database connection.
+            password (str): The password for the database connection.
+            host (str): The host address of the database server.
+            port (int): The port number of the database server.
+            database (str): The name of the database to connect to.
+        """
         self.connection = psycopg2.connect(
             user=user,
             password=password,
@@ -145,10 +163,27 @@ class DWDatabaseInterface:
         self.cursor = self.connection.cursor()
 
     def __query(self, query):
+        """
+        Executes the given SQL query and returns the result.
+
+        Args:
+            query (str): The SQL query to execute.
+
+        Returns:
+            list: The result of the query as a list of tuples.
+        """
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
     def get_list_of_files_already_processed(self):
+        """
+        Retrieves the list of files that have already been processed.
+
+        Returns:
+            records (list): A list of tuples containing the details of the processed files. Each tuple
+            contains the following values:
+                - "file_path" (str): The path of the processed file.
+        """
         query = """
             SELECT DISTINCT LOWER(lab_id) || '/' || file_name AS file_path
             FROM "arboviroses"."combined_01_join_labs"
@@ -158,6 +193,16 @@ class DWDatabaseInterface:
         return records
     
     def get_latest_date_of_lab_data(self):
+        """
+        Retrieves the date of the latest record for each lab.
+        Used how recent the data is for each lab.
+
+        Returns:
+            records (list): A list of tuples containing the details of the latest lab data for each lab. Each tuple
+            contains the following values:
+                - "lab_id" (str): The ID/name of the lab.
+                - "last_date" (datetime): The latest date of lab data.
+        """
         query = """
             SELECT lab_id, MAX(date_testing) AS last_date
             FROM "arboviroses"."combined_01_join_labs"
@@ -168,6 +213,14 @@ class DWDatabaseInterface:
         return records
     
     def get_list_of_all_labs(self):
+        """
+        Retrieves the list of all labs.
+
+        Returns:
+            records (list): A list of tuples containing the details of the labs. Each tuple
+            contains the following values:
+                - "lab_id" (str): The ID/name of the lab.
+        """
         query = """
             SELECT DISTINCT lab_id
             FROM "arboviroses"."combined_01_join_labs"
@@ -177,6 +230,16 @@ class DWDatabaseInterface:
         return records
     
     def get_number_of_tests_per_lab_and_epiweek_in_this_year(self):
+        """
+        Retrieves the number of tests per lab and epiweek in the current year.
+
+        Returns:
+            records (list): A list of tuples containing the details of the number of tests. Each tuple
+            contains the following values:
+                - "lab_id" (str): The ID/name of the lab.
+                - "epiweek_number" (int): The epiweek number.
+                - "test_count" (int): The number of tests.
+        """
         query = """
             SELECT
                 lab_id, 
@@ -192,6 +255,14 @@ class DWDatabaseInterface:
         return records
     
     def get_epiweek_number_of_latest_epiweeks(self):
+        """
+        Retrieves the epiweek numbers of the latest 5 epiweeks in the current year.
+
+        Returns:
+            records (list): A list of tuples containing the epiweek numbers of the latest epiweeks. Each tuple
+            contains the following values:
+                - "epiweek_number" (int): The epiweek number.
+        """
         query = """
             SELECT 
                 unnest(
@@ -208,6 +279,13 @@ class DWDatabaseInterface:
         return records
     
     def get_number_of_tests_per_lab_in_latest_epiweeks(self):
+        """
+        Retrieves the number of tests per lab in the latest epiweeks.
+
+        Returns:
+            records (dict): A dictionary containing the number of tests per lab in the latest epiweeks. The keys
+            are strings in the format "lab-epiweek" (ex. SABIN-21) and the values are the corresponding test counts.
+        """
         epiweeks = self.get_epiweek_number_of_latest_epiweeks()
         lab_counts_by_epiweek = self.get_number_of_tests_per_lab_and_epiweek_in_this_year()
         labs = self.get_list_of_all_labs()
