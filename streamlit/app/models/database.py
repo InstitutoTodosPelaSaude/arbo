@@ -2,10 +2,18 @@ import psycopg2
 import os
 
 class DagsterDatabaseInterface:
+    """
+    Class to interact with the Dagster database.
+    """
 
-    # define static method for singleton pattern
     @staticmethod
     def get_instance():
+        """
+        Singleton pattern to get the instance of the class.
+
+        Returns:
+            DagsterDatabaseInterface: The instance of the class.
+        """
         user = os.getenv("DB_DAGSTER_USER")
         password = os.getenv("DB_DAGSTER_PASSWORD")
         host = os.getenv("DB_DAGSTER_HOST")
@@ -19,6 +27,17 @@ class DagsterDatabaseInterface:
         return DagsterDatabaseInterface.__instance
 
     def __init__(self, user, password, host, port, database):
+        """
+        Initialize the class.
+        Currently, it connects to a PostgreSQL database.
+
+        Args:
+            user (str): Database user.
+            password (str): Database password.
+            host (str): Database host.
+            port (str): Database port.
+            database (str): Database name.
+        """
         self.connection = psycopg2.connect(
             user=user,
             password=password,
@@ -31,10 +50,31 @@ class DagsterDatabaseInterface:
         self.cursor = self.connection.cursor()
 
     def __query(self, query):
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
+            """
+            Executes the given SQL query and returns the result.
+
+            Args:
+                query (str): The SQL query to execute.
+
+            Returns:
+                list: The result of the query as a list of tuples.
+            """
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
     
     def get_last_run_for_each_pipeline(self):
+        """
+        Retrieves the last run for each pipeline from the logs table.
+
+        Returns:
+            records (list): A list of dictionaries containing the details of the last run for each pipeline. Each dictionary
+            contains the following keys:
+                - "run_id" (str): The ID of the run.
+                - "pipeline" (str): The name of the pipeline.
+                - "status" (str): The status of the run.
+                - "start_timestamp" (datetime): The start timestamp of the run.
+                - "end_timestamp" (datetime): The end timestamp of the run.
+        """
         query = """
             SELECT
                 "run_id",
