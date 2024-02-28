@@ -22,7 +22,8 @@ SELECT
                 'DNS1',
                 'DENGUEMI',
                 'NS1ELISA',
-                'NS1IMUNOCRO'
+                'NS1IMUNOCRO',
+                'PCRDECT'
             ], 
             'detalhe_exame', 
             'result', 
@@ -50,7 +51,8 @@ SELECT
                 'PCRCHIK',
                 'RCHIKUNGMELISAIGG',
                 'RCHIKUNGMELISAIGM',
-                'CHIKVPCR-BIOMOL'
+                'CHIKVPCR-BIOMOL',
+                'PCRCHIKCT'
             ], 
             'detalhe_exame', 
             'result', 
