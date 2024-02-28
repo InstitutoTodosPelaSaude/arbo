@@ -30,8 +30,9 @@ SELECT
     -- test_kit
     CASE
         WHEN detalhe_exame IN (
-            'PCRCHIK', 'PCRDE', 'VIRUSZICA'
+            'PCRCHIK', 'PCRDE', 'VIRUSZICA',
 
+            'PCRDECT', 'PCRCHIKCT'
         ) AND exame ILIKE 'PCR para Zika, Chikungunya e Dengue'
         THEN 'arbo_pcr_3'
         	
@@ -70,7 +71,8 @@ SELECT
 
         -- PCR
         WHEN detalhe_exame IN (
-            'PCRDE'
+            'PCRDE', 
+            'PCRDECT'
         ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO V_RUS DENGUE ' 
         THEN 'denv_pcr'
 
@@ -108,6 +110,7 @@ SELECT
 
         WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS DENGUE)' THEN 1
         WHEN result = 'DETECTADO (PRESENCA DE MATERIAL GENETICO DO VIRUS DENGUE).' THEN 1
+        WHEN result = 'PRESENCA DE MATERIAL GENETICO DO VIRUS DENGUE.' THEN 1
         WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS ZIKA)' THEN 1
         WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 1
 
@@ -172,7 +175,7 @@ AND NOT detalhe_exame IN (
         -- Febre do Nilo Ocidental
         'FLAVIRUS',
 
-        -- TODO: Usar os exames abaixo
+        -- Redundância de exames
         'CHIKUNGMIMUN',
         'CHIKUNGGIMUN'
     )
