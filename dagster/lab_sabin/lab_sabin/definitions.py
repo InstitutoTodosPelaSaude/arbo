@@ -9,7 +9,8 @@ from .assets import (
     sabin_convert_xlsx_to_csv,
     sabin_remove_used_files,
     sabin_all_assets_job,
-    new_sabin_file_sensor
+    new_sabin_file_sensor,
+    sabin_slack_failure_sensor
 )
 from .constants import dbt_project_dir
 from .schedules import schedules
@@ -21,5 +22,5 @@ defs = Definitions(
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
     },
     jobs=[sabin_all_assets_job],
-    sensors=[new_sabin_file_sensor]
+    sensors=[new_sabin_file_sensor, sabin_slack_failure_sensor]
 )
