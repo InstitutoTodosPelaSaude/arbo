@@ -9,7 +9,7 @@ from .assets import (
     hlagyn_remove_used_files,
     hlagyn_all_assets_job,
     new_hlagyn_file_sensor,
-    hlahyn_slack_failure_sensor
+    hlagyn_slack_failure_sensor
 )
 from .constants import dbt_project_dir
 from .schedules import schedules
@@ -21,5 +21,5 @@ defs = Definitions(
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
     },
     jobs=[hlagyn_all_assets_job],
-    sensors=[new_hlagyn_file_sensor, hlahyn_slack_failure_sensor],
+    sensors=[new_hlagyn_file_sensor, hlagyn_slack_failure_sensor],
 )
