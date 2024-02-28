@@ -138,7 +138,7 @@ def new_hlagyn_file_sensor(context: SensorEvaluationContext):
         yield SkipReason(f"There are files in the hlagyn folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")
 
 # Failure sensor that sends a message to slack
-hlahyn_slack_failure_sensor = make_slack_on_run_failure_sensor(
+hlagyn_slack_failure_sensor = make_slack_on_run_failure_sensor(
     monitored_jobs=[hlagyn_all_assets_job],
     slack_token=DAGSTER_SLACK_BOT_TOKEN,
     channel=DAGSTER_SLACK_BOT_CHANNEL,
