@@ -18,5 +18,5 @@ defs = Definitions(
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
     },
     jobs=[matrices_all_assets_job],
-    sensors=[run_matrices_sensor]
+    sensors=[run_matrices_sensor, matrices_slack_failure_sensor]
 )
