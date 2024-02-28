@@ -8,7 +8,8 @@ from .assets import (
     einstein_raw,
     einstein_remove_used_files,
     einstein_all_assets_job,
-    new_einstein_file_sensor
+    new_einstein_file_sensor,
+    einstein_slack_failure_sensor
 )
 from .constants import dbt_project_dir
 from .schedules import schedules
@@ -20,5 +21,5 @@ defs = Definitions(
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
     },
     jobs=[einstein_all_assets_job],
-    sensors=[new_einstein_file_sensor],
+    sensors=[new_einstein_file_sensor, einstein_slack_failure_sensor],
 )
