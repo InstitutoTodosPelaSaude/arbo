@@ -18,6 +18,7 @@ from dagster_dbt import (
 )
 from dagster.core.storage.pipeline_run import RunsFilter
 from dagster.core.storage.dagster_run import FINISHED_STATUSES
+from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
 import pathlib
@@ -33,6 +34,8 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
+DAGSTER_SLACK_BOT_TOKEN = os.getenv('DAGSTER_SLACK_BOT_TOKEN')
+DAGSTER_SLACK_BOT_CHANNEL = os.getenv('DAGSTER_SLACK_BOT_CHANNEL')
 
 dagster_dbt_translator = DagsterDbtTranslator(
     settings=DagsterDbtTranslatorSettings(enable_asset_checks=True)
@@ -170,3 +173,12 @@ def run_matrices_sensor(context: SensorEvaluationContext):
         return SkipReason(f"Last run status is {last_run_status}")
 
     return RunRequest()
+
+# Failure sensor that sends a message to slack
+matrices_slack_failure_sensor = make_slack_on_run_failure_sensor(
+    monitored_jobs=[matrices_all_assets_job],
+    slack_token=DAGSTER_SLACK_BOT_TOKEN,
+    channel=DAGSTER_SLACK_BOT_CHANNEL,
+    default_status=DefaultSensorStatus.RUNNING,
+    text_fn = lambda context: f"MATRICES JOB FAILED: {context.failure_event.message}"
+)
