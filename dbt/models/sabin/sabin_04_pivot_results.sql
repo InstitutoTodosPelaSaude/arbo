@@ -20,9 +20,10 @@ SELECT
                 'DENGUEMIC',
                 'DENGIGM',
                 'DNS1',
-                'PCRDE',
+                'DENGUEMI',
                 'NS1ELISA',
-                'NS1IMUNOCRO'
+                'NS1IMUNOCRO',
+                'PCRDECT'
             ], 
             'detalhe_exame', 
             'result', 
@@ -50,7 +51,8 @@ SELECT
                 'PCRCHIK',
                 'RCHIKUNGMELISAIGG',
                 'RCHIKUNGMELISAIGM',
-                'CHIKVPCR-BIOMOL'
+                'CHIKVPCR-BIOMOL',
+                'PCRCHIKCT'
             ], 
             'detalhe_exame', 
             'result', 
@@ -70,7 +72,9 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'MAYROVIGG',
+                'MAYVIGM',
+                'RESMAYARO'
             ], 
             'detalhe_exame', 
             'result', 
@@ -80,7 +84,7 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'DEVORO'
             ], 
             'detalhe_exame', 
             'result', 

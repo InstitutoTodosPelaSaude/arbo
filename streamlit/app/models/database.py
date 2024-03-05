@@ -23,6 +23,7 @@ class PostgresqlDatabaseInterface(abc.ABC):
                 port=port,
                 database=database
             )
+            self.connection.set_session(autocommit=True)
             return True
         except OperationalError as e:
             pass
