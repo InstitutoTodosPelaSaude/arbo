@@ -21,5 +21,5 @@ SELECT
     file_name
 FROM source_data
 WHERE 
-    "Exame" NOT IN ('Influenza A', 'Influenza B', 'Covid-19 Antígeno') AND
+    "Exame" NOT IN ('Influenza A', 'Influenza B', 'Covid-19 Antígeno', 'IgG', 'IgM') AND
     "Resultado" NOT IN ('Inválido')
