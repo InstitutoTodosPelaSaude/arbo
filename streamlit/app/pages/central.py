@@ -4,6 +4,7 @@ import time
 import pandas as pd
 
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 from pathlib import Path
 import sys
@@ -27,10 +28,12 @@ from models.database import DWDatabaseInterface
 
 LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
+st.session_state['able_to_get_list_of_files'] = True
 
 @st.cache_resource
 def get_dagster_database_connection():
     return DagsterDatabaseInterface.get_instance()
+
 
 @st.cache_resource
 def get_dw_database_connection():
@@ -47,8 +50,12 @@ def widgets_list_files_in_folder(path, container):
     files = list_files_in_folder(path, ACCEPTED_EXTENSIONS)
 
     files_already_processed = get_dw_database_connection().get_list_of_files_already_processed()
-    files_already_processed = set([file[0] for file in files_already_processed])
-    
+    if files_already_processed != None:
+        files_already_processed = set([file[0] for file in files_already_processed])
+    else:
+        files_already_processed = set()
+        st.session_state['able_to_get_list_of_files'] = False
+
     with container:
         if files == []:
             st.markdown("*Nenhum arquivo encontrado*")
@@ -193,6 +200,9 @@ def widgets_restore_file_from_trash(file):
 
 def widgets_add_lab_info(lab, container):
     lab_latest_date = get_dw_database_connection().get_latest_date_of_lab_data()
+    if lab_latest_date == None:
+        st.error(f"Erro ao buscar última data dos laboratórios.")
+        return
     lab_latest_date_dict = dict(lab_latest_date)
 
     lab = lab.upper()
@@ -203,6 +213,7 @@ def widgets_add_lab_info(lab, container):
         lab_latest_date = lab_latest_date_dict[lab]
         st.markdown(f"Dados até {format_timestamp(lab_latest_date, False)}")
 
+
 def widgets_add_lab_epiweek_count_plot(lab, container):
 
     if lab in ['Matrices', 'Combined']:
@@ -210,6 +221,10 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
 
     lab = lab.upper()
     lab_epiweeks_count = get_dw_database_connection().get_number_of_tests_per_lab_in_latest_epiweeks()
+    if lab_epiweeks_count == None:
+        st.error(f"Erro ao buscar informações dos epiweeks")
+        return
+    
     lab_epiweeks_count = lab_epiweeks_count.items()
     lab_epiweeks_count = [ [*lab_epiweek.split('-'), count ] for lab_epiweek, count in lab_epiweeks_count ]
     lab_epiweeks_count_df = pd.DataFrame(lab_epiweeks_count, columns=['Lab', 'Epiweek', 'Count'])
@@ -268,13 +283,15 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
 
 def widgets_show_last_runs_for_each_pipeline():
 
-    try:
-        runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
-    except Exception as e:
-        st.error(f"Erro ao buscar informações dos runs, banco de dados indisponível")
+    runs_info = get_dagster_database_connection().get_last_run_for_each_pipeline()
+    if runs_info == None:
+        st.error(f"Erro ao buscar informações dos runs.")
         return
 
-    STATUS_TO_EMOJI = { 'FAILURE': ':x:', 'SUCCESS': ':white_check_mark:' }
+    STATUS_TO_EMOJI = defaultdict(lambda: ':question:')
+    STATUS_TO_EMOJI['FAILURE'] = ':x:'
+    STATUS_TO_EMOJI['SUCCESS'] = ':white_check_mark:'
+    STATUS_TO_EMOJI['CANCELED'] = ':x:'
 
     df_runs_info = pd.DataFrame(
         runs_info, 
@@ -353,6 +370,8 @@ for lab_lower in LABS:
     lab_folder_trash_container = st.expander(f":file_folder: {lab_lower}")
     widgets_list_files_in_folder( lab_trash_path, lab_folder_trash_container )
 
+if st.session_state['able_to_get_list_of_files'] == False:
+    st.warning(":warning: Erro ao buscar lista de já arquivos já processados")
 
 
 
@@ -378,6 +397,7 @@ for lab in LABS:
 
     files_selected = widgets_list_files_in_folder_checkbox( lab_trash_path, lab_folder_trash_container )
     files_selected_in_trash += files_selected
+
 
 if trash_is_empty:
     st.markdown("*A lixeira está vazia :)*")
@@ -419,3 +439,17 @@ if files_selected_in_trash != []:
 st.divider()
 st.markdown("## :arrows_counterclockwise:  Última run")
 widgets_show_last_runs_for_each_pipeline()
+
+# Utils
+# =====
+
+# Clear Cache
+st.divider()
+
+col_1, col_2, col_pad = st.columns([.2, .4, .4])
+
+if col_1.button("Clear Cache"):
+    st.cache_resource.clear()
+
+if col_2.button("Rerun"):
+    st.rerun()
