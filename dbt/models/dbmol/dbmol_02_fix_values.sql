@@ -30,7 +30,28 @@ SELECT
     date_testing,
     location,
     state,
-    result,
+    
+    CASE
+        WHEN result = 'POSITIVO' THEN 1
+        WHEN result = 'NEGATIVO' THEN 0
+        WHEN result = 'NAO DETECTADO' THEN 0
+        WHEN result = 'DETECTADO' THEN 0
+
+        -- WIP TEMPORARY
+        WHEN result = 'INFERIOR A 5.0' THEN 0
+        WHEN result = 'INFERIOR A 1/20' THEN 0
+        WHEN result = 'INFERIOR A 0.1' THEN 0
+
+        WHEN result ~ '[0-9]+[.]*[0-9]*' THEN
+            CASE 
+                WHEN result::FLOAT < 0.80 THEN 0
+                ELSE 1
+            END
+        
+        ELSE -2
+    END AS result,
+
+
     file_name
 
 FROM source_data
@@ -52,3 +73,4 @@ AND "CodigoProcedimento" IN
     'TDENGE',
     'ZIKA'
 )
+AND NOT detalhe_exame IN ('MAT', 'MATERIAL', 'METODO', 'SOROTI')
