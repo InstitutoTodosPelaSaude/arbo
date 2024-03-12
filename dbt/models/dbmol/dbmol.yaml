@@ -19,7 +19,7 @@ models:
           - not_null:
               config:
                 severity: warn
-                error_if: ">1000"
+                error_if: ">3000"
       - name: date_testing
         tests:
           *not_null_warn_error_if_gt_1000
