@@ -46,13 +46,12 @@ def dbmol_raw(context):
     dbmol_files = [file for file in os.listdir(DBMOL_FILES_FOLDER) if file.endswith(DBMOL_FILES_EXTENSION)]
     assert len(dbmol_files) > 0, f"No files found in the folder {DBMOL_FILES_FOLDER} with extension {DBMOL_FILES_EXTENSION}"
 
-    # Read the sheets 'itps_covid', 'itps_influenza' and 'itps_vsr' from the file
     dbmol_df = pd.read_csv(DBMOL_FILES_FOLDER / dbmol_files[0])
     dbmol_df['file_name'] = dbmol_files[0]
     context.log.info(f"Reading file {dbmol_files[0]}")
         
     # Save to db
-    dbmol_df.to_sql('dbmol_raw', engine, schema=DB_SCHEMA, if_exists='replace', index=False)
+    dbmol_df.to_sql('dbmol_raw', engine, schema='arboviroses', if_exists='replace', chunksize=10000, index=False)
     engine.dispose()
 
     n_rows = dbmol_df.shape[0]
