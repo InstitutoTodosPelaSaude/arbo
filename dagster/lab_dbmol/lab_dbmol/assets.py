@@ -74,6 +74,6 @@ def dbmol_raw(context):
     select='dbmol',
     dagster_dbt_translator=dagster_dbt_translator
 )
-def respiratorios_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
+def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
