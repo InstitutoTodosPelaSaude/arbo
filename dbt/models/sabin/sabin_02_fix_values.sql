@@ -125,6 +125,7 @@ SELECT
         
         WHEN result = 'DETECTAVEL' THEN 1
         WHEN result = 'INDETECTAVEL' THEN 0
+        WHEN result = "'" THEN 0
 
         WHEN result = 'NAO REAGENTE' THEN 0
         
@@ -133,6 +134,7 @@ SELECT
         
         WHEN result = 'REAGENTE' THEN 1
         WHEN result = 'REAGENTE 1:200' THEN 1
+        WHEN result = "REAGENTE'" THEN 1
 
         -- 9999 or 99,99 or 99.99
         WHEN result ~ '[0-9]+[,.]*[0-9]*' AND result ~ '^[0-9]' THEN
