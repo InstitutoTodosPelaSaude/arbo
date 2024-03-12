@@ -21,10 +21,42 @@ SELECT
         ELSE NULL
     END AS sex,
 
-    birth_date,
+    EXTRACT( YEAR FROM AGE(date_testing, birth_date) )::int AS age,
 
     
-    exame,
+    CASE exame
+        -- VALIDAR ESSES EXAMES
+        WHEN 'ZIKA VIRUS DETECCAO POR PCR - PLASMA' THEN 'zikv_pcr'
+        WHEN 'ZIKA VIRUS ANTICORPOS IGM' THEN 'igm_serum'
+        WHEN 'ZIKA VIRUS ANTICORPOS IGG' THEN 'igg_serum'
+        WHEN 'PESQUISA MOLECULAR DO VIRUS CHIKUNGUNYA' THEN 'chikv_pcr'
+        WHEN 'PAINEL DE ARBOVIROSES (DENGUE, ZIKA E CHIKUNGUNYA)' THEN 'arbo_pcr_3'
+        WHEN 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' 
+        THEN 
+            CASE 
+                WHEN detalhe_exame = 'IGG' THEN 'igg_serum'
+                WHEN detalhe_exame = 'IGM' THEN 'igm_serum'
+                ELSE 'UNKNOWN'
+            END
+        
+        WHEN 'DETECCAO MOLECULAR DO ZIKA VIRUS' THEN 'zikv_pcr'
+        WHEN 'DETECCAO E TIPAGEM DO VIRUS DA DENGUE' THEN 'denv_pcr'
+        WHEN 'DENGUE NS1' THEN 'ns1_antigen'
+        WHEN 'DENGUE - ANTICORPOS IGM' THEN 'igm_serum'
+        WHEN 'DENGUE - ANTICORPOS IGG' THEN 'igg_serum'
+        WHEN 'CHIKUNGUNYA VIRUS IGM' THEN 'igm_serum'
+        WHEN 'CHIKUNGUNYA VIRUS IGG' THEN 'igg_serum'
+        WHEN 'ANTICORPOS ANTI CHIKUNGUNYA IGG E IGM'
+        THEN 
+            CASE 
+                WHEN detalhe_exame = 'AACHIG' THEN 'igg_serum'
+                WHEN detalhe_exame = 'AACHIM' THEN 'igm_serum'
+                ELSE 'UNKNOWN'
+            END
+
+        ELSE 'UNKNOWN'
+    END AS test_kit,
+
     "CodigoProcedimento",
     detalhe_exame,
     date_testing,
