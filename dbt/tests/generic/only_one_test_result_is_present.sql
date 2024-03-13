@@ -5,20 +5,15 @@
     FROM {{ model }}
     WHERE
         NOT (
-            "SC2_test_result" +
-            "FLUA_test_result" +
-            "FLUB_test_result" +
-            "VSR_test_result" +
-            "META_test_result" +
-            "RINO_test_result" +
-            "PARA_test_result" +
-            "ADENO_test_result" +
-            "BOCA_test_result" +
-            "COVS_test_result" +
-            "ENTERO_test_result" +
-            "BAC_test_result"
-        ) IN (-11, -10)
+            "denv_test_result"+
+            "zikv_test_result"+
+            "chikv_test_result"+
+            "yfv_test_result"+
+            "mayv_test_result"+
+            "orov_test_result"+
+            "wnv_test_result"
+        ) IN (-6, -5)
         -- Because the test results are -1 for not tested, 0 for negative and 1 for positive
-        -- the only way to have a sum of -11 or -10 is if there is only one test result present (0 or 1)
+        -- the only way to have a sum of -6 or -5 is if there is only one test result present (0 or 1)
 
 {% endtest %}
