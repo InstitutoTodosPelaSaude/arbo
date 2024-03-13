@@ -21,8 +21,11 @@ SELECT
         ELSE NULL
     END AS sex,
 
-    EXTRACT( YEAR FROM AGE(date_testing, birth_date) )::int AS age,
-
+    CASE
+        WHEN EXTRACT( YEAR FROM AGE(date_testing, birth_date) )::int > 120
+        THEN NULL
+        ELSE EXTRACT( YEAR FROM AGE(date_testing, birth_date) )::int
+    END AS age,
     
     CASE exame
         -- VALIDAR ESSES EXAMES
@@ -58,7 +61,15 @@ SELECT
     END AS test_kit,
 
     "CodigoProcedimento",
-    detalhe_exame,
+        
+    CASE 
+        WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM'
+        THEN 'MAYV_IGG_IGM'
+        WHEN exame in ('CHIKUNGUNYA VIRUS IGM', 'CHIKUNGUNYA VIRUS IGG') AND detalhe_exame = 'RESUL' 
+        THEN 'CHIKV_IGG_IGM'
+        ELSE detalhe_exame
+    END AS detalhe_exame,
+
     date_testing,
     location,
     state,
@@ -70,6 +81,7 @@ SELECT
         WHEN result = 'DETECTADO' THEN 0
 
         -- WIP TEMPORARY
+        -- REMEMBER REACTIVATE TEST ON dbmol.yaml
         WHEN result = 'INFERIOR A 5.0' THEN 0
         WHEN result = 'INFERIOR A 1/20' THEN 0
         WHEN result = 'INFERIOR A 0.1' THEN 0
