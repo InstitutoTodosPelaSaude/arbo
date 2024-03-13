@@ -74,7 +74,7 @@ SELECT
         WHEN result = 'INFERIOR A 1/20' THEN 0
         WHEN result = 'INFERIOR A 0.1' THEN 0
 
-        WHEN result ~ '[0-9]+[.]*[0-9]*' THEN
+        WHEN result ~ '[0-9]+[.]*[0-9]*' AND result ~ '^[0-9]' THEN
             CASE 
                 WHEN result::FLOAT < 0.80 THEN 0
                 ELSE 1
