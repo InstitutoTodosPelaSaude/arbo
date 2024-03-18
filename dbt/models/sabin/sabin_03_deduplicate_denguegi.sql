@@ -23,11 +23,21 @@ WITH source_data AS (
         file_name
     FROM
     (
-        -- REMOVER DENGUEIG SE VIER ACOMPANHADO DE DENGUE IGG
         SELECT
             *,
-            CASE 
-                WHEN SUM( (detalhe_exame in ('DENGIGG', 'DENGUEGI'))::INT) OVER (PARTITION BY test_id) = 2 AND detalhe_exame = 'DENGUEGI' THEN 1
+            CASE
+                -- REMOVER DENGUEIG SE VIER ACOMPANHADO DE DENGUE IGG
+                WHEN 
+                    SUM( (detalhe_exame in ('DENGIGG', 'DENGUEGI'))::INT) 
+                    OVER (PARTITION BY test_id) = 2 AND detalhe_exame = 'DENGUEGI' 
+                THEN 1
+
+                -- REMOVER NS1IMUNOCRO SE VIER ACOMPANHADO DE NS1ELISA
+                WHEN
+                    SUM( (detalhe_exame in ('NS1ELISA', 'NS1IMUNOCRO'))::INT)
+                    OVER (PARTITION BY test_id) = 2 AND detalhe_exame = 'NS1IMUNOCRO'
+                THEN 1
+
                 ELSE 0
             END::BOOL AS remove_line
         FROM source_data
