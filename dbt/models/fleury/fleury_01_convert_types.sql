@@ -15,7 +15,7 @@ SELECT
     "MUNICIPIO" AS location,
     "ESTADO" AS state,
     "EXAME" AS exame,
-    "PATOGENO" AS pathogen,
+    {{ normalize_text("PATOGENO") }} AS pathogen,
     {{ normalize_text("RESULTADO") }} AS result,
     file_name
 FROM source_data
