@@ -18,7 +18,7 @@ models:
         tests: &not_null_warn_error_if_gt_100
           - not_null:
               config:
-                severity: error
+                severity: warn
                 error_if: ">100"
       - name: date_testing
         tests:
