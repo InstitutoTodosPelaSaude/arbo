@@ -183,7 +183,10 @@ class DWDatabaseInterface (PostgresqlDatabaseInterface):
         query = """
             SELECT 
                 unnest(
-                    ARRAY[week_num-4, week_num-3, week_num-2, week_num-1, week_num] 
+                    ARRAY[
+                        week_num-7, week_num-6, week_num-5, week_num-4, 
+                        week_num-3, week_num-2, week_num-1, week_num
+                    ] 
                 )
                 AS epiweek_number_5
             FROM arboviroses.epiweeks
@@ -199,6 +202,7 @@ class DWDatabaseInterface (PostgresqlDatabaseInterface):
         epiweeks = self.get_epiweek_number_of_latest_epiweeks()
         lab_counts_by_epiweek = self.get_number_of_tests_per_lab_and_epiweek_in_this_year()
         
+        epiweeks = [ epiweek[0] for epiweek in epiweeks ]
         if lab_counts_by_epiweek is None:
             return None
         
@@ -209,9 +213,10 @@ class DWDatabaseInterface (PostgresqlDatabaseInterface):
             join_lab_and_epiweek(lab, epiweek): count
             for lab, epiweek, count 
             in lab_counts_by_epiweek
+            if epiweek in epiweeks
         }
 
-        epiweeks = [ epiweek[0] for epiweek in epiweeks ]
+        
         labs = [ lab[0] for lab in labs ]
 
         for lab in labs:
