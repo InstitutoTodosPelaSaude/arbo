@@ -20,6 +20,7 @@ SELECT
     -- to the id_columns list
     sample_id,
     test_id,	
+    patient_id,
     test_kit,
     sex,
     age,
