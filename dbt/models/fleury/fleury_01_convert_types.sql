@@ -16,6 +16,6 @@ SELECT
     "ESTADO" AS state,
     "EXAME" AS exame,
     "PATOGENO" AS pathogen,
-    "RESULTADO" AS result,
+    {{ normalize_text("RESULTADO") }} AS result,
     file_name
 FROM source_data
