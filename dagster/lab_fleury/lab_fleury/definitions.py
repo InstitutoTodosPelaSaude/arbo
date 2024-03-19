@@ -21,5 +21,5 @@ defs = Definitions(
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
     },
     jobs=[fleury_all_assets_job],
-    sensors=[new_fleury_file_sensor] #, fleury_slack_failure_sensor],
+    sensors=[new_fleury_file_sensor, fleury_slack_failure_sensor],
 )

@@ -74,7 +74,7 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
 
 @asset(
     compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "fleury_01_convert_types")]
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "fleury_06_final")]
 )
 def fleury_remove_used_files(context):
     """
