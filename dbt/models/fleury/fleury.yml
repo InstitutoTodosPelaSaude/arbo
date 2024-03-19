@@ -149,7 +149,14 @@ models:
       - name: sample_id
         tests:
           - not_null
-          - unique*/-
+          - unique
+      - name: test_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fleury_04_fill_results')
+              field: test_id
+
       - name: test_kit
         tests: *test_kit_tests
       - name: result
