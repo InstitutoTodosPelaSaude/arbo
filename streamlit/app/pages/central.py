@@ -26,7 +26,7 @@ from models.database import DWDatabaseInterface
 
 
 
-LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin']
+LABS = ['Einstein', 'Hilab', 'HlaGyn', 'Sabin', 'Fleury']
 ACCEPTED_EXTENSIONS = ['csv', 'txt', 'xlsx', 'xls', 'tsv']
 st.session_state['able_to_get_list_of_files'] = True
 
