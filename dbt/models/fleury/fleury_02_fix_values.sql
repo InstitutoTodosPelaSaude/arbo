@@ -5,6 +5,14 @@ WITH source_data AS (
     {{ ref("fleury_01_convert_types") }}
 )
 SELECT
+    md5(
+        CONCAT(
+            test_id,
+            exame,
+            pathogen
+        )
+    ) AS sample_id,
+
     test_id,
     date_testing,
     patient_id,
@@ -25,6 +33,7 @@ SELECT
         
         ELSE -1
     END AS age,
+
     CASE pathogen
         WHEN 'CHIKUNGUNYA, ANTICORPOS, IGG'       THEN 'igg_serumn' 
         WHEN 'CHIKUNGUNYA, ANTICORPOS, IGM'       THEN 'igm_serum' 
