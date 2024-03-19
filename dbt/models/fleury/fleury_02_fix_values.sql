@@ -59,7 +59,8 @@ SELECT
 
     location,
     state,
-    file_name
+    file_name,
+    pathogen
 
 FROM source_data
 WHERE 1=1
