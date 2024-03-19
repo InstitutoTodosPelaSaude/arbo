@@ -54,10 +54,7 @@ def fleury_raw(context):
     fleury_files = [file for file in os.listdir(FLEURY_FILES_FOLDER) if file.endswith(FLEURY_FILES_EXTENSION)]
     assert len(fleury_files) > 0, f"No files found in the folder {FLEURY_FILES_FOLDER} with extension {FLEURY_FILES_EXTENSION}"
 
-    fleury_df = pd.read_excel(FLEURY_FILES_FOLDER / fleury_files[0], dtype = str)
-    if 'Unnamed: 0' in fleury_df.columns: 
-        # Some files have an empty row in the beginning
-        fleury_df = pd.read_csv(FLEURY_FILES_FOLDER / fleury_files[0], sep='\t', dtype = str)
+    fleury_df = pd.read_csv(FLEURY_FILES_FOLDER / fleury_files[0], sep='\t', dtype = str, encoding='latin-1')
     fleury_df['file_name'] = fleury_files[0]
     context.log.info(f"Reading file {fleury_files[0]}")
         
