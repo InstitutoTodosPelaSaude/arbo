@@ -23,7 +23,8 @@ SELECT
                 'DENGUEMI',
                 'NS1ELISA',
                 'NS1IMUNOCRO',
-                'PCRDECT'
+                'PCRDECT',
+                'PCRD'
             ], 
             'detalhe_exame', 
             'result', 
