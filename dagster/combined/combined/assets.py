@@ -73,7 +73,13 @@ def export_to_tsv(context):
 combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
 
 @multi_asset_sensor(
-    monitored_assets=[AssetKey("einstein_06_final"), AssetKey("hilab_05_final"), AssetKey("hlagyn_05_final"), AssetKey("sabin_07_final")],
+    monitored_assets=[
+        AssetKey("einstein_06_final"), 
+        AssetKey("hilab_05_final"), 
+        AssetKey("hlagyn_05_final"), 
+        AssetKey("sabin_07_final"), 
+        AssetKey("fleury_06_final")
+    ],
     job=combined_all_assets_job,
     default_status=DefaultSensorStatus.RUNNING
 )
@@ -92,7 +98,13 @@ def run_combined_sensor(context: SensorEvaluationContext):
         return SkipReason(f"Last run status is {last_run_status}")
     
     # Check if all upstream jobs are finished (avoid running multiple times)
-    upstream_jobs = ['einstein_all_assets_job', 'hilab_all_assets_job', 'hlagyn_all_assets_job', 'sabin_all_assets_job']
+    upstream_jobs = [
+        'einstein_all_assets_job', 
+        'hilab_all_assets_job', 
+        'hlagyn_all_assets_job', 
+        'sabin_all_assets_job', 
+        'fleury_all_assets_job'
+    ]
     for job in upstream_jobs:
         last_run = context.instance.get_runs(
             filters=RunsFilter(job_name=job)
