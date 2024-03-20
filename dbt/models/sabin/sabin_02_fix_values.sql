@@ -76,8 +76,12 @@ SELECT
         ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO V_RUS DENGUE ' 
         THEN 'denv_pcr'
 
+        WHEN detalhe_exame = 'PCRD' AND exame ILIKE 'DETECÇÃO E TIPAGEM DO VÍRUS DA DENGUE'
+        THEN 'denv_pcr'
+
         WHEN detalhe_exame IN (
-            'CHIKVPCR-BIOMOL'
+            'CHIKVPCR-BIOMOL',
+            'PCRCHIKCT'
         ) THEN 'chikv_pcr'
 
         WHEN detalhe_exame IN (
@@ -113,6 +117,7 @@ SELECT
         WHEN result = 'PRESENCA DE MATERIAL GENETICO DO VIRUS DENGUE.' THEN 1
         WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS ZIKA)' THEN 1
         WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 1
+        WHEN result = 'DETECTADO DENGUE SOROTIPO 2' THEN 1
 
         WHEN result = 'NAO DETECTADO (AUSENCIA DE MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 0
         WHEN result = 'NAO DETECTADO (AUSENCIA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 0
@@ -180,4 +185,5 @@ AND NOT detalhe_exame IN (
         -- Redundância de exames
         'CHIKUNGMIMUN',
         'CHIKUNGGIMUN'
+        'PCRCHIKCT'
     )
