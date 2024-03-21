@@ -184,6 +184,6 @@ AND NOT detalhe_exame IN (
 
         -- Redundância de exames
         'CHIKUNGMIMUN',
-        'CHIKUNGGIMUN'
+        'CHIKUNGGIMUN',
         'PCRCHIKCT'
     )
