@@ -96,6 +96,9 @@ SELECT
             'RESMAYARO'
         ) THEN 'mayv_pcr'
 
+        WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFIC'
+        THEN 'yfv_pcr'
+
         ELSE 'UNKNOWN'
     END AS test_kit,
 
@@ -186,4 +189,5 @@ AND NOT detalhe_exame IN (
         'CHIKUNGMIMUN',
         'CHIKUNGGIMUN',
         'PCRCHIKCT'
+        'YFIC'
     )
