@@ -46,18 +46,22 @@ SELECT
         WHEN 'DENGUE, NS1'                        THEN 'ns1_antigen' 
         WHEN 'ZIKA VIRUS, DETECCAO NO RNA'        THEN 'zikv_pcr' 
         WHEN 'ZIKA VIRUS - IGG'                    THEN 'igg_serumn' 
-        WHEN 'ZIKA VIRUS - IGM'                    THEN 'igm_serum' 
+        WHEN 'ZIKA VIRUS - IGM'                    THEN 'igm_serum'
+        WHEN 'FEBRE AMARELA, ANTICORPOS, IGG'       THEN 'igg_serum'
+        WHEN 'FEBRE AMARELA, ANTICORPOS, IGM'      THEN 'igm_serum'
         ELSE 'UNKNOWN'
     END AS test_kit,
 
     CASE 
-        WHEN result = 'INDETECTAVEL'                THEN 0
+        WHEN result = 'INDETECTAVEL'                    THEN 0
 
-        WHEN result = 'NAO REAGENTE'                THEN 0
-        WHEN result = 'NAO DETECTADO (NEGATIVO)'    THEN 0
+        WHEN result = 'NAO REAGENTE'                    THEN 0
+        WHEN result = 'NAO DETECTADO (NEGATIVO)'        THEN 0
+        WHEN result = 'NAO REAGENTE, INFERIOR A 1/100'  THEN 0
+        WHEN result = 'NAO REAGENTE, INFERIOR A 1/10'   THEN 0
 
-        WHEN result = 'REAGENTE'                    THEN 1
-        WHEN result = 'DETECTADO (POSITIVO)'        THEN 1
+        WHEN result = 'REAGENTE'                        THEN 1
+        WHEN result = 'DETECTADO (POSITIVO)'            THEN 1
         ELSE -2
     END AS result,
 
