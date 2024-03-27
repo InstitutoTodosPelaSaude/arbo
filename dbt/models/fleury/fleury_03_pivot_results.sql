@@ -48,7 +48,8 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'FEBRE AMARELA, ANTICORPOS, IGG',
+                'FEBRE AMARELA, ANTICORPOS, IGM'
             ], 
             'pathogen', 
             'result', 
