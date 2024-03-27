@@ -62,13 +62,14 @@ SELECT
     CASE 
         WHEN result = 'INDETECTAVEL'                    THEN 0
 
-        WHEN result = 'NAO REAGENTE'                    THEN 0
+        WHEN result ILIKE 'NAO REAGENT%'                THEN 0
         WHEN result = 'NAO DETECTADO (NEGATIVO)'        THEN 0
-        WHEN result = 'NAO REAGENTE, INFERIOR A 1/100'  THEN 0
-        WHEN result = 'NAO REAGENTE, INFERIOR A 1/10'   THEN 0
+        WHEN result = 'NEGATIVO'                        THEN 0
 
-        WHEN result = 'REAGENTE'                        THEN 1
+        WHEN result ILIKE 'REAGENT%'                    THEN 1
         WHEN result = 'DETECTADO (POSITIVO)'            THEN 1
+        WHEN result = 'POSITIVO'                        THEN 1
+
         ELSE -2
     END AS result,
 
@@ -90,4 +91,9 @@ AND NOT (
     result ILIKE 'RECOMENDAMOS A REPETICAO DESTE EXAME APOS UMA SEMANA%'
     OR result IS NULL
     OR result = 'INDETERMINADO'
+    
+    -- Remoção temporária de resultados com valores
+    OR result ILIKE '1/%'
+    OR result ILIKE 'INFERIOR A 1/%'
+    OR result ILIKE 'SUPERIOR A 1/%'
 )
