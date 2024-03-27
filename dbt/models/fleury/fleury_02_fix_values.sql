@@ -55,7 +55,7 @@ SELECT
 
         WHEN result = 'NAO REAGENTE'                THEN 0
         WHEN result = 'NAO DETECTADO (NEGATIVO)'    THEN 0
-        
+
         WHEN result = 'REAGENTE'                    THEN 1
         WHEN result = 'DETECTADO (POSITIVO)'        THEN 1
         ELSE -2
@@ -73,7 +73,7 @@ AND exame NOT IN (
     -- Respiratory tests
     '2019NCOV', 'AGCOVIDNS', 'AGSINCURG', 'COVID19GX',
     'COVID19SALI', 'COVIDFLURSVGX', 'INFLUENZAPCR', 'VIRUSMOL', 'VRSAG',
-    'AGINFLU'
+    'AGINFLU', 'COVID19POCT'
 )
 AND NOT (
     result ILIKE 'RECOMENDAMOS A REPETICAO DESTE EXAME APOS UMA SEMANA%'
