@@ -25,8 +25,8 @@ SELECT
         pivot_pathogen_results(
             [
                 'ZIKA VIRUS, DETECCAO NO RNA',
-                'ZIKA VIRUS - IGG',
-                'ZIKA VIRUS - IGM'
+                'ZIKA VIRUS - IGG'           ,
+                'ZIKA VIRUS - IGM'           ,
             ], 
             'pathogen', 
             'result', 
@@ -38,7 +38,7 @@ SELECT
             [
                 'CHIKUNGUNYA, ANTICORPOS, IGG',
                 'CHIKUNGUNYA, ANTICORPOS, IGM',
-                'CHIKUNGUNYA, PCR'
+                'CHIKUNGUNYA, PCR'            ,
             ], 
             'pathogen', 
             'result', 
@@ -49,7 +49,8 @@ SELECT
         pivot_pathogen_results(
             [
                 'FEBRE AMARELA, ANTICORPOS, IGG',
-                'FEBRE AMARELA, ANTICORPOS, IGM'
+                'FEBRE AMARELA, ANTICORPOS, IGM',
+                'FEBRE AMARELA, PCR'            ,
             ], 
             'pathogen', 
             'result', 
@@ -59,7 +60,9 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'MAYARO, ANTICORPOS, IGM'        ,
+                'MAYARO, ANTICORPOS, IGG'        ,
+                'MAYARO, DETECCAO DO RNA POR PCR',
             ], 
             'pathogen', 
             'result', 
@@ -69,7 +72,9 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'OROPOUCHE, ANTICORPOS, IGG'         ,
+                'OROPOUCHE, ANTICORPOS, IGM'         ,
+                'OROPOUCHE, DETECCAO DO RNA POR PCR' ,
             ], 
             'pathogen', 
             'result', 
