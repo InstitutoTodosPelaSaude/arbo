@@ -35,33 +35,41 @@ SELECT
     END AS age,
 
     CASE pathogen
-        WHEN 'CHIKUNGUNYA, ANTICORPOS, IGG'       THEN 'igg_serumn' 
+        WHEN 'CHIKUNGUNYA, ANTICORPOS, IGG'       THEN 'igg_serum' 
         WHEN 'CHIKUNGUNYA, ANTICORPOS, IGM'       THEN 'igm_serum' 
         WHEN 'CHIKUNGUNYA, PCR'                   THEN 'chikv_pcr' 
         WHEN 'DENGUE, ANTIGENO NS1, TESTE RAPIDO' THEN 'ns1_antigen' 
-        WHEN 'DENGUE, IGG'                        THEN 'igg_serumn' 
-        WHEN 'DENGUE, IGG, TESTE RAPIDO'          THEN 'igg_serumn' 
+        WHEN 'DENGUE, IGG'                        THEN 'igg_serum' 
+        WHEN 'DENGUE, IGG, TESTE RAPIDO'          THEN 'igg_serum' 
         WHEN 'DENGUE, IGM'                        THEN 'igm_serum' 
         WHEN 'DENGUE, IGM, TESTE RAPIDO'          THEN 'igm_serum' 
         WHEN 'DENGUE, NS1'                        THEN 'ns1_antigen' 
         WHEN 'ZIKA VIRUS, DETECCAO NO RNA'        THEN 'zikv_pcr' 
-        WHEN 'ZIKA VIRUS - IGG'                    THEN 'igg_serumn' 
-        WHEN 'ZIKA VIRUS - IGM'                    THEN 'igm_serum'
-        WHEN 'FEBRE AMARELA, ANTICORPOS, IGG'       THEN 'igg_serum'
-        WHEN 'FEBRE AMARELA, ANTICORPOS, IGM'      THEN 'igm_serum'
+        WHEN 'ZIKA VIRUS - IGG'                   THEN 'igg_serum' 
+        WHEN 'ZIKA VIRUS - IGM'                   THEN 'igm_serum'
+        WHEN 'FEBRE AMARELA, ANTICORPOS, IGG'     THEN 'igg_serum'
+        WHEN 'FEBRE AMARELA, ANTICORPOS, IGM'     THEN 'igm_serum'
+        WHEN 'FEBRE AMARELA, PCR'                 THEN 'yfv_pcr'
+        WHEN 'MAYARO, ANTICORPOS, IGM'            THEN 'igm_serum'
+        WHEN 'MAYARO, ANTICORPOS, IGG'            THEN 'igg_serum'
+        WHEN 'MAYARO, DETECCAO DO RNA POR PCR'    THEN 'mayv_pcr'
+        WHEN 'OROPOUCHE, ANTICORPOS, IGG'         THEN 'igg_serum'
+        WHEN 'OROPOUCHE, ANTICORPOS, IGM'         THEN 'igm_serum'
+        WHEN 'OROPOUCHE, DETECCAO DO RNA POR PCR' THEN 'orov_pcr'
         ELSE 'UNKNOWN'
     END AS test_kit,
 
     CASE 
         WHEN result = 'INDETECTAVEL'                    THEN 0
 
-        WHEN result = 'NAO REAGENTE'                    THEN 0
+        WHEN result ILIKE 'NAO REAGENT%'                THEN 0
         WHEN result = 'NAO DETECTADO (NEGATIVO)'        THEN 0
-        WHEN result = 'NAO REAGENTE, INFERIOR A 1/100'  THEN 0
-        WHEN result = 'NAO REAGENTE, INFERIOR A 1/10'   THEN 0
+        WHEN result = 'NEGATIVO'                        THEN 0
 
-        WHEN result = 'REAGENTE'                        THEN 1
+        WHEN result ILIKE 'REAGENT%'                    THEN 1
         WHEN result = 'DETECTADO (POSITIVO)'            THEN 1
+        WHEN result = 'POSITIVO'                        THEN 1
+
         ELSE -2
     END AS result,
 
@@ -83,4 +91,9 @@ AND NOT (
     result ILIKE 'RECOMENDAMOS A REPETICAO DESTE EXAME APOS UMA SEMANA%'
     OR result IS NULL
     OR result = 'INDETERMINADO'
+    
+    -- Remoção temporária de resultados com valores
+    OR result ILIKE '1/%'
+    OR result ILIKE 'INFERIOR A 1/%'
+    OR result ILIKE 'SUPERIOR A 1/%'
 )
