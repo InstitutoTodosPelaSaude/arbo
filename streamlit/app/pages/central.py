@@ -234,6 +234,7 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
     # container.write(lab_epiweeks_count_df)
 
     df_chart_data = lab_epiweeks_count_df
+    df_chart_data = df_chart_data.sort_values(by='Epiweek', ascending=True)
     fig = plt.figure( figsize=(10, 1) )
     # remove border
     fig.gca().spines['top'].set_visible(False)
