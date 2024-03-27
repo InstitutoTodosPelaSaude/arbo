@@ -18,6 +18,7 @@ from models.files import (
     restore_file_from_trash, 
     read_all_files_in_folder_as_df,
     get_zipped_folder,
+    get_file_content,
     folder_has_valid_files
 )
 
@@ -141,6 +142,19 @@ def widgets_download_files_in_folder(path, container):
         mime = "application/zip",
         help = "Download todos",
         key = f"download_all_{path}"
+    )
+
+
+def widget_download_file(file_path, container):
+    file_content = get_file_content(file_path)
+    filename = file_path.split('/')[-1].split('.')[0].capitalize()
+
+    container.download_button(
+        label = f":arrow_down_small: {filename}",
+        data = file_content,
+        file_name = file_path.split('/')[-1],
+        mime = "text/csv",
+        help = "Download"
     )
 
 
@@ -356,7 +370,7 @@ st.markdown("## :1234: Matrizes")
 
 download_matrices_container = st.expander(":file_folder: Arquivos")
 widgets_download_files_in_folder( "matrices", download_matrices_container )
-
+widget_download_file("/data/combined/combined.tsv", st)
 
 # File Explorer
 # =============

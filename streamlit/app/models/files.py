@@ -94,3 +94,8 @@ def get_zipped_folder(path, accepted_extensions):
             zip_file.writestr(file_name, file)
 
     return zip_buffer.getvalue(), zip_file_name
+
+
+def get_file_content(filepath):
+    with open(filepath, "rb") as f:
+        return f.read()
