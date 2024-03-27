@@ -18,6 +18,7 @@ from models.files import (
     restore_file_from_trash, 
     read_all_files_in_folder_as_df,
     get_zipped_folder,
+    get_file_content,
     folder_has_valid_files
 )
 
@@ -144,6 +145,19 @@ def widgets_download_files_in_folder(path, container):
     )
 
 
+def widget_download_file(file_path, container):
+    file_content = get_file_content(file_path)
+    filename = file_path.split('/')[-1].split('.')[0].capitalize()
+
+    container.download_button(
+        label = f":arrow_down_small: {filename}",
+        data = file_content,
+        file_name = file_path.split('/')[-1],
+        mime = "text/csv",
+        help = "Download"
+    )
+
+
 def widgets_upload_file(selected_lab):
     # Upload file to the server
     # =========================
@@ -234,6 +248,7 @@ def widgets_add_lab_epiweek_count_plot(lab, container):
     # container.write(lab_epiweeks_count_df)
 
     df_chart_data = lab_epiweeks_count_df
+    df_chart_data = df_chart_data.sort_values(by='Epiweek', ascending=True)
     fig = plt.figure( figsize=(10, 1) )
     # remove border
     fig.gca().spines['top'].set_visible(False)
@@ -355,7 +370,7 @@ st.markdown("## :1234: Matrizes")
 
 download_matrices_container = st.expander(":file_folder: Arquivos")
 widgets_download_files_in_folder( "matrices", download_matrices_container )
-
+widget_download_file("/data/combined/combined.tsv", st)
 
 # File Explorer
 # =============
