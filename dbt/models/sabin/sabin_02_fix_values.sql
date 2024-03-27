@@ -96,6 +96,9 @@ SELECT
             'RESMAYARO'
         ) THEN 'mayv_pcr'
 
+        WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFIC'
+        THEN 'yfv_pcr'
+
         ELSE 'UNKNOWN'
     END AS test_kit,
 
@@ -148,6 +151,13 @@ SELECT
                 ELSE 1
             END
 
+        -- .99
+        WHEN result ~ '^[,.]+[0-9]*' THEN
+            CASE 
+                WHEN (regexp_replace(regexp_replace(result , ',' , '.'), '.', '')::FLOAT / 100) < 0.80 THEN 0
+                ELSE 1
+            END
+
         -- Historical data 2023
         -- Avoid using this logic for new data
         WHEN result = 'NAO REAGEN' THEN 0
@@ -186,4 +196,5 @@ AND NOT detalhe_exame IN (
         'CHIKUNGMIMUN',
         'CHIKUNGGIMUN',
         'PCRCHIKCT'
+        'YFIC'
     )
