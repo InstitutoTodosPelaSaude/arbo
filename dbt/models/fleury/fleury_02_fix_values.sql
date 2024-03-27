@@ -51,9 +51,13 @@ SELECT
     END AS test_kit,
 
     CASE 
-        WHEN result = 'INDETECTAVEL' THEN 0
-        WHEN result = 'NAO REAGENTE' THEN 0
-        WHEN result = 'REAGENTE'     THEN 1
+        WHEN result = 'INDETECTAVEL'                THEN 0
+
+        WHEN result = 'NAO REAGENTE'                THEN 0
+        WHEN result = 'NAO DETECTADO (NEGATIVO)'    THEN 0
+        
+        WHEN result = 'REAGENTE'                    THEN 1
+        WHEN result = 'DETECTADO (POSITIVO)'        THEN 1
         ELSE -2
     END AS result,
 
