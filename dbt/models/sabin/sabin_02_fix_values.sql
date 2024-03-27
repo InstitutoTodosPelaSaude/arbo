@@ -151,6 +151,13 @@ SELECT
                 ELSE 1
             END
 
+        -- .99
+        WHEN result ~ '^[,.]+[0-9]*' THEN
+            CASE 
+                WHEN (regexp_replace(regexp_replace(result , ',' , '.'), '.', '')::FLOAT / 100) < 0.80 THEN 0
+                ELSE 1
+            END
+
         -- Historical data 2023
         -- Avoid using this logic for new data
         WHEN result = 'NAO REAGEN' THEN 0
