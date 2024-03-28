@@ -69,6 +69,7 @@ SELECT
         WHEN result ILIKE 'REAGENT%'                    THEN 1
         WHEN result = 'DETECTADO (POSITIVO)'            THEN 1
         WHEN result = 'POSITIVO'                        THEN 1
+        WHEN result = 'DETECTAVEL'                      THEN 1
 
         ELSE -2
     END AS result,
