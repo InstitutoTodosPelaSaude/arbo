@@ -91,6 +91,7 @@ AND NOT (
     result ILIKE 'RECOMENDAMOS A REPETICAO DESTE EXAME APOS UMA SEMANA%'
     OR result IS NULL
     OR result = 'INDETERMINADO'
+    OR result = 'INCONCLUSIVO'
     
     -- Remoção temporária de resultados com valores
     OR result ILIKE '1/%'
