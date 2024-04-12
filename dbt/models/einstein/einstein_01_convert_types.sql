@@ -9,7 +9,7 @@ WITH source_data AS (
 
 )
 SELECT
-    "accession"::BIGINT AS test_id,
+    "accession"::BIGINT::TEXT AS test_id,
     "sexo" AS sex,
     "idade"::INT AS age,
     "exame" AS exame,
