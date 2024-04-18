@@ -22,6 +22,6 @@ WHERE 0=1
     OR ( test_kit = 'ns1_antigen' AND NOT (DENV_test_result IN ('Pos','Neg')) )
     OR ( test_kit = 'denv_pcr' AND NOT (DENV_test_result IN ('Pos','Neg')) )
     OR ( test_kit = 'chikv_pcr' AND NOT (CHIKV_test_result IN ('Pos','Neg')) )
-    OR ( test_kit = 'zika_pcr' AND NOT (ZIKV_test_result IN ('Pos','Neg')) )
+    OR ( test_kit = 'zikv_pcr' AND NOT (ZIKV_test_result IN ('Pos','Neg')) )
     OR ( test_kit = 'mayv_pcr' AND NOT (MAYV_test_result IN ('Pos','Neg')) )
     OR ( test_kit = 'orov_pcr' AND NOT (OROV_test_result IN ('Pos','Neg')) )
