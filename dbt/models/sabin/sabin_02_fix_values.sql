@@ -86,7 +86,7 @@ SELECT
 
         WHEN detalhe_exame IN (
             'ZIKAPCRBIO'
-        ) THEN 'zika_pcr'
+        ) THEN 'zikv_pcr'
 
         WHEN detalhe_exame IN (
             'DEVORO'
