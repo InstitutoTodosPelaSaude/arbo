@@ -39,7 +39,8 @@ SELECT
                 'ZIKAM1',
                 'ZIKAM2',
                 'ZIKAIGG2',
-                'ZIKAPCRBIO'
+                'ZIKAPCRBIO',
+                'VIRUSZICACT'
             ], 
             'detalhe_exame', 
             'result', 
