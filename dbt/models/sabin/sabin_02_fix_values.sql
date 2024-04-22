@@ -85,7 +85,9 @@ SELECT
         ) THEN 'chikv_pcr'
 
         WHEN detalhe_exame IN (
-            'ZIKAPCRBIO'
+            'ZIKAPCRBIO',
+
+            'VIRUSZICACT' -- Historical - 2022
         ) THEN 'zikv_pcr'
 
         WHEN detalhe_exame IN (
@@ -209,5 +211,8 @@ AND NOT detalhe_exame IN (
         'CHIKUNGMIMUN',
         'CHIKUNGGIMUN',
         'PCRCHIKCT'
-        'YFIC'
+        'YFIC',
+        -- 2022
+        'TITULOMAYARO',
+        'TITMAYIGM'
     )
