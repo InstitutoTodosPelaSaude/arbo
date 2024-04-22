@@ -105,7 +105,7 @@ SELECT
     CASE 
         WHEN sex ILIKE 'F%' THEN 'F'
         WHEN sex ILIKE 'M%' THEN 'M'
-        ELSE 'UNKNOWN'
+        ELSE NULL
     END AS sex,
 
     EXTRACT( YEAR FROM AGE(date_testing, birth_date) )::int AS age,
@@ -159,13 +159,18 @@ SELECT
                 ELSE 1
             END
 
-        -- Historical data 2023
+        -- Historical data 2022 and 2023
         -- Avoid using this logic for new data
-        WHEN result = 'NAO REAGEN' THEN 0
-        WHEN result = 'NAO REAGENT' THEN 0
-        WHEN result = 'NAO RREAGENTE' THEN 0
-        WHEN result = 'REAGEN' THEN 1
-        WHEN result = 'REAGENTE3' THEN 1
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'NAO REA%'                       THEN 0
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'NAO REGENTE'                    THEN 0
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'NAO DETECTADO%'                 THEN 0
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'INFERIOR A%'                    THEN 0
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'AUSENCIA DE MATERIAL GENETICO%' THEN 0
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'REAGEN%'                        THEN 1
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'PRESENCA DE MATERIAL GENETICO%' THEN 1
+        WHEN date_testing < '2024-01-01' AND result ILIKE 'DETECTADO %'                    THEN 1
+
+
         
         ELSE -2 -- UNKNOWN
     END::FLOAT AS result,
@@ -177,9 +182,16 @@ FROM source_data
 WHERE not detalhe_exame in ('OBSGERALINTERNA', 'FEBREGLC', 'FEBREMLC')
 AND result IS NOT NULL
 AND NOT result IN (
+    -- Historical data 2022 and 2023
+    -- Not relevant for new data
     'INDETERMINADO', 
+    'INCONCLUSIVO',
+    'INCONCLUSIVE',
+    'INCONCLUSIVO, VIDE NOTA.',
+    '-',
     '*', 
-    'E'
+    'E',
+    ''
 )
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
