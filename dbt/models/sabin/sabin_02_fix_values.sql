@@ -32,7 +32,8 @@ SELECT
         WHEN detalhe_exame IN (
             'PCRCHIK', 'PCRDE', 'VIRUSZICA',
 
-            'PCRDECT', 'PCRCHIKCT'
+            'PCRDECT', 'PCRCHIKCT',
+            'VIRUSZICACT' -- Historical - 2022
         ) AND exame ILIKE 'PCR para Zika, Chikungunya e Dengue'
         THEN 'arbo_pcr_3'
         	
@@ -85,9 +86,7 @@ SELECT
         ) THEN 'chikv_pcr'
 
         WHEN detalhe_exame IN (
-            'ZIKAPCRBIO',
-
-            'VIRUSZICACT' -- Historical - 2022
+            'ZIKAPCRBIO'
         ) THEN 'zikv_pcr'
 
         WHEN detalhe_exame IN (
