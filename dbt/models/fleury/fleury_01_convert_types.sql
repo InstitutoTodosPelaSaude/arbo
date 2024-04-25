@@ -13,7 +13,7 @@ SELECT
     "SEXO" AS sex,
     "IDADE" AS age,
     "MUNICIPIO" AS location,
-    "ESTADO" AS state,
+    "ESTADO" AS state_code,
     "EXAME" AS exame,
     {{ normalize_text("PATOGENO") }} AS pathogen,
     {{ normalize_text("RESULTADO") }} AS result,
