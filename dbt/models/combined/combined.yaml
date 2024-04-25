@@ -152,3 +152,19 @@ models:
           - relationships:
               to: ref('combined_04_fix_location')
               field: sample_id
+
+      - name: state_code
+        tests:
+          - not_null:
+              name: state_code_not_null
+              config:
+                severity: error
+                error_if: ">1000"
+                warn_if: '>0'
+          - not_null:
+              name: state_code_not_null_in_the_last_7_days
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: '>0'
+                where: "date_testing >= CURRENT_DATE - INTERVAL '7 days'"
