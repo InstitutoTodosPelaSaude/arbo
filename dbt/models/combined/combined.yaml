@@ -85,6 +85,27 @@ models:
       - name: sample_id
         tests:
           - unique
+      - name: test_kit
+        tests:
+          - not_null
+          - accepted_values:
+              name: test_kit_accepted_values
+              values: ['arbo_pcr_3','chikv_pcr','denv_pcr','zikv_pcr','mayv_pcr','orov_pcr','yfv_pcr','igg_serum','igm_serum','ns1_antigen']
+      - name: age
+        tests:
+          - dbt_utils.not_null_proportion:
+              name: age_not_null_proportion
+              at_least: 0.99
+          - dbt_utils.not_null_proportion:
+              name: age_not_null_proportion_in_the_last_7_days
+              at_least: 0.99
+              config:
+                where: "date_testing >= CURRENT_DATE - INTERVAL '7 days'"
+          - dbt_utils.not_null_proportion:
+              name: age_not_null_proportion_in_the_last_15_days
+              at_least: 0.99
+              config:
+                where: "date_testing >= CURRENT_DATE - INTERVAL '15 days'"
 
   - name: combined_02_age_groups
     description: Add age groups to combined table
