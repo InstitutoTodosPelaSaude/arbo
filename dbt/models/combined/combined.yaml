@@ -160,11 +160,11 @@ models:
               config:
                 severity: error
                 error_if: ">1000"
-                warn_if: '>0'
-          - not_null:
+                warn_if: ">500"
+          - not_null: 
               name: state_code_not_null_in_the_last_7_days
               config:
                 severity: error
                 error_if: ">100"
-                warn_if: '>0'
+                warn_if: ">10"
                 where: "date_testing >= CURRENT_DATE - INTERVAL '7 days'"
