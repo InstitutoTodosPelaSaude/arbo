@@ -106,6 +106,21 @@ models:
               at_least: 0.99
               config:
                 where: "date_testing >= CURRENT_DATE - INTERVAL '15 days'"
+      - name: state
+        tests:
+          - dbt_utils.not_null_proportion:
+              name: state_not_null_proportion
+              at_least: 0.95
+          - accepted_values:
+              name: state_accepted_values
+              values: [
+                  'ACRE','ALAGOAS','AMAPA','AMAZONAS','BAHIA','CEARA','DISTRITO FEDERAL',
+                  'ESPIRITO SANTO','GOIAS','MARANHAO','MATO GROSSO','MATO GROSSO DO SUL',
+                  'MINAS GERAIS','PARA','PARAIBA','PARANA','PERNAMBUCO','PIAUI',
+                  'RIO DE JANEIRO','RIO GRANDE DO NORTE','RIO GRANDE DO SUL',
+                  'RONDONIA','RORAIMA','SANTA CATARINA','SAO PAULO','SERGIPE','TOCANTINS',
+                  'NOT_REPORTED' # Não informado
+              ]
 
   - name: combined_02_age_groups
     description: Add age groups to combined table
