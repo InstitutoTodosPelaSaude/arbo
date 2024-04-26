@@ -12,12 +12,13 @@ click==8.1.7
 colorama==0.4.6
 coloredlogs==14.0
 croniter==2.0.1
-dagster==1.5.5
-dagster-dbt==0.21.5
-dagster-graphql==1.5.5
-dagster-pipes==1.5.5
-dagster-postgres
-dagster-webserver==1.5.5
+dagster==1.6.6
+dagster-dbt==0.22.6
+dagster-graphql==1.6.6
+dagster-pipes==1.6.6
+dagster-postgres==0.22.6
+dagster-slack==0.22.6
+dagster-webserver==1.6.6
 dbt-core==1.6.7
 dbt-extractor==0.4.1
 dbt-postgres==1.6.7
@@ -102,3 +103,4 @@ watchfiles==0.21.0
 websockets==12.0
 yarl==1.9.2
 zipp==3.17.0
+dagster-slack

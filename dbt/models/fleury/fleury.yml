@@ -1,0 +1,192 @@
+version: 2
+
+sources:
+  - name: dagster
+    description: Raw data from Fleury
+    schema: arboviroses
+    tables:
+      - name: fleury_raw
+        meta:
+          dagster:
+            asset_key: ["fleury_raw"]
+
+models:
+  - name: fleury_01_convert_types
+    description: wip
+    columns:
+      - name: test_id
+        tests: &not_null_warn_error_if_gt_100
+          - not_null:
+              config:
+                severity: warn
+                error_if: ">100"
+      - name: date_testing
+        tests:
+          *not_null_warn_error_if_gt_100
+      - name: pathogen
+        tests:
+          *not_null_warn_error_if_gt_100
+      - name: exame
+        tests:
+          *not_null_warn_error_if_gt_100
+  - name: fleury_02_fix_values
+    columns:
+      - name: sample_id
+        tests:
+          - not_null
+      - name: test_kit
+        tests: &test_kit_tests
+          - not_null
+          - dbt_utils.not_accepted_values:
+              values: ["UNKNOWN"]
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1] # 0 = negative, 1 = positive
+      - name: age
+        tests: &age_tests
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 200
+      - name: date_testing
+        tests:
+          # date not in the future
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+
+  - name: fleury_03_pivot_results
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('fleury_02_fix_values')
+      - at_least_one_test_result_is_present
+      - only_one_test_result_is_present
+    description: wip
+    columns:
+      - name: sample_id
+        tests:
+          - not_null
+      - name: test_kit
+        tests: *test_kit_tests
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, -1] # 0 = negative, 1 = positive
+      - name: age
+        tests: *age_tests
+      - name: date_testing
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+      - name: DENV_test_result
+        tests: &test_pivot_test_result_columns
+          - not_null
+          - accepted_values:
+              values: [0, 1, -1]
+      - name: ZIKV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: CHIKV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: YFV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: MAYV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: OROV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: WNV_test_result
+        tests: *test_pivot_test_result_columns
+
+  - name: fleury_04_fill_results
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('fleury_03_pivot_results')
+    description: wip
+    columns:
+      - name: sample_id
+        tests:
+          - not_null
+      - name: test_kit
+        tests: *test_kit_tests
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, -1] # 0 = negative, 1 = positive
+      - name: age
+        tests: *age_tests
+      - name: date_testing
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+      - name: DENV_test_result
+        tests: &test_pivot_test_result_columns_str
+          - not_null
+          - accepted_values:
+              values: ['Pos', 'Neg', 'NT']
+      - name: ZIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: CHIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: YFV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: MAYV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: OROV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: WNV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: qty_original_lines
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 3
+  
+  - name: fleury_05_deduplicate
+    description: wip
+    columns:
+      - name: sample_id
+        tests:
+          - not_null
+          - unique
+      - name: test_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fleury_04_fill_results')
+              field: test_id
+
+      - name: test_kit
+        tests: *test_kit_tests
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, -1] # 0 = negative, 1 = positive
+      - name: age
+        tests: *age_tests
+      - name: date_testing
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+      - name: DENV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: ZIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: CHIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: YFV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: MAYV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: OROV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: WNV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: qty_original_lines
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 3

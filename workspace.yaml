@@ -12,6 +12,9 @@ load_from:
         module_name: lab_sabin.definitions
         working_directory: dagster/lab_sabin
     - python_module:
+        module_name: lab_fleury.definitions
+        working_directory: dagster/lab_fleury
+    - python_module:
         module_name: lab_dbmol.definitions
         working_directory: dagster/lab_dbmol
     - python_module:
@@ -20,3 +23,6 @@ load_from:
     - python_module:
         module_name: matrices.definitions
         working_directory: dagster/matrices
+    - python_module:
+        module_name: external_reports.definitions
+        working_directory: dagster/external_reports

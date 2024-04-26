@@ -1,7 +1,65 @@
 import psycopg2
 import os
 
-class DagsterDatabaseInterface:
+from psycopg2 import InterfaceError, OperationalError
+from psycopg2.errors import UndefinedTable, InFailedSqlTransaction
+import abc
+
+class PostgresqlDatabaseInterface(abc.ABC):
+    
+    def __init__(self, user, password, host, port, database):
+        if self.__connect_to_database(user, password, host, port, database):
+            self.cursor = self.connection.cursor()
+        else:
+            self.cursor = None
+
+    def __connect_to_database(self, user, password, host, port, database):
+
+        try:
+            self.connection = psycopg2.connect(
+                user=user,
+                password=password,
+                host=host,
+                port=port,
+                database=database
+            )
+            self.connection.set_session(autocommit=True)
+            return True
+        except OperationalError as e:
+            pass
+            return False
+
+    def __get_cursor(self):
+        try:
+            return self.connection.cursor()
+        except InterfaceError as e:
+            return None
+
+    def query(self, query):
+        if self.cursor is None:
+            return None
+        
+        if self.cursor.closed:
+            self.cursor = self.__get_cursor()
+
+        if self.cursor is None:
+            return None
+        
+        try: 
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except (UndefinedTable, InFailedSqlTransaction) as e:
+            return None
+        except InterfaceError as e:
+            # reconnect to database
+            self.cursor.close()
+            return None
+
+    def __del__(self):
+        self.connection.close()
+
+
+class DagsterDatabaseInterface (PostgresqlDatabaseInterface):
 
     # define static method for singleton pattern
     @staticmethod
@@ -17,22 +75,10 @@ class DagsterDatabaseInterface:
                 user, password, host, port, database 
             )
         return DagsterDatabaseInterface.__instance
-
-    def __init__(self, user, password, host, port, database):
-        self.connection = psycopg2.connect(
-            user=user,
-            password=password,
-            host=host,
-            port=port,
-            database=database
-        )
-        
-        self.cursor = self.connection.cursor()
-
-    def __query(self, query):
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
     
+    def __init__(self, user, password, host, port, database):
+        super().__init__(user, password, host, port, database)
+
     def get_last_run_for_each_pipeline(self):
         query = """
             SELECT
@@ -67,14 +113,10 @@ class DagsterDatabaseInterface:
             WHERE row_num = 1
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
 
-    def __del__(self):
-        self.connection.close()
-
-
-class DWDatabaseInterface:
+class DWDatabaseInterface (PostgresqlDatabaseInterface):
 
     # define static method for singleton pattern
     @staticmethod
@@ -90,29 +132,17 @@ class DWDatabaseInterface:
                 user, password, host, port, database 
             )
         return DWDatabaseInterface.__instance
-
-    def __init__(self, user, password, host, port, database):
-        self.connection = psycopg2.connect(
-            user=user,
-            password=password,
-            host=host,
-            port=port,
-            database=database
-        )
-        
-        self.cursor = self.connection.cursor()
-
-    def __query(self, query):
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
     
+    def __init__(self, user, password, host, port, database):
+        super().__init__(user, password, host, port, database)
+
     def get_list_of_files_already_processed(self):
         query = """
             SELECT DISTINCT LOWER(lab_id) || '/' || file_name AS file_path
             FROM "arboviroses"."combined_01_join_labs"
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_latest_date_of_lab_data(self):
@@ -122,7 +152,7 @@ class DWDatabaseInterface:
             GROUP BY lab_id
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_list_of_all_labs(self):
@@ -131,7 +161,7 @@ class DWDatabaseInterface:
             FROM "arboviroses"."combined_01_join_labs"
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_number_of_tests_per_lab_and_epiweek_in_this_year(self):
@@ -146,14 +176,17 @@ class DWDatabaseInterface:
             GROUP BY lab_id, epiweek_number
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_epiweek_number_of_latest_epiweeks(self):
         query = """
             SELECT 
                 unnest(
-                    ARRAY[week_num-4, week_num-3, week_num-2, week_num-1, week_num] 
+                    ARRAY[
+                        week_num-7, week_num-6, week_num-5, week_num-4, 
+                        week_num-3, week_num-2, week_num-1, week_num
+                    ] 
                 )
                 AS epiweek_number_5
             FROM arboviroses.epiweeks
@@ -162,12 +195,17 @@ class DWDatabaseInterface:
             AND CURRENT_DATE>=start_date
         """
 
-        records = self.__query(query)
+        records = super().query(query)
         return records
     
     def get_number_of_tests_per_lab_in_latest_epiweeks(self):
         epiweeks = self.get_epiweek_number_of_latest_epiweeks()
         lab_counts_by_epiweek = self.get_number_of_tests_per_lab_and_epiweek_in_this_year()
+        
+        epiweeks = [ epiweek[0] for epiweek in epiweeks ]
+        if lab_counts_by_epiweek is None:
+            return None
+        
         labs = self.get_list_of_all_labs()
         join_lab_and_epiweek = lambda lab, epiweek: f"{lab}-{epiweek:02d}"
 
@@ -175,9 +213,10 @@ class DWDatabaseInterface:
             join_lab_and_epiweek(lab, epiweek): count
             for lab, epiweek, count 
             in lab_counts_by_epiweek
+            if epiweek in epiweeks
         }
 
-        epiweeks = [ epiweek[0] for epiweek in epiweeks ]
+        
         labs = [ lab[0] for lab in labs ]
 
         for lab in labs:
@@ -186,6 +225,3 @@ class DWDatabaseInterface:
                     lab_counts_by_epiweek[join_lab_and_epiweek(lab, epiweek)] = 0
 
         return lab_counts_by_epiweek
-
-    def __del__(self):
-        self.connection.close()

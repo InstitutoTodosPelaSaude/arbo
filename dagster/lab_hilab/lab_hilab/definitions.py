@@ -8,7 +8,8 @@ from .assets import (
     hilab_raw, 
     hilab_all_assets_job, 
     new_hilab_file_sensor, 
-    hilab_remove_used_files
+    hilab_remove_used_files,
+    hilab_slack_failure_sensor
 )
 from .constants import dbt_project_dir
 from .schedules import schedules
@@ -20,5 +21,5 @@ defs = Definitions(
         "dbt": DbtCliResource(project_dir=os.fspath(dbt_project_dir)),
     },
     jobs=[hilab_all_assets_job],
-    sensors=[new_hilab_file_sensor],
+    sensors=[new_hilab_file_sensor, hilab_slack_failure_sensor],
 )

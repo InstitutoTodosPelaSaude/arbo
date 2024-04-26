@@ -4,17 +4,11 @@
         *
     FROM {{ model }}
     WHERE
-        "SC2_test_result" = 'NT' AND
-        "FLUA_test_result" = 'NT' AND
-        "FLUB_test_result" = 'NT' AND
-        "VSR_test_result" = 'NT' AND
-        "RINO_test_result" = 'NT' AND
-        "META_test_result" = 'NT' AND
-        "PARA_test_result" = 'NT' AND
-        "ADENO_test_result" = 'NT' AND
-        "BOCA_test_result" = 'NT' AND
-        "COVS_test_result" = 'NT' AND
-        "ENTERO_test_result" = 'NT' AND
-        "BAC_test_result" = 'NT'
-
+        "denv_test_result"  = 'NT' AND
+        "zikv_test_result"  = 'NT' AND
+        "chikv_test_result" = 'NT' AND
+        "yfv_test_result"   = 'NT' AND
+        "mayv_test_result"  = 'NT' AND
+        "orov_test_result"  = 'NT' AND
+        "wnv_test_result"   = 'NT'
 {% endtest %}

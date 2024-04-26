@@ -16,7 +16,8 @@ from dagster_dbt import (
     get_asset_key_for_model
 )
 from dagster.core.storage.pipeline_run import RunsFilter
-from dagster.core.storage.dagster_run import FINISHED_STATUSES
+from dagster.core.storage.dagster_run import FINISHED_STATUSES, DagsterRunStatus
+from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
 import pathlib
@@ -36,6 +37,8 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
+DAGSTER_SLACK_BOT_TOKEN = os.getenv('DAGSTER_SLACK_BOT_TOKEN')
+DAGSTER_SLACK_BOT_CHANNEL = os.getenv('DAGSTER_SLACK_BOT_CHANNEL')
 
 dagster_dbt_translator = DagsterDbtTranslator(
     settings=DagsterDbtTranslatorSettings(enable_asset_checks=True)
@@ -48,18 +51,15 @@ def hlagyn_raw(context):
     """
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
-    hlagyn_df = pd.DataFrame()
-    for file in os.listdir(HLAGYN_FILES_FOLDER):
-        if not file.endswith(HLAGYN_FILES_EXTENSION):
-            continue
+    hlagyn_files = [file for file in os.listdir(HLAGYN_FILES_FOLDER) if file.endswith(HLAGYN_FILES_EXTENSION)]
+    assert len(hlagyn_files) > 0, f"No files found in the folder {HLAGYN_FILES_FOLDER} with extension {HLAGYN_FILES_EXTENSION}"
 
-        df = pd.read_excel(HLAGYN_FILES_FOLDER / file, dtype = str)
-        if 'Unnamed: 0' in df.columns: 
-            # Some files have an empty row in the beginning
-            df = pd.read_excel(HLAGYN_FILES_FOLDER / file, skiprows=1, dtype = str)
-
-        df['file_name'] = file
-        hlagyn_df = pd.concat([hlagyn_df, df], ignore_index=True)
+    hlagyn_df = pd.read_excel(HLAGYN_FILES_FOLDER / hlagyn_files[0], dtype = str)
+    if 'Unnamed: 0' in hlagyn_df.columns: 
+        # Some files have an empty row in the beginning
+        hlagyn_df = pd.read_excel(HLAGYN_FILES_FOLDER / hlagyn_files[0], skiprows=1, dtype = str)
+    hlagyn_df['file_name'] = hlagyn_files[0]
+    context.log.info(f"Reading file {hlagyn_files[0]}")
         
     # Save to db
     hlagyn_df.to_sql('hlagyn_raw', engine, schema='arboviroses', if_exists='replace', index=False)
@@ -129,6 +129,19 @@ def new_hlagyn_file_sensor(context: SensorEvaluationContext):
 
     # If there are no runs running, run the job
     if last_run_status in FINISHED_STATUSES or last_run_status is None:
+        # Do not run if the last status is an error
+        if last_run_status == DagsterRunStatus.FAILURE:
+            return SkipReason(f"Last run status is an error status: {last_run_status}")
+
         yield RunRequest()
     else:
         yield SkipReason(f"There are files in the hlagyn folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")
+
+# Failure sensor that sends a message to slack
+hlagyn_slack_failure_sensor = make_slack_on_run_failure_sensor(
+    monitored_jobs=[hlagyn_all_assets_job],
+    slack_token=DAGSTER_SLACK_BOT_TOKEN,
+    channel=DAGSTER_SLACK_BOT_CHANNEL,
+    default_status=DefaultSensorStatus.RUNNING,
+    text_fn = lambda context: f"LAB JOB FAILED: {context.failure_event.message}"
+)

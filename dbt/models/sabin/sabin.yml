@@ -14,30 +14,71 @@ sources:
 models:
   - name: sabin_01_convert_types
     description: Convert types
+    columns:
+      - name: test_id
+        tests: &not_null_warn_error_if_gt_100
+          - not_null:
+              config:
+                severity: warn
+                error_if: ">100"
+      - name: date_testing
+        tests:
+          *not_null_warn_error_if_gt_100
+      - name: detalhe_exame
+        tests:
+          *not_null_warn_error_if_gt_100
+      - name: exame
+        tests:
+          *not_null_warn_error_if_gt_100
 
   - name: sabin_02_fix_values
     description: Convert types
     columns:
-      - name: sex
+      - name: sample_id
         tests:
+          - not_null
+
+      - name: test_kit
+        tests: &test_kit_tests
+          - not_null
+          - dbt_utils.not_accepted_values:
+              values: ["UNKNOWN"]
           - accepted_values:
-              values: ['F', 'M', 'UNKNOWN']
+              values: ["arbo_pcr_3","chikv_pcr","denv_pcr","igg_serum","igm_serum","mayv_pcr","ns1_antigen","orov_pcr","zikv_pcr"]
+
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1] # 0 = negative, 1 = positive
 
       - name: age
-        tests:
+        tests: &age_tests
           - dbt_utils.accepted_range:
               min_value: 0
               max_value: 150
-      
-      - name: result
+              inclusive: true
+              config:
+                severity: warn
+          - dbt_utils.not_null_proportion:
+              at_least: 0.99
+              config:
+                severity: warn
+          - not_null:
+              config:
+                severity: warn
+                error_if: ">100"
+
+      - name: sex
         tests:
           - accepted_values:
-              values: [-1, 0, 1]
-
-      - name: test_kit
+              values: ["M", "F"]
+    
+      - name: date_testing
         tests:
-          - dbt_utils.not_accepted_values:
-              values: ['UNKNOWN']
+          # date not in the future
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
       
   - name: sabin_03_deduplicate_denguegi
     description: Deduplicate data
@@ -59,22 +100,114 @@ models:
     tests:
       - dbt_utils.equal_rowcount:
           compare_model: ref('sabin_03_deduplicate_denguegi')
-          
+      - at_least_one_test_result_is_present
+      - only_one_test_result_is_present
+      - model_has_more_than_x_rows:
+          n_rows: 0
+
     columns:
       - name: test_id
         tests:
+          - not_null
           - relationships:
-              to: ref('sabin_03_deduplicate')
+              to: ref('sabin_03_deduplicate_denguegi')
               field: test_id
-      
       - name: sample_id
         tests:
+          - not_null
           - relationships:
-              to: ref('sabin_03_deduplicate')
+              to: ref('sabin_03_deduplicate_denguegi')
               field: sample_id
+      - name: test_kit
+        tests: *test_kit_tests
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+      - name: age
+        tests: *age_tests
+      - name: date_testing
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+      - name: DENV_test_result
+        tests: &test_pivot_test_result_columns
+          - not_null
+          - accepted_values:
+              values: [0, 1, -1]
+      - name: ZIKV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: CHIKV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: YFV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: MAYV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: OROV_test_result
+        tests: *test_pivot_test_result_columns
+      - name: WNV_test_result
+        tests: *test_pivot_test_result_columns
       
+  - name: sabin_05_fill_results
+    description: wip
+    tests:
+      - at_least_one_test_result_is_present_str
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('sabin_04_pivot_results')
+    columns:
+      - name: test_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('sabin_04_pivot_results')
+              field: test_id
+      - name: sample_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('sabin_04_pivot_results')
+              field: sample_id
+      - name: test_kit
+        tests: *test_kit_tests
+      - name: age
+        tests: *age_tests
+      - name: date_testing
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+      - name: qty_original_lines
+        tests:
+          - accepted_values: &qty_original_lines_accepted_range
+              config:
+                severity: warn
+                error_if: ">20"
+              values: [1, 2, 3, 4]
+              quote: false
+              
+      - name: denv_test_result
+        tests: &test_fill_values_test_result_columns
+          - not_null
+          - accepted_values:
+              values: ['Pos', 'Neg', 'NT']
+      - name: zikv_test_result
+        tests: *test_fill_values_test_result_columns
+      - name: chikv_test_result
+        tests: *test_fill_values_test_result_columns
+      - name: yfv_test_result
+        tests: *test_fill_values_test_result_columns
+      - name: mayv_test_result
+        tests: *test_fill_values_test_result_columns
+      - name: orov_test_result
+        tests: *test_fill_values_test_result_columns
+      - name: wnv_test_result
+        tests: *test_fill_values_test_result_columns
+
+
   - name: sabin_06_deduplicate
     description: Deduplicate data
+    tests:
+      - at_least_one_test_result_is_present_str
     columns:
       - name: test_id
         tests:

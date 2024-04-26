@@ -8,8 +8,8 @@ WITH source_data AS (
     {{ source("dagster", "einstein_raw") }}
 
 )
-SELECT
-    "accession" AS test_id,
+SELECT DISTINCT
+    "accession"::BIGINT::TEXT AS test_id,
     "sexo" AS sex,
     "idade"::INT AS age,
     "exame" AS exame,

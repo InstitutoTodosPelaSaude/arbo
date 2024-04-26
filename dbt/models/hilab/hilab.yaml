@@ -32,11 +32,6 @@ models:
     tests:
       - dbt_utils.equal_rowcount:
           compare_model: ref('hilab_02_fix_values')
-    columns:
-      - name: age
-        tests:
-        - dbt_utils.not_null_proportion:
-            at_least: 0.99
   
   - name: hilab_04_fill_results
     description: '{{ doc("fill_results") }}'

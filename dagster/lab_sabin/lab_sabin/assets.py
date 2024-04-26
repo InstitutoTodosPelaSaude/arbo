@@ -16,7 +16,8 @@ from dagster_dbt import (
     get_asset_key_for_model
 )
 from dagster.core.storage.pipeline_run import RunsFilter
-from dagster.core.storage.dagster_run import FINISHED_STATUSES
+from dagster.core.storage.dagster_run import FINISHED_STATUSES, DagsterRunStatus
+from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
 import pathlib
@@ -38,6 +39,8 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
+DAGSTER_SLACK_BOT_TOKEN = os.getenv('DAGSTER_SLACK_BOT_TOKEN')
+DAGSTER_SLACK_BOT_CHANNEL = os.getenv('DAGSTER_SLACK_BOT_CHANNEL')
 
 dagster_dbt_translator = DagsterDbtTranslator(
     settings=DagsterDbtTranslatorSettings(enable_asset_checks=True)
@@ -78,6 +81,7 @@ def sabin_raw(context):
 
     sabin_df = pd.read_csv(SABIN_FILES_FOLDER / sabin_files[0], dtype = str)
     sabin_df['file_name'] = sabin_files[0]
+    context.log.info(f"Reading file {sabin_files[0]}")
 
     # Save to db
     sabin_df.to_sql('sabin_raw', engine, schema='arboviroses', if_exists='replace', index=False)
@@ -148,6 +152,19 @@ def new_sabin_file_sensor(context: SensorEvaluationContext):
 
     # If there are no runs running, run the job
     if last_run_status in FINISHED_STATUSES or last_run_status is None:
+        # Do not run if the last status is an error
+        if last_run_status == DagsterRunStatus.FAILURE:
+            return SkipReason(f"Last run status is an error status: {last_run_status}")
+
         yield RunRequest()
     else:
         yield SkipReason(f"There are files in the sabin folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")
+
+# Failure sensor that sends a message to slack
+sabin_slack_failure_sensor = make_slack_on_run_failure_sensor(
+    monitored_jobs=[sabin_all_assets_job],
+    slack_token=DAGSTER_SLACK_BOT_TOKEN,
+    channel=DAGSTER_SLACK_BOT_CHANNEL,
+    default_status=DefaultSensorStatus.RUNNING,
+    text_fn = lambda context: f"LAB JOB FAILED: {context.failure_event.message}"
+)
