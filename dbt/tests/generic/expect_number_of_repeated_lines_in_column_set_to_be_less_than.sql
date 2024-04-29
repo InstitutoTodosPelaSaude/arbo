@@ -4,11 +4,14 @@
         COUNT(*)
     FROM
     (
+        -- Filter every line that is repeated more than once
+        -- Based on the columns that are passed
         SELECT COUNT(*), {{ columns }}
         FROM {{ model }}
         GROUP BY {{ columns }}
         HAVING COUNT(*) > 1
     ) _
     HAVING COUNT(*) > {{ max_value }} 
+    -- Test Fail if the number of repeated lines is greater than the max_value
 
 {% endtest %}
