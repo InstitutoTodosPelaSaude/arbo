@@ -79,7 +79,7 @@ source_data_fix_values AS (
 
         date_testing,
         location,
-        state,
+        {{ map_sigla_uf_to_name('state', null_if_not_match=True) }} AS state,
         
         CASE
 
