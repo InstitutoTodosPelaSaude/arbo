@@ -15,7 +15,11 @@ source_data_fix_values AS (
         MD5(
             CONCAT(
                 test_id,
-                exame
+                exame,
+                CASE exame
+                    WHEN 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' THEN detalhe_exame
+                    ELSE ''
+                END
                 -- Falta adicionar o detalhe do exame aqui
             )
         ) AS sample_id,
@@ -70,10 +74,10 @@ source_data_fix_values AS (
         "CodigoProcedimento",
 
         CASE 
-            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM'
-            THEN 'MAYV_IGG_IGM'
-            WHEN exame in ('CHIKUNGUNYA VIRUS IGM', 'CHIKUNGUNYA VIRUS IGG') AND detalhe_exame = 'RESUL' 
-            THEN 'CHIKV_IGG_IGM'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGG' THEN 'MAYV_IGG'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGM' THEN 'MAYV_IGM'
+            WHEN exame = 'CHIKUNGUNYA VIRUS IGM' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGM' 
+            WHEN exame = 'CHIKUNGUNYA VIRUS IGG' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGG'
             ELSE detalhe_exame
         END AS detalhe_exame,
 
