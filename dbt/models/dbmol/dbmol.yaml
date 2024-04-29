@@ -150,6 +150,7 @@ models:
     tests:
       - dbt_utils.equal_rowcount:
           compare_model: ref('dbmol_03_pivot_results')
+      - test_kit_contains_the_correct_pathogen_results
     description: wip
     columns:
       - name: sample_id
