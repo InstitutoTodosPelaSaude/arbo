@@ -32,6 +32,14 @@ models:
 
   - name: dbmol_02_fix_values
     description: wip
+    tests:
+      - expect_proportion_of_unique_values_in_column_set_to_be_between:
+          columns: test_id, detalhe_exame
+          min_value: 0.98
+          max_value: 1.01
+      - expect_number_of_repeated_lines_in_column_set_to_be_less_than:
+          columns: test_id, detalhe_exame
+          max_value: 1000
     columns:
       - name: sample_id
         tests:
@@ -81,6 +89,14 @@ models:
                 warn_if: "> 10"
           - dbt_utils.expression_is_true:
               expression: "<= current_date"
+      
+      - name: state
+        tests:
+          - accepted_uf_names
+          - not_null:
+              config:
+                severity: error
+                error_if: "> 100"
 
   - name: dbmol_03_pivot_results
     tests:
