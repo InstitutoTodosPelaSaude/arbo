@@ -89,15 +89,18 @@ SELECT
         ) THEN 'chikv_pcr'
 
         WHEN detalhe_exame IN (
-            'ZIKAPCRBIO'
+            'ZIKAPCRBIO',
+            'ZIKAV'
         ) THEN 'zikv_pcr'
 
         WHEN detalhe_exame IN (
-            'DEVORO'
+            'DEVORO',
+            'OROVPCR'
         ) THEN 'orov_pcr'
 
         WHEN detalhe_exame IN (
-            'RESMAYARO'
+            'RESMAYARO',
+            'MAYARO'
         ) THEN 'mayv_pcr'
 
         WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFIC'
@@ -126,6 +129,10 @@ SELECT
         WHEN result = 'DETECTADO (PRESENCA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 1
         WHEN result = 'DETECTADO DENGUE SOROTIPO 2' THEN 1
         WHEN result = 'PRESENCA DE MATERIAL GENETICO DO VIRUS DENGUE,' THEN 1
+        WHEN result = 'DETECTADO VIRUS DENGUE TIPO 1' THEN 1
+        WHEN result = 'DETECTADO VIRUS DENGUE TIPO 2' THEN 1
+        WHEN result = 'DETECTADO VIRUS DENGUE TIPO 3' THEN 1
+        WHEN result = 'DETECTADO VIRUS DENGUE TIPO 4' THEN 1
 
         WHEN result = 'NAO DETECTADO (AUSENCIA DE MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 0
         WHEN result = 'NAO DETECTADO (AUSENCIA DO MATERIAL GENETICO DO VIRUS CHIKUNGUNYA)' THEN 0
@@ -196,7 +203,8 @@ AND NOT result IN (
     '-',
     '*', 
     'E',
-    ''
+    '',
+    'TESTE'
 )
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
@@ -218,4 +226,11 @@ AND NOT detalhe_exame IN (
         -- 2022
         'TITULOMAYARO',
         'TITMAYIGM'
+        -- Momentaneamente até implementar divisão dos testes
+        'DENV1',
+        'DENV2',
+        'DENV3',
+        'DENV4',
+        'ZIKA1',
+        'ZIKA2'
     )
