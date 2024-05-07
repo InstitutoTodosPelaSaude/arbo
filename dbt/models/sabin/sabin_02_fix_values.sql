@@ -80,6 +80,9 @@ SELECT
         WHEN detalhe_exame = 'PCRDE' AND exame ILIKE 'DETECÇÃO MOLECULAR DO VÍRUS DENGUE COM GENOTIPAGEM'
         THEN 'denv_pcr'
 
+        WHEN detalhe_exame = 'DENV' AND exame ILIKE 'DETECÇÃO MOLECULAR DO VÍRUS DENGUE COM GENOTIPAGEM'
+        THEN 'denv_pcr'
+
         WHEN detalhe_exame = 'PCRD' AND exame ILIKE 'DETECÇÃO E TIPAGEM DO VÍRUS DA DENGUE'
         THEN 'denv_pcr'
 
@@ -157,6 +160,8 @@ SELECT
         WHEN result = 'REAGENTE 1:200' THEN 1
         WHEN result = 'REAGENTE''' THEN 1
 
+        WHEN result = 'DETECTADO' THEN 1
+
         -- 9999 or 99,99 or 99.99
         WHEN result ~ '[0-9]+[,.]*[0-9]*' AND result ~ '^[0-9]' THEN
             CASE 
@@ -225,7 +230,7 @@ AND NOT detalhe_exame IN (
         'YFIC',
         -- 2022
         'TITULOMAYARO',
-        'TITMAYIGM'
+        'TITMAYIGM',
         -- Momentaneamente até implementar divisão dos testes
         'DENV1',
         'DENV2',
