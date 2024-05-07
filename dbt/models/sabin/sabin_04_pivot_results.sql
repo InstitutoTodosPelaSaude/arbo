@@ -24,7 +24,8 @@ SELECT
                 'NS1ELISA',
                 'NS1IMUNOCRO',
                 'PCRDECT',
-                'PCRD'
+                'PCRD',
+                'DENV'
             ], 
             'detalhe_exame', 
             'result', 
@@ -40,7 +41,8 @@ SELECT
                 'ZIKAM2',
                 'ZIKAIGG2',
                 'ZIKAPCRBIO',
-                'VIRUSZICACT'
+                'VIRUSZICACT',
+                'ZIKAV'
             ], 
             'detalhe_exame', 
             'result', 
@@ -76,7 +78,8 @@ SELECT
             [
                 'MAYROVIGG',
                 'MAYVIGM',
-                'RESMAYARO'
+                'RESMAYARO',
+                'MAYARO'
             ], 
             'detalhe_exame', 
             'result', 
@@ -86,7 +89,8 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                'DEVORO'
+                'DEVORO',
+                'OROVPCR'
             ], 
             'detalhe_exame', 
             'result', 
