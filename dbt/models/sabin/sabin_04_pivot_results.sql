@@ -66,7 +66,8 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                'YFIC'
+                'YFIC',
+                'YFV'
             ], 
             'detalhe_exame', 
             'result', 

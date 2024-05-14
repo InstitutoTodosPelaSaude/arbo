@@ -109,6 +109,9 @@ SELECT
         WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFIC'
         THEN 'yfv_pcr'
 
+        WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFV'
+        THEN 'yfv_pcr'
+
         ELSE 'UNKNOWN'
     END AS test_kit,
 

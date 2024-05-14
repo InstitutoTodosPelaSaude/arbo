@@ -135,3 +135,4 @@ AND NOT (
     OR result ILIKE 'INFERIOR A 1/%'
     OR result ILIKE 'SUPERIOR A 1/%'
 )
+AND test_id NOT IN ('6330770357_400')
