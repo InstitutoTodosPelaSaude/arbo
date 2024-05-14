@@ -41,7 +41,8 @@ SELECT
                 'AACHIM',
                 'CHIKUN',
                 'CHIKV',
-                'CHIKV_IGG_IGM'
+                'CHIKV_IGG',
+                'CHIKV_IGM',
             ], 
             'detalhe_exame', 
             'result', 
@@ -61,7 +62,8 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                'MAYV_IGG_IGM'
+                'MAYV_IGG',
+                'MAYV_IGM',
             ], 
             'detalhe_exame', 
             'result', 
