@@ -10,7 +10,7 @@
         'MINAS GERAIS','PARA','PARAIBA','PARANA','PERNAMBUCO','PIAUI',
         'RIO DE JANEIRO','RIO GRANDE DO NORTE','RIO GRANDE DO SUL',
         'RONDONIA','RORAIMA','SANTA CATARINA','SAO PAULO','SERGIPE','TOCANTINS',
-        'NOT_REPORTED' -- Não informado
+        'NOT REPORTED' -- Não informado
     )
 
 {% endtest %}
