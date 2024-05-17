@@ -14,7 +14,7 @@ WITH source_data AS (
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE -- FILTER USEFUL TEST KITS FOR EACH PATHOGEN
         CASE 
-            WHEN "DENV_test_result" IN ('Pos', 'Neg') THEN test_kit IN ('arbo_pcr_3', 'ns1_antigen')
+            WHEN "DENV_test_result" IN ('Pos', 'Neg') THEN test_kit IN ('arbo_pcr_3', 'ns1_antigen', 'arbo_pcr')
             ELSE TRUE
         END
 )
