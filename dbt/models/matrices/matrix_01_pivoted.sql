@@ -7,6 +7,7 @@ WITH source_data AS (
         epiweek_enddate,
         lab_id,
         "month",
+        CASE WHEN region IS NULL THEN 'NOT REPORTED' ELSE region END AS region,
         CASE WHEN state IS NULL THEN 'NOT REPORTED' ELSE state END AS state,
         CASE WHEN state_code IS NULL THEN 'NOT REPORTED' ELSE state_code END AS state_code,
         CASE WHEN country IS NULL THEN 'NOT REPORTED' ELSE country END AS country,
