@@ -34,9 +34,11 @@ WITH source_data AS (
     GROUP BY epiweek_enddate, state_code
 )
 SELECT
-    epiweek_enddate as "Semanas epidemiológicas",
+    epiweek_enddate as "Semanas epidemiológicas"
     {% for state in results_list %}
-        MAX(CASE WHEN state_code = '{{ state }}' THEN "DENV" ELSE NULL END) AS "{{ state }}"{% if not loop.last %},{% endif %}
+        {% if loop.first %},{% endif %}
+        MAX(CASE WHEN state_code = '{{ state }}' THEN "DENV" ELSE NULL END) AS "{{ state }}"
+        {% if not loop.last %},{% endif %}
     {% endfor %}
 FROM source_data
 GROUP BY epiweek_enddate
