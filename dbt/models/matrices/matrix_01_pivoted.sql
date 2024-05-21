@@ -5,6 +5,7 @@ WITH source_data AS (
         sample_id,
         test_kit,
         epiweek_enddate,
+        epiweek_number,
         lab_id,
         "month",
         CASE WHEN region IS NULL THEN 'NOT REPORTED' ELSE region END AS region,
