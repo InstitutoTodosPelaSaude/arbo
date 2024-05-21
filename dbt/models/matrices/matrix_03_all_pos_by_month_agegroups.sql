@@ -20,7 +20,10 @@ SELECT
     "CHIKV",
     "DENV",
     "OROV",
-    "ZIKV"
+    "ZIKV",
+    "YFV",
+    "MAYV",
+    "WNV"
 FROM source_data
 ORDER BY "month", age_group
     
