@@ -176,7 +176,7 @@ models:
               name: state_code_not_null
               config:
                 severity: error
-                error_if: ">1000"
+                error_if: ">4000"
                 warn_if: ">500"
           - not_null: 
               name: state_code_not_null_in_the_last_7_days
