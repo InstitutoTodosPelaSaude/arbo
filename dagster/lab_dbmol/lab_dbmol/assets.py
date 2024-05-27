@@ -1,21 +1,32 @@
 from dagster import (
-    AssetExecutionContext,
-    asset,
+    AssetExecutionContext, 
+    asset, 
+    sensor,
+    define_asset_job,
+    RunRequest, 
+    SkipReason, 
+    SensorEvaluationContext,
     MaterializeResult, 
-    MetadataValue
+    MetadataValue,
+    DefaultSensorStatus
 )
+from textwrap import dedent
 from dagster_dbt import (
     DbtCliResource, 
     dbt_assets,
     DagsterDbtTranslator,
-    DagsterDbtTranslatorSettings
+    DagsterDbtTranslatorSettings,
+    get_asset_key_for_model
 )
-from textwrap import dedent
+from dagster.core.storage.pipeline_run import RunsFilter
+from dagster.core.storage.dagster_run import FINISHED_STATUSES, DagsterRunStatus
+from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
 import pathlib
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+import shutil
 
 from .constants import dbt_manifest_path
 
@@ -77,3 +88,29 @@ def dbmol_raw(context):
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
+@asset(
+    compute_kind="python", 
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "dbmol_final")]
+)
+def dbmol_remove_used_files(context):
+    """
+    Remove the files that were used in the dbt process
+    """
+    raw_data_table = 'dbmol_raw'
+    files_in_folder = [file for file in os.listdir(DBMOL_FILES_FOLDER) if file.endswith(DBMOL_FILES_EXTENSION)]
+
+    # Get the files that were used in the dbt process
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+    used_files = pd.read_sql_query(f"SELECT DISTINCT file_name FROM arboviroses.{raw_data_table}", engine).file_name.to_list()
+    engine.dispose()
+
+    # Remove the files that were used
+    path_to_move = DBMOL_FILES_FOLDER / "_out"
+    for used_file in used_files:
+        if used_file in files_in_folder:
+            context.log.info(f"Moving file {used_file} to {path_to_move}")
+            shutil.move(DBMOL_FILES_FOLDER / used_file, path_to_move / used_file)
+    
+    # Log the unmoved files
+    files_in_folder = os.listdir(DBMOL_FILES_FOLDER)
+    context.log.info(f"Files that were not moved: {files_in_folder}")
