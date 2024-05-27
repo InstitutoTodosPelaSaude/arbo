@@ -178,10 +178,11 @@ models:
                 severity: error
                 error_if: ">4000"
                 warn_if: ">500"
+                where: "state != 'NOT REPORTED'"
           - not_null: 
               name: state_code_not_null_in_the_last_7_days
               config:
                 severity: error
                 error_if: ">100"
                 warn_if: ">10"
-                where: "date_testing >= CURRENT_DATE - INTERVAL '7 days'"
+                where: "(date_testing >= CURRENT_DATE - INTERVAL '7 days') AND state != 'NOT REPORTED'"
