@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 WITH source_data AS (
 
     SELECT * FROM
@@ -5,7 +7,7 @@ WITH source_data AS (
 
 )
 SELECT
-    "NumeroPedido" AS test_id,
+    "NumeroPedido"::BIGINT::TEXT AS test_id,
     "Sexo" AS sex,
     -- "idade"::INT AS age,
     {{ normalize_text("Procedimento") }} AS exame,
