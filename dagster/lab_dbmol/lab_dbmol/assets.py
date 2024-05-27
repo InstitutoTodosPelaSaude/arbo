@@ -120,7 +120,8 @@ dbmol_all_assets_job = define_asset_job(name="dbmol_all_assets_job")
 
 @sensor(
     job=dbmol_all_assets_job,
-    default_status=DefaultSensorStatus.RUNNING
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=15 # 15 seconds
 )
 def new_dbmol_file_sensor(context: SensorEvaluationContext):
     """
