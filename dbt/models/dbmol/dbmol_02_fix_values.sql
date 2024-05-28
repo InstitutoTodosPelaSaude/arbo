@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 {% set result_is_numeric = "result ~ '[0-9]+[.]*[0-9]*' AND result ~ '^[0-9]'" %}
 {% set INDETERMINADO   = -3 %}
 {% set NAO_RECONHECIDO = -2 %}

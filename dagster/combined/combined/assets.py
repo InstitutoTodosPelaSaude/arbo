@@ -82,7 +82,8 @@ combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
         AssetKey("hilab_05_final"), 
         AssetKey("hlagyn_05_final"), 
         AssetKey("sabin_07_final"), 
-        AssetKey("fleury_06_final")
+        AssetKey("fleury_06_final"),
+        AssetKey("dbmol_final")
     ],
     job=combined_all_assets_job,
     default_status=DefaultSensorStatus.RUNNING,
@@ -108,7 +109,8 @@ def run_combined_sensor(context: SensorEvaluationContext):
         'hilab_all_assets_job', 
         'hlagyn_all_assets_job', 
         'sabin_all_assets_job', 
-        'fleury_all_assets_job'
+        'fleury_all_assets_job',
+        'dbmol_all_assets_job'
     ]
 
     # Check if there are new lab assets completed and run combined if it is true

@@ -1,4 +1,5 @@
 {{ config(materialized='table') }}
+
 {{ 
     dbt_utils.deduplicate(
         relation=ref('dbmol_04_fill_results'),

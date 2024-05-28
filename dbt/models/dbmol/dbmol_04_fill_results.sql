@@ -1,8 +1,4 @@
-{{ 
-    config(
-        materialized='table',
-    ) 
-}}
+{{ config(materialized='table') }}
 
 {%set test_result_columns = [
         'denv_test_result',
