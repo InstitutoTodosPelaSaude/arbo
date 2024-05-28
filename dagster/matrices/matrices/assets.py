@@ -160,6 +160,51 @@ def export_matrices_to_tsv():
 
         df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
 
+@asset(
+    compute_kind="python", 
+    deps=[
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups_renamed"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_epiweek_state"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_agegroups"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state_filtered"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_year"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_pos_neg_by_epiweek"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_totaltests_by_epiweek_region"),
+    ]
+)
+def export_matrices_to_xlsx():
+    """
+    Export all new matrices to XLSX files. The XLSX files are saved to the `matrices` folder.
+    """
+
+    
+    # Connect to the database
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+
+    # Get the list of matrix tables
+    matrix_tables = pd.read_sql_query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'", engine).table_name.tolist()
+    matrix_tables = [
+        table for table in matrix_tables 
+        if table.startswith('matrix_NEW_') 
+        and table[7] != '0' # Avoid exporting tables like matrix_02_CUBE_pos_neg_results
+    ]
+
+    # Create the matrices folder if it doesn't exist
+    path = 'data/matrices'
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+
+    # Export each matrix table to a TSV file
+    for table in matrix_tables:
+        df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
+        df = df.fillna(0)
+
+        # cast everything to int
+        df = df.astype(int, errors='ignore')
+
+        df.to_excel(f'{path}/{table}.xlsx', index=False)
+
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
 
 @asset_sensor(
