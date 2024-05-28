@@ -9,8 +9,8 @@ EMBUGUACU,SAO PAULO,EMBU GUACU,missing space in the hyphenated name
 JIPARANA,RONDONIA,JI PARANA,missing space in the hyphenated name
 JABOATAO,PERNAMBUCO,JABOATAO DOS GUARARAPES,mistake in the name of the city
 GUARILHOS,SAO PAULO,GUARULHOS,mistake in the name of the city
-CONTROL LAB,NOT_REPORTED,NOT REPORTED,error in the name of the city
-VALUE,NOT_REPORTED,NOT REPORTED,error in the name of the city
+CONTROL LAB,NOT REPORTED,NOT REPORTED,error in the name of the city
+VALUE,NOT REPORTED,NOT REPORTED,error in the name of the city
 SOBRADINHO,DISTRITO FEDERAL,BRASILIA,Map DF district region to brasilia city
 TAGUATINGA,DISTRITO FEDERAL,BRASILIA,Map DF district region to brasilia city
 GUARA,DISTRITO FEDERAL,BRASILIA,Map DF district region to brasilia city

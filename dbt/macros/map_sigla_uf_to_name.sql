@@ -27,6 +27,6 @@
         WHEN 'SP' THEN 'SAO PAULO'
         WHEN 'SE' THEN 'SERGIPE'
         WHEN 'TO' THEN 'TOCANTINS'
-        ELSE {% if null_if_not_match %} 'NOT_REPORTED' {% else %} {{column}} {% endif %}
+        ELSE {% if null_if_not_match %} 'NOT REPORTED' {% else %} {{column}} {% endif %}
     END
 {% endmacro %}
