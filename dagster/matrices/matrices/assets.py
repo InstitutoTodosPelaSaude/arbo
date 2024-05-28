@@ -154,10 +154,6 @@ def export_matrices_to_tsv():
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
         df = df.fillna(0)
 
-        if not 'posrate' in table:
-            # cast everything to int
-            df = df.astype(int, errors='ignore')
-
         df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
 
 @asset(
@@ -199,9 +195,6 @@ def export_matrices_to_xlsx():
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
         df = df.fillna(0)
-
-        # cast everything to int
-        df = df.astype(int, errors='ignore')
 
         df.to_excel(f'{path}/{table}.xlsx', index=False)
 
