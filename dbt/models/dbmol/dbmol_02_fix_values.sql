@@ -76,8 +76,8 @@ source_data_fix_values AS (
         "CodigoProcedimento",
 
         CASE 
-            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGG' THEN 'MAYV_IGG'
-            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGM' THEN 'MAYV_IGM'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame IN ('IGG', 'TITG') THEN 'MAYV_IGG'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame IN ('IGM', 'TITM') THEN 'MAYV_IGM'
             WHEN exame = 'CHIKUNGUNYA VIRUS IGM' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGM' 
             WHEN exame = 'CHIKUNGUNYA VIRUS IGG' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGG'
             ELSE detalhe_exame
@@ -116,8 +116,8 @@ source_data_fix_values AS (
                 ( exame ILIKE 'PAINEL DE ARBOVIROSES%' AND detalhe_exame IN ('CHIKUN', 'DENGUE', 'ZIKAV') ) -- PZDC
             THEN
                 CASE 
-                    WHEN result IN ('POSITIVO', 'DETECTADO')     THEN 1
-                    WHEN result IN ('NEGATIVO', 'NAO DETECTADO') THEN 0
+                    WHEN result IN ('POSITIVO', 'POSITIVA', 'DETECTADO')     THEN 1
+                    WHEN result IN ('NEGATIVO', 'NEGATIVA', 'NAO DETECTADO') THEN 0
                     ELSE {{ NAO_RECONHECIDO }}
                 END
 
@@ -125,7 +125,9 @@ source_data_fix_values AS (
             WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM'
             THEN
                 CASE
-                    WHEN result ILIKE 'INFERIOR A %' THEN 0
+                    WHEN result ILIKE 'INFERIOR A %'             THEN 0
+                    WHEN result IN ('POSITIVO', 'DETECTADO')     THEN 1
+                    WHEN result IN ('NEGATIVO', 'NAO DETECTADO') THEN 0
                     ELSE {{ NAO_RECONHECIDO }}
                 END
 
