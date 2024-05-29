@@ -56,7 +56,8 @@ SELECT
                 'RCHIKUNGMELISAIGG',
                 'RCHIKUNGMELISAIGM',
                 'CHIKVPCR-BIOMOL',
-                'PCRCHIKCT'
+                'PCRCHIKCT',
+                'CHIKUPCR'
             ], 
             'detalhe_exame', 
             'result', 
