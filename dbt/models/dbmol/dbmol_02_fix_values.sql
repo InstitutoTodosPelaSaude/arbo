@@ -116,8 +116,8 @@ source_data_fix_values AS (
                 ( exame ILIKE 'PAINEL DE ARBOVIROSES%' AND detalhe_exame IN ('CHIKUN', 'DENGUE', 'ZIKAV') ) -- PZDC
             THEN
                 CASE 
-                    WHEN result IN ('POSITIVO', 'DETECTADO')     THEN 1
-                    WHEN result IN ('NEGATIVO', 'NAO DETECTADO') THEN 0
+                    WHEN result IN ('POSITIVO', 'POSITIVA', 'DETECTADO')     THEN 1
+                    WHEN result IN ('NEGATIVO', 'NEGATIVA', 'NAO DETECTADO') THEN 0
                     ELSE {{ NAO_RECONHECIDO }}
                 END
 
@@ -125,7 +125,9 @@ source_data_fix_values AS (
             WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM'
             THEN
                 CASE
-                    WHEN result ILIKE 'INFERIOR A %' THEN 0
+                    WHEN result ILIKE 'INFERIOR A %'             THEN 0
+                    WHEN result IN ('POSITIVO', 'DETECTADO')     THEN 1
+                    WHEN result IN ('NEGATIVO', 'NAO DETECTADO') THEN 0
                     ELSE {{ NAO_RECONHECIDO }}
                 END
 
@@ -152,8 +154,12 @@ source_data_fix_values AS (
         'TDENGE',
         'ZIKA'
     )
-    AND NOT detalhe_exame IN ('MAT', 'MATERIAL', 'METODO', 'SOROTI')
+    AND NOT detalhe_exame IN (
+        'MAT', 'MATERIAL', 'METODO', 'SOROTI',
+        'TITG', 'TITM' -- MAYARO TIT
+    )
     AND NOT result IN ('RESULTADO CONFERIDO E LIBERADO.')
+    AND NOT result ILIKE '%RESULTADO FORMATADO%'
 )
 SELECT
     *
