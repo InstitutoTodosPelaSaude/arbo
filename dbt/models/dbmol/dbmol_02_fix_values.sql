@@ -76,8 +76,8 @@ source_data_fix_values AS (
         "CodigoProcedimento",
 
         CASE 
-            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame IN ('IGG', 'TITG') THEN 'MAYV_IGG'
-            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame IN ('IGM', 'TITM') THEN 'MAYV_IGM'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGG' THEN 'MAYV_IGG'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGM' THEN 'MAYV_IGM'
             WHEN exame = 'CHIKUNGUNYA VIRUS IGM' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGM' 
             WHEN exame = 'CHIKUNGUNYA VIRUS IGG' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGG'
             ELSE detalhe_exame
@@ -154,7 +154,10 @@ source_data_fix_values AS (
         'TDENGE',
         'ZIKA'
     )
-    AND NOT detalhe_exame IN ('MAT', 'MATERIAL', 'METODO', 'SOROTI')
+    AND NOT detalhe_exame IN (
+        'MAT', 'MATERIAL', 'METODO', 'SOROTI',
+        'TITG', 'TITM' -- MAYARO TIT
+    )
     AND NOT result IN ('RESULTADO CONFERIDO E LIBERADO.')
     AND NOT result ILIKE '%RESULTADO FORMATADO%'
 )
