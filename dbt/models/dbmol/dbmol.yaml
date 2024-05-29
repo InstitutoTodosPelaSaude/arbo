@@ -55,7 +55,7 @@ models:
           - dbt_utils.not_accepted_values:
               values: ["UNKNOWN"]
           - accepted_values:
-              name: test_kit_accepted_values
+              name: dbmol_test_kit_accepted_values
               values: ["igm_serum", "igg_serum", "ns1_antigen", "denv_pcr", "zikv_pcr", "chikv_pcr", "arbo_pcr_3"]
       - name: result
         tests:
