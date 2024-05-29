@@ -156,6 +156,7 @@ source_data_fix_values AS (
     )
     AND NOT detalhe_exame IN ('MAT', 'MATERIAL', 'METODO', 'SOROTI')
     AND NOT result IN ('RESULTADO CONFERIDO E LIBERADO.')
+    AND NOT result ILIKE '%RESULTADO FORMATADO%'
 )
 SELECT
     *
