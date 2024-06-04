@@ -250,5 +250,5 @@ AND NOT detalhe_exame IN (
 AND NOT (
     -- Remover exames com detalhe_exame YFV e exame PAINEL MOLECULAR PARA DENGUE
     -- Inconsistência de dados
-    detalhe_exame IN 'YFV' AND exame ILIKE 'PAINEL MOLECULAR PARA DENGUE %'
+    detalhe_exame IN ('YFV') AND exame ILIKE 'PAINEL MOLECULAR PARA DENGUE %'
 )
