@@ -89,7 +89,8 @@ SELECT
         WHEN detalhe_exame IN (
             'CHIKVPCR-BIOMOL',
             'PCRCHIKCT',
-            'CHIKUPCR'
+            'CHIKUPCR',
+            'CHICK'
         ) THEN 'chikv_pcr'
 
         WHEN detalhe_exame IN (
