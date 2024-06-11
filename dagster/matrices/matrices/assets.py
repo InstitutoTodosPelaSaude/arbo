@@ -193,8 +193,11 @@ def export_matrices_to_xlsx():
 
     # Export each matrix table to a TSV file
     for table in matrix_tables:
-        df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
+        df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine, dtype='str')
+        
         df = df.fillna(0)
+        df = df.fillna('0')
+        df = df.fillna('0.0')
 
         df.to_excel(f'{path}/{table}.xlsx', index=False)
 
