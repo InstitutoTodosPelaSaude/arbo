@@ -201,7 +201,10 @@ SELECT
     file_name
 
 FROM source_data
-WHERE not detalhe_exame in ('OBSGERALINTERNA', 'FEBREGLC', 'FEBREMLC')
+WHERE NOT detalhe_exame in (
+    'OBSGERALINTERNA', 
+    'FEBREGLC', 'FEBREMLC' -- Redundance of results
+)
 AND result IS NOT NULL
 AND NOT result IN (
     -- Historical data 2022 and 2023
@@ -218,29 +221,34 @@ AND NOT result IN (
 )
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
-        'ADOLFOLUTZPDF',
-        
-        -- Redundância de exames Chikungunya ELISA IgM e IgG
-        'RCHIKUNGMIMUNOG',
-        'RCHIKUGMIMUNOM',
-        -- Febre Amarela (Yellow Fever)
-        'YF',
-        -- Febre do Nilo Ocidental
-        'FLAVIRUS',
+    'ADOLFOLUTZPDF',
+    
+    -- Redundância de exames Chikungunya ELISA IgM e IgG
+    'RCHIKUNGMIMUNOG',
+    'RCHIKUGMIMUNOM',
+    -- Febre Amarela (Yellow Fever)
+    'YF',
+    -- Febre do Nilo Ocidental
+    'FLAVIRUS',
 
-        -- Redundância de exames
-        'CHIKUNGMIMUN',
-        'CHIKUNGGIMUN',
-        'PCRCHIKCT'
-        'YFIC',
-        -- 2022
-        'TITULOMAYARO',
-        'TITMAYIGM',
-        -- Momentaneamente até implementar divisão dos testes
-        'DENV1',
-        'DENV2',
-        'DENV3',
-        'DENV4',
-        'ZIKA1',
-        'ZIKA2'
-    )
+    -- Redundância de exames
+    'CHIKUNGMIMUN',
+    'CHIKUNGGIMUN',
+    'PCRCHIKCT'
+    'YFIC',
+    -- 2022
+    'TITULOMAYARO',
+    'TITMAYIGM',
+    -- Momentaneamente até implementar divisão dos testes
+    'DENV1',
+    'DENV2',
+    'DENV3',
+    'DENV4',
+    'ZIKA1',
+    'ZIKA2'
+)
+AND NOT (
+    -- Remover exames com detalhe_exame YFV e exame PAINEL MOLECULAR PARA DENGUE
+    -- Inconsistência de dados
+    detalhe_exame IN ('YFV') AND exame ILIKE 'PAINEL MOLECULAR PARA DENGUE %'
+)
