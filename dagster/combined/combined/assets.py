@@ -63,16 +63,15 @@ def export_to_tsv(context):
     # Create data folder if not exists
     pathlib.Path('data/combined').mkdir(parents=True, exist_ok=True)
 
-    # Export to xlsx
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-    df = pd.read_sql('select * from arboviroses."combined_05_location"', engine)
-    df.to_csv('data/combined/combined.tsv', sep='\t', index=False)
+    cursor = engine.raw_connection().cursor()
+
+    # Export data
+    with open('data/combined/combined.tsv', 'w') as file:
+        cursor.copy_expert('COPY (SELECT * FROM arboviroses."combined_05_location") TO STDOUT WITH CSV DELIMITER E\'\t\' HEADER', file)
+
     engine.dispose()
 
-    context.add_output_metadata({
-        'num_rows': df.shape[0],
-        # 'laboratories': df['laboratory'].nunique(),
-    })
 
 combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
 
