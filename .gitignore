@@ -11,6 +11,7 @@ data/**/*.csv
 data/**/*.tsv
 data/**/*.json
 data/**/*.parquet
+data/**/*.zip
 
 **/.DS_Store
 tmp*/

@@ -25,6 +25,7 @@ import pathlib
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from time import sleep
+import zipfile
 
 from .constants import dbt_manifest_path
 
@@ -73,6 +74,19 @@ def export_to_tsv(context):
         'num_rows': df.shape[0],
         # 'laboratories': df['laboratory'].nunique(),
     })
+
+@asset(
+    compute_kind="python", 
+    deps=[export_to_tsv]
+)
+def zip_exported_file(context):
+    """
+    Zip the combined exported file
+    """
+    with zipfile.ZipFile('data/combined/combined.zip', 'w',
+                         compression=zipfile.ZIP_DEFLATED,
+                         compresslevel=9) as zf:
+        zf.write('data/combined/combined.tsv', arcname='combined.tsv')
 
 combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
 
