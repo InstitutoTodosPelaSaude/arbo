@@ -3,7 +3,7 @@
 WITH source_data AS (
     SELECT
         epiweek_enddate,
-        MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" ELSE NULL END) AS "DENV_posrate",
+        MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" * 100 ELSE NULL END) AS "DENV_posrate",
         SUM(CASE WHEN pathogen = 'DENV' THEN "Pos" ELSE 0 END) AS "DENV_pos",
         SUM(CASE WHEN pathogen = 'DENV' THEN "Neg" ELSE 0 END) AS "DENV_neg"
     FROM {{ ref("matrix_02_epiweek") }}
