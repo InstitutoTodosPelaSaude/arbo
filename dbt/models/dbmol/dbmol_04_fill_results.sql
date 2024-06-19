@@ -26,7 +26,6 @@ SELECT
     age,
     location,
     state,
-    result,
     date_testing,
     file_name,
 
