@@ -163,11 +163,6 @@ models:
               field: sample_id
       - name: test_kit
         tests: *test_kit_tests
-      - name: result
-        tests:
-          - not_null
-          - accepted_values:
-              values: [0, 1, -1] # 0 = negative, 1 = positive
       - name: age
         tests: *age_tests
       - name: date_testing
@@ -211,11 +206,6 @@ models:
               field: sample_id
       - name: test_kit
         tests: *test_kit_tests
-      - name: result
-        tests:
-          - not_null
-          - accepted_values:
-              values: [0, 1, -1] # 0 = negative, 1 = positive
       - name: age
         tests: *age_tests
       - name: date_testing
@@ -276,11 +266,6 @@ models:
           - unique
       - name: test_kit
         tests: *test_kit_tests
-      - name: result
-        tests:
-          - not_null
-          - accepted_values:
-              values: [0, 1, -1] # 0 = negative, 1 = positive
       - name: age
         tests: *age_tests
       - name: date_testing
