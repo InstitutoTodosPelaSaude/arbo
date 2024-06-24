@@ -20,9 +20,9 @@ source_data_fix_values AS (
                 exame,
                 CASE exame
                     WHEN 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' THEN detalhe_exame
+                    WHEN 'ANTICORPOS ANTI CHIKUNGUNYA IGG E IGM' THEN detalhe_exame
                     ELSE ''
                 END
-                -- Falta adicionar o detalhe do exame aqui
             )
         ) AS sample_id,
 
