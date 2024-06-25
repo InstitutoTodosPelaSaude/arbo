@@ -4,7 +4,7 @@ WITH source_data AS (
     SELECT
         epiweek_enddate,
         age_group,
-        MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" ELSE 0 END) AS "DENV"
+        MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" * 100 ELSE NULL END) AS "DENV"
     FROM {{ ref("matrix_02_epiweek_agegroups") }}
     GROUP BY epiweek_enddate, age_group
 )
