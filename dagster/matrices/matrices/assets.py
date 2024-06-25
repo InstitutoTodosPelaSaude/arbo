@@ -118,6 +118,8 @@ def country_agegroup_matrices():
         state_epiweek_matrices,
         country_agegroup_matrices,
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups_renamed"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ARBO_pos_by_month_agegroups_renamed"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_month_agegroups_renamed"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_epiweek_state"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_agegroups"),
@@ -132,6 +134,15 @@ def export_matrices_to_tsv():
     """
     Export all matrices to TSV files. The TSV files are saved to the `matrices` folder.
     """
+
+    file_names = {'matrix_NEW_DENV_posrate_by_epiweek_year':'01_DENV_line_posrate_direct_week_country_years', 
+                  'matrix_NEW_DENV_posrate_pos_neg_by_epiweek':'02_DENV_line_bar_posrate_posneg_direct_week_country',
+                  'matrix_NEW_DENV_totaltests_by_epiweek_region':'03_DENV_bar_total_direct_weeks_regions',
+                  'matrix_NEW_DENV_posrate_by_epiweek_state_filtered':'04_DENV_line_posrate_direct_weeks_states',
+                  'matrix_NEW_DENV_posrate_by_epiweek_agegroups':'06_DENV_heat_posrate_agegroups_week_country',
+                  'matrix_NEW_DENV_pos_by_month_agegroups_renamed':'07_DENV_barH_pos_agegroups_month_country',
+                  'matrix_NEW_ARBO_pos_by_month_agegroups_renamed':'08_Arbo_barH_pos_agegroups_month_country'
+                  }
 
     
     # Connect to the database
@@ -154,12 +165,18 @@ def export_matrices_to_tsv():
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
         df = df.fillna(0)
 
-        df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
+        try:
+            new_name = file_names[table]
+            df.to_csv(f'{path}/{new_name}.tsv', sep='\t', index=False)
+        except:
+            df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
 
 @asset(
     compute_kind="python", 
     deps=[
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups_renamed"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ARBO_pos_by_month_agegroups_renamed"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_month_agegroups_renamed"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_epiweek_state"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_agegroups"),
@@ -175,6 +192,14 @@ def export_matrices_to_xlsx():
     Export all new matrices to XLSX files. The XLSX files are saved to the `matrices` folder.
     """
 
+    file_names = {'matrix_NEW_DENV_posrate_by_epiweek_year':'01_DENV_line_posrate_direct_week_country_years', 
+                  'matrix_NEW_DENV_posrate_pos_neg_by_epiweek':'02_DENV_line_bar_posrate_posneg_direct_week_country',
+                  'matrix_NEW_DENV_totaltests_by_epiweek_region':'03_DENV_bar_total_direct_weeks_regions',
+                  'matrix_NEW_DENV_posrate_by_epiweek_state_filtered':'04_DENV_line_posrate_direct_weeks_states',
+                  'matrix_NEW_DENV_posrate_by_epiweek_agegroups':'06_DENV_heat_posrate_agegroups_week_country',
+                  'matrix_NEW_DENV_pos_by_month_agegroups_renamed':'07_DENV_barH_pos_agegroups_month_country',
+                  'matrix_NEW_ARBO_pos_by_month_agegroups_renamed':'08_Arbo_barH_pos_agegroups_month_country'
+                  }
     
     # Connect to the database
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
@@ -199,7 +224,12 @@ def export_matrices_to_xlsx():
         df = df.fillna('0')
         df = df.fillna('0.0')
 
-        df.to_excel(f'{path}/{table}.xlsx', index=False)
+        try:
+            new_name = file_names[table]
+            df.to_excel(f'{path}/{new_name}.xlsx', index=False)
+        except:
+            df.to_excel(f'{path}/{table}.xlsx', index=False)
+
 
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
 
