@@ -6,6 +6,7 @@ WITH source_data AS (
         age_group,
         SUM(CASE WHEN pathogen = 'DENV' THEN "Pos" ELSE 0 END) AS "DENV"
     FROM {{ ref("matrix_02_month_agegroups") }}
+    WHERE age_group != 'NOT REPORTED'
     GROUP BY "month", age_group
 )
 SELECT
