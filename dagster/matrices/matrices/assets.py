@@ -148,13 +148,10 @@ def export_matrices_to_tsv():
     # Connect to the database
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
-    # Get the list of matrix tables
-    matrix_tables = pd.read_sql_query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'", engine).table_name.tolist()
-    matrix_tables = [
-        table for table in matrix_tables 
-        if table.startswith('matrix_') 
-        and table[7] != '0' # Avoid exporting tables like matrix_02_CUBE_pos_neg_results
-    ]
+    # List of matrix tables
+    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 'matrix_NEW_DENV_totaltests_by_epiweek_region',
+                     'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
+                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed']
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
@@ -204,13 +201,10 @@ def export_matrices_to_xlsx():
     # Connect to the database
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
-    # Get the list of matrix tables
-    matrix_tables = pd.read_sql_query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'", engine).table_name.tolist()
-    matrix_tables = [
-        table for table in matrix_tables 
-        if table.startswith('matrix_NEW_') 
-        and table[7] != '0' # Avoid exporting tables like matrix_02_CUBE_pos_neg_results
-    ]
+    # List of matrix tables
+    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 'matrix_NEW_DENV_totaltests_by_epiweek_region',
+                     'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
+                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed']
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'

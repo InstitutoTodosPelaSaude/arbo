@@ -21,6 +21,7 @@ WITH source_data AS (
         "OROV_test_result",
         "WNV_test_result"
     FROM {{ ref("combined_05_location") }}
+    WHERE epiweek_enddate < CURRENT_DATE AND epiweek_enddate >= '2022-01-01'
 )
 SELECT
     combined.*,

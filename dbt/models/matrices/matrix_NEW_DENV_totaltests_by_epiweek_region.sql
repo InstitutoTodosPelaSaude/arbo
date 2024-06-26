@@ -6,6 +6,7 @@ WITH source_data AS (
         region,
         SUM(CASE WHEN pathogen = 'DENV' THEN "totaltests" ELSE 0 END) AS "DENV"
     FROM {{ ref("matrix_02_epiweek_regions") }}
+    WHERE region != 'NOT REPORTED'
     GROUP BY epiweek_enddate, region
 )
 SELECT

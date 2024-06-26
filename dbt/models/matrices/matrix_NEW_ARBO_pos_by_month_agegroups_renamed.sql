@@ -11,6 +11,7 @@ WITH source_data AS (
         SUM(CASE WHEN pathogen = 'OROV' THEN "Pos" ELSE 0 END) AS "OROV",
         SUM(CASE WHEN pathogen = 'WNV' THEN "Pos" ELSE 0 END) AS "WNV"
     FROM {{ ref("matrix_02_month_agegroups") }}
+    WHERE age_group != 'NOT REPORTED'
     GROUP BY "month", age_group
 )
 SELECT
