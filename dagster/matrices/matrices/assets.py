@@ -125,7 +125,7 @@ def country_agegroup_matrices():
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_agegroups"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state_filtered"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_year"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_year"), 
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_pos_neg_by_epiweek"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_totaltests_by_epiweek_region"),
     ]
@@ -149,9 +149,13 @@ def export_matrices_to_tsv():
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
     # List of matrix tables
-    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 'matrix_NEW_DENV_totaltests_by_epiweek_region',
-                     'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
-                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed']
+    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 
+                     'matrix_NEW_DENV_totaltests_by_epiweek_region', 'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 
+                     'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
+                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed', 
+                     'matrix_NEW_ALL_pos_by_month_agegroups_renamed', 'matrix_NEW_DENV_pos_by_epiweek_state',
+                     'matrix_NEW_ALL_pos_by_month_agegroups', 'matrix_NEW_DENV_posrate_by_epiweek_state'
+                     ]
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
@@ -202,9 +206,13 @@ def export_matrices_to_xlsx():
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
     # List of matrix tables
-    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 'matrix_NEW_DENV_totaltests_by_epiweek_region',
-                     'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
-                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed']
+    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 
+                     'matrix_NEW_DENV_totaltests_by_epiweek_region', 'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 
+                     'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
+                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed', 
+                     'matrix_NEW_ALL_pos_by_month_agegroups_renamed', 'matrix_NEW_DENV_pos_by_epiweek_state',
+                     'matrix_NEW_ALL_pos_by_month_agegroups', 'matrix_NEW_DENV_posrate_by_epiweek_state'
+                     ]
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
