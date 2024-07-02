@@ -2,9 +2,9 @@
 
 {# 
     This model is a filtered version of the matrix_03_denv_posrate_by_epiweek_state.sql model.
-    It filters the states that have a fill rate of at least 70%.
+    It filters the states that have a fill rate of at least 50%.
 #}
-{% set state_fill_threshold = 0.7 %} 
+{% set state_fill_threshold = 0.5 %} 
 
 {% set get_state_codes %}
     SELECT distinct state_code
