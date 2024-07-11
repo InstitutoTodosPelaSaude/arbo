@@ -10,7 +10,7 @@ WITH source_data AS (
         SUM(CASE WHEN pathogen = 'MAYV' THEN "Pos" ELSE 0 END) AS "MAYV",
         SUM(CASE WHEN pathogen = 'OROV' THEN "Pos" ELSE 0 END) AS "OROV",
         SUM(CASE WHEN pathogen = 'WNV' THEN "Pos" ELSE 0 END) AS "WNV"
-    FROM {{ ref("matrix_02_month_agegroups") }}
+    FROM {{ ref("matrix_02_arbo_month_agegroups") }}
     WHERE age_group != 'NOT REPORTED'
     GROUP BY "month", age_group
 )
