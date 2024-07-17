@@ -61,12 +61,8 @@ SELECT
         -- Fix ages in the format 5, 10, 100, etc
         WHEN regexp_like(age, '\d+') 
         THEN age::int
-
-        -- Keep null values
-        WHEN NULL
-        THEN NULL
         
-        ELSE -1
+        ELSE NULL
     END AS age,
 
     CASE pathogen
