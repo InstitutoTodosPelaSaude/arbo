@@ -167,6 +167,8 @@ SELECT
 
         WHEN result = 'DETECTADO' THEN 1
 
+        WHEN result
+
         -- 9999 or 99,99 or 99.99
         WHEN result ~ '[0-9]+[,.]*[0-9]*' AND result ~ '^[0-9]' THEN
             CASE 
@@ -245,7 +247,10 @@ AND NOT detalhe_exame IN (
     'DENV3',
     'DENV4',
     'ZIKA1',
-    'ZIKA2'
+    'ZIKA2',
+    -- Momentaneamente até saber como tratar
+    'FENILOM',
+    'FENILOG'
 )
 AND NOT (
     -- Remover exames com detalhe_exame YFV e exame PAINEL MOLECULAR PARA DENGUE
