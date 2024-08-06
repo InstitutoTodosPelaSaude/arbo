@@ -114,9 +114,6 @@ def country_agegroup_matrices():
 @asset(
     compute_kind="python", 
     deps=[
-        country_epiweek_matrices,
-        state_epiweek_matrices,
-        country_agegroup_matrices,
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups_renamed"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ARBO_pos_by_month_agegroups_renamed"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_month_agegroups_renamed"),
@@ -125,13 +122,24 @@ def country_agegroup_matrices():
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_agegroups"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state_filtered"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_year"), 
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_year"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_pos_neg_by_epiweek"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_totaltests_by_epiweek_region"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_cities"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_states"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_states")
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "01_DENV_line_posrate_direct_week_country_years"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "02_DENV_line_bar_posrate_posneg_direct_week_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "03_DENV_bar_total_direct_weeks_regions"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "04_DENV_line_posrate_direct_weeks_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "06_DENV_heat_posrate_agegroups_week_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "07_DENV_barH_pos_agegroups_month_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "08_Arbo_barH_pos_agegroups_month_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_cities"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities")
     ]
 )
 def export_matrices_to_tsv():
@@ -139,32 +147,16 @@ def export_matrices_to_tsv():
     Export all matrices to TSV files. The TSV files are saved to the `matrices` folder.
     """
 
-    file_names = {'matrix_NEW_DENV_posrate_by_epiweek_year':'01_DENV_line_posrate_direct_week_country_years', 
-                  'matrix_NEW_DENV_posrate_pos_neg_by_epiweek':'02_DENV_line_bar_posrate_posneg_direct_week_country',
-                  'matrix_NEW_DENV_totaltests_by_epiweek_region':'03_DENV_bar_total_direct_weeks_regions',
-                  'matrix_NEW_DENV_posrate_by_epiweek_state_filtered':'04_DENV_line_posrate_direct_weeks_states',
-                  'matrix_NEW_DENV_posrate_by_epiweek_agegroups':'06_DENV_heat_posrate_agegroups_week_country',
-                  'matrix_NEW_DENV_pos_by_month_agegroups_renamed':'07_DENV_barH_pos_agegroups_month_country',
-                  'matrix_NEW_ARBO_pos_by_month_agegroups_renamed':'08_Arbo_barH_pos_agegroups_month_country',
-                  'matrix_NEW_DENV_pos_direct_states':'11_DENV_map_pos_direct_states',
-                  'matrix_NEW_DENV_pos_direct_cities':'11_DENV_map_pos_direct_cities',
-                  'matrix_NEW_CHIKV_pos_direct_states':'12_CHIKV_map_pos_direct_states',
-                  'matrix_NEW_CHIKV_pos_direct_cities':'12_CHIKV_map_pos_direct_cities'
-                  }
-
     
     # Connect to the database
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
     # List of matrix tables
-    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 
-                     'matrix_NEW_DENV_totaltests_by_epiweek_region', 'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 
-                     'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
-                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed', 'matrix_NEW_DENV_pos_direct_cities', 'matrix_NEW_DENV_pos_direct_states',
-                     'matrix_NEW_CHIKV_pos_direct_cities', 'matrix_NEW_CHIKV_pos_direct_states',
-                     'matrix_NEW_ALL_pos_by_month_agegroups_renamed', 'matrix_NEW_DENV_pos_by_epiweek_state',
-                     'matrix_NEW_ALL_pos_by_month_agegroups', 'matrix_NEW_DENV_posrate_by_epiweek_state'
-                     ]
+    matrix_tables = ['01_DENV_line_posrate_direct_week_country_years', '02_DENV_line_bar_posrate_posneg_direct_week_country',
+                     '03_DENV_bar_total_direct_weeks_regions', '04_DENV_line_posrate_direct_weeks_states',
+                     '06_DENV_heat_posrate_agegroups_week_country', '07_DENV_barH_pos_agegroups_month_country',
+                     '08_Arbo_barH_pos_agegroups_month_country', '11_DENV_map_pos_direct_states', '11_DENV_map_pos_direct_cities', 
+                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities']
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
@@ -175,11 +167,6 @@ def export_matrices_to_tsv():
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
         df = df.fillna(0)
 
-        try:
-            new_name = file_names[table]
-            df.to_csv(f'{path}/{new_name}.tsv', sep='\t', index=False)
-        except:
-            df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
 
 @asset(
     compute_kind="python", 
@@ -198,37 +185,34 @@ def export_matrices_to_tsv():
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_cities"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_states"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_states")
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "01_DENV_line_posrate_direct_week_country_years"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "02_DENV_line_bar_posrate_posneg_direct_week_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "03_DENV_bar_total_direct_weeks_regions"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "04_DENV_line_posrate_direct_weeks_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "06_DENV_heat_posrate_agegroups_week_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "07_DENV_barH_pos_agegroups_month_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "08_Arbo_barH_pos_agegroups_month_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_cities"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_states"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities")
     ]
 )
 def export_matrices_to_xlsx():
     """
     Export all new matrices to XLSX files. The XLSX files are saved to the `matrices` folder.
     """
-
-    file_names = {'matrix_NEW_DENV_posrate_by_epiweek_year':'01_DENV_line_posrate_direct_week_country_years', 
-                  'matrix_NEW_DENV_posrate_pos_neg_by_epiweek':'02_DENV_line_bar_posrate_posneg_direct_week_country',
-                  'matrix_NEW_DENV_totaltests_by_epiweek_region':'03_DENV_bar_total_direct_weeks_regions',
-                  'matrix_NEW_DENV_posrate_by_epiweek_state_filtered':'04_DENV_line_posrate_direct_weeks_states',
-                  'matrix_NEW_DENV_posrate_by_epiweek_agegroups':'06_DENV_heat_posrate_agegroups_week_country',
-                  'matrix_NEW_DENV_pos_by_month_agegroups_renamed':'07_DENV_barH_pos_agegroups_month_country',
-                  'matrix_NEW_ARBO_pos_by_month_agegroups_renamed':'08_Arbo_barH_pos_agegroups_month_country',
-                  'matrix_NEW_DENV_pos_direct_states':'11_DENV_map_pos_direct_states',
-                  'matrix_NEW_DENV_pos_direct_cities':'11_DENV_map_pos_direct_cities'
-                  }
     
     # Connect to the database
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
     # List of matrix tables
-    matrix_tables = ['matrix_NEW_DENV_posrate_by_epiweek_year', 'matrix_NEW_DENV_posrate_pos_neg_by_epiweek', 
-                     'matrix_NEW_DENV_totaltests_by_epiweek_region', 'matrix_NEW_DENV_posrate_by_epiweek_state_filtered', 
-                     'matrix_NEW_DENV_posrate_by_epiweek_agegroups', 'matrix_NEW_DENV_pos_by_month_agegroups_renamed',
-                     'matrix_NEW_ARBO_pos_by_month_agegroups_renamed', 'matrix_NEW_DENV_pos_direct_cities', 'matrix_NEW_DENV_pos_direct_states',
-                     'matrix_NEW_CHIKV_pos_direct_cities', 'matrix_NEW_CHIKV_pos_direct_states',
-                     'matrix_NEW_ALL_pos_by_month_agegroups_renamed', 'matrix_NEW_DENV_pos_by_epiweek_state',
-                     'matrix_NEW_ALL_pos_by_month_agegroups', 'matrix_NEW_DENV_posrate_by_epiweek_state'
-                     ]
+    matrix_tables = ['01_DENV_line_posrate_direct_week_country_years', '02_DENV_line_bar_posrate_posneg_direct_week_country',
+                     '03_DENV_bar_total_direct_weeks_regions', '04_DENV_line_posrate_direct_weeks_states',
+                     '06_DENV_heat_posrate_agegroups_week_country', '07_DENV_barH_pos_agegroups_month_country',
+                     '08_Arbo_barH_pos_agegroups_month_country', '11_DENV_map_pos_direct_states', '11_DENV_map_pos_direct_cities', 
+                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities']
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
@@ -242,11 +226,7 @@ def export_matrices_to_xlsx():
         df = df.fillna('0')
         df = df.fillna('0.0')
 
-        try:
-            new_name = file_names[table]
-            df.to_excel(f'{path}/{new_name}.xlsx', index=False)
-        except:
-            df.to_excel(f'{path}/{table}.xlsx', index=False)
+        df.to_excel(f'{path}/{table}.xlsx', index=False)
 
 
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
