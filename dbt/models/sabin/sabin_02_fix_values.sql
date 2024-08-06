@@ -167,8 +167,6 @@ SELECT
 
         WHEN result = 'DETECTADO' THEN 1
 
-        WHEN result
-
         -- 9999 or 99,99 or 99.99
         WHEN result ~ '[0-9]+[,.]*[0-9]*' AND result ~ '^[0-9]' THEN
             CASE 
