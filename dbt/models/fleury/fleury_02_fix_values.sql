@@ -62,7 +62,7 @@ SELECT
         WHEN regexp_like(age, '\d+') 
         THEN age::int
         
-        ELSE -1
+        ELSE NULL
     END AS age,
 
     CASE pathogen
