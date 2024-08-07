@@ -245,7 +245,10 @@ AND NOT detalhe_exame IN (
     'DENV3',
     'DENV4',
     'ZIKA1',
-    'ZIKA2'
+    'ZIKA2',
+    -- Momentaneamente até saber como tratar
+    'FENILOM',
+    'FENILOG'
 )
 AND NOT (
     -- Remover exames com detalhe_exame YFV e exame PAINEL MOLECULAR PARA DENGUE
