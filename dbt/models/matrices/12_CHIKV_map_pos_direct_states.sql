@@ -31,6 +31,7 @@ source_data AS (
     SELECT
         epiweek_enddate,
         state_code,
+        state,
         pathogen,
         {{ matrices_metrics('result') }}
     FROM {{ ref("matrix_01_pivoted") }}
@@ -38,7 +39,7 @@ source_data AS (
         "CHIKV_test_result" IN ('Pos', 'Neg') AND 
         test_kit NOT IN ('igg_serum') AND
         epiweek_enddate >= '{{ epiweek_start }}'
-    GROUP BY epiweek_enddate, state_code, pathogen
+    GROUP BY epiweek_enddate, state_code, state, pathogen
 ),
 
 -- CTE que calcula a soma de casos por combinação de semana e estado, garantindo que
@@ -46,33 +47,36 @@ source_data AS (
 source_data_sum AS (
     SELECT
         e.epiweek_enddate as "semanas epidemiologicas",
-        e.state_code as "state",
+        e.state_code AS "state_code",
+        s.state AS "state",
         COALESCE(SUM(CASE WHEN s.pathogen = 'CHIKV' THEN s."Pos" ELSE 0 END), 0) as "cases"
     FROM epiweeks_states e
     LEFT JOIN source_data s 
     ON e.epiweek_enddate = s.epiweek_enddate 
     AND e.state_code = s.state_code
-    GROUP BY e.epiweek_enddate, e.state_code
+    GROUP BY e.epiweek_enddate, e.state_code, s.state
 ),
 
 -- CTE que calcula a soma cumulativa de casos por estado, ordenando por semana
 source_data_cumulative_sum AS (
     SELECT
         "semanas epidemiologicas",
+        "state_code",
         "state",
         "cases" AS "epiweek_cases",
         SUM("cases") OVER (PARTITION BY "state" ORDER BY "semanas epidemiologicas") as "cumulative_cases"
     FROM source_data_sum
-    ORDER BY "semanas epidemiologicas", "state"
+    ORDER BY "semanas epidemiologicas", "state_code", "state"
 )
 
 -- Seleção final das colunas desejadas, ordenada por semana e estado
 SELECT
     "semanas epidemiologicas",
+    "state_code",
     "state",
-    "epiweek_cases",
-    "cumulative_cases"
+    "epiweek_cases"::INTEGER,
+    "cumulative_cases"::INTEGER
 FROM source_data_cumulative_sum
 WHERE "cumulative_cases" > 0
-ORDER BY "semanas epidemiologicas", "state"
+ORDER BY "semanas epidemiologicas", "state_code"
     

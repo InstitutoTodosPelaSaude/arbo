@@ -166,6 +166,7 @@ def export_matrices_to_tsv():
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
         df = df.fillna(0)
+        df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
 
 
 @asset(
