@@ -200,7 +200,7 @@ def export_matrices_to_tsv():
         get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities")
     ]
 )
-def export_matrices_to_xlsx():
+def export_matrices_to_xlsx(context):
     """
     Export all new matrices to XLSX files. The XLSX files are saved to the `matrices` folder.
     """
@@ -219,13 +219,15 @@ def export_matrices_to_xlsx():
     path = 'data/matrices'
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
+    # Delete all the files in the folder, ignoring the .gitkeep file
+    for file in os.listdir(path):
+        if file != '.gitkeep':
+            os.remove(os.path.join(path, file))
+            context.log.info(f'Deleted {file}')
+
     # Export each matrix table to a TSV file
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine, dtype='str')
-        
-        df = df.fillna(0)
-        df = df.fillna('0')
-        df = df.fillna('0.0')
 
         df.to_excel(f'{path}/{table}.xlsx', index=False)
 
