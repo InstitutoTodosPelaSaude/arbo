@@ -139,7 +139,8 @@ def country_agegroup_matrices():
         get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_states"),
         get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_cities"),
         get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities")
+        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_ALL_count_by_labid_testkit_pathogen_result")
     ]
 )
 def export_matrices_to_tsv():
@@ -156,7 +157,8 @@ def export_matrices_to_tsv():
                      '03_DENV_bar_total_direct_weeks_regions', '04_DENV_line_posrate_direct_weeks_states',
                      '06_DENV_heat_posrate_agegroups_week_country', '07_DENV_barH_pos_agegroups_month_country',
                      '08_Arbo_barH_pos_agegroups_month_country', '11_DENV_map_pos_direct_states', '11_DENV_map_pos_direct_cities', 
-                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities']
+                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities',
+                     'matrix_ALL_count_by_labid_testkit_pathogen_result']
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
@@ -197,7 +199,8 @@ def export_matrices_to_tsv():
         get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_states"),
         get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_cities"),
         get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities")
+        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_ALL_count_by_labid_testkit_pathogen_result")
     ]
 )
 def export_matrices_to_xlsx(context):
@@ -213,7 +216,8 @@ def export_matrices_to_xlsx(context):
                      '03_DENV_bar_total_direct_weeks_regions', '04_DENV_line_posrate_direct_weeks_states',
                      '06_DENV_heat_posrate_agegroups_week_country', '07_DENV_barH_pos_agegroups_month_country',
                      '08_Arbo_barH_pos_agegroups_month_country', '11_DENV_map_pos_direct_states', '11_DENV_map_pos_direct_cities', 
-                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities']
+                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities',
+                     'matrix_ALL_count_by_labid_testkit_pathogen_result']
 
     # Create the matrices folder if it doesn't exist
     path = 'data/matrices'
