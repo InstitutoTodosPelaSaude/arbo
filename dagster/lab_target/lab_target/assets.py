@@ -90,32 +90,32 @@ def target_raw(context):
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
-# @asset(
-#     compute_kind="python", 
-#     deps=[get_asset_key_for_model([arboviroses_dbt_assets], "target_final")]
-# )
-# def target_remove_used_files(context):
-#     """
-#     Remove the files that were used in the dbt process
-#     """
-#     raw_data_table = 'target_raw'
-#     files_in_folder = [file for file in os.listdir(TARGET_FILES_FOLDER) if file.endswith(DBMOL_FILES_EXTENSION)]
+@asset(
+    compute_kind="python", 
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "target_final")]
+)
+def target_remove_used_files(context):
+    """
+    Remove the files that were used in the dbt process
+    """
+    raw_data_table = 'target_raw'
+    files_in_folder = [file for file in os.listdir(TARGET_FILES_FOLDER) if file.endswith(TARGET_FILES_EXTENSION)]
 
-#     # Get the files that were used in the dbt process
-#     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-#     used_files = pd.read_sql_query(f"SELECT DISTINCT file_name FROM arboviroses.{raw_data_table}", engine).file_name.to_list()
-#     engine.dispose()
+    # Get the files that were used in the dbt process
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+    used_files = pd.read_sql_query(f"SELECT DISTINCT file_name FROM arboviroses.{raw_data_table}", engine).file_name.to_list()
+    engine.dispose()
 
-#     # Remove the files that were used
-#     path_to_move = TARGET_FILES_FOLDER / "_out"
-#     for used_file in used_files:
-#         if used_file in files_in_folder:
-#             context.log.info(f"Moving file {used_file} to {path_to_move}")
-#             shutil.move(TARGET_FILES_FOLDER / used_file, path_to_move / used_file)
+    # Remove the files that were used
+    path_to_move = TARGET_FILES_FOLDER / "_out"
+    for used_file in used_files:
+        if used_file in files_in_folder:
+            context.log.info(f"Moving file {used_file} to {path_to_move}")
+            shutil.move(TARGET_FILES_FOLDER / used_file, path_to_move / used_file)
     
-#     # Log the unmoved files
-#     files_in_folder = os.listdir(TARGET_FILES_FOLDER)
-#     context.log.info(f"Files that were not moved: {files_in_folder}")
+    # Log the unmoved files
+    files_in_folder = os.listdir(TARGET_FILES_FOLDER)
+    context.log.info(f"Files that were not moved: {files_in_folder}")
 
 target_all_assets_job = define_asset_job(name="target_all_assets_job")
 
