@@ -68,6 +68,13 @@ WITH source_data AS (
     'DBMOL' as lab_id,
     {{ columns | join(', ') }}
     FROM {{ ref("dbmol_final") }}
+
+    UNION
+
+    SELECT
+    'TARGET' as lab_id,
+    {{ columns | join(', ') }}
+    FROM {{ ref("target_final") }}
     
 )
 SELECT
