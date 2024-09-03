@@ -67,6 +67,7 @@ SELECT
         WHEN exame IN ('DENVQL') THEN 'denv_pcr'
         WHEN exame IN ('CHIKVQL') THEN 'chikv_pcr'
         WHEN exame IN ('ZIKVQL') THEN 'zika_pcr'
+        WHEN exame IN ('PMDZC') THEN 'arbo_pcr_3'
     END AS test_kit,
     CASE 
         WHEN result = 'NAO DETECTADO' THEN 0
@@ -74,4 +75,4 @@ SELECT
     END AS result,
     file_name
 FROM source_table
-WHERE exame IN ('DENVQL', 'CHIKVQL', 'ZIKVQL') -- REMOVE RESPAT-RELATED TESTS
+WHERE exame NOT IN ('RESCAP02', 'COV19SWI','COVID19','COVID19U', 'RESCAP04', 'COV19LVI') -- REMOVE RESPAT-RELATED TESTS
