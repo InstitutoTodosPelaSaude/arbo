@@ -11,7 +11,8 @@ SELECT
     {{ 
         pivot_pathogen_results(
             [
-                'RES1'
+                'RES1', 
+                'DENV'
             ], 
             'detalhe_exame', 
             'result', 
