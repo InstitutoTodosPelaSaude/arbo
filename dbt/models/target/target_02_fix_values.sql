@@ -66,7 +66,7 @@ SELECT
     CASE
         WHEN exame IN ('DENVQL') THEN 'denv_pcr'
         WHEN exame IN ('CHIKVQL') THEN 'chikv_pcr'
-        WHEN exame IN ('ZIKVQL') THEN 'zika_pcr'
+        WHEN exame IN ('ZIKVQL') THEN 'zikv_pcr'
         WHEN exame IN ('PMDZC') THEN 'arbo_pcr_3'
     END AS test_kit,
     CASE 
