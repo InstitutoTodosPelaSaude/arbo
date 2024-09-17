@@ -105,7 +105,7 @@ models:
           - dbt_utils.not_accepted_values:
               values: ["UNKNOWN"]
           - accepted_values:
-              values: ["denv_pcr", "chikv_pcr", "zika_pcr", "arbo_pcr_3"]     
+              values: ["denv_pcr", "chikv_pcr", "zikv_pcr", "arbo_pcr_3"]     
 
   - name: target_03_pivot_results
     description: wip
