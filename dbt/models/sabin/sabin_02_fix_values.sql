@@ -151,6 +151,7 @@ SELECT
         WHEN result = 'NAO DETECTADO RNA DO VIRUS DA DENGUE' THEN 0
         WHEN result = 'NAO DETECTADO' THEN 0
         WHEN result = 'AUSENCIA DE MATERIAL GENETICO DO VIRUS ZIKA,' THEN 0
+        WHEN result = 'NAO' THEN 0
         
         WHEN result = 'DETECTAVEL' THEN 1
         WHEN result = 'INDETECTAVEL' THEN 0
