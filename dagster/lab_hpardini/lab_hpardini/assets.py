@@ -51,7 +51,7 @@ def hpardini_raw(context):
 
     # Read the file
     context.log.info(f"Reading file {hpardini_files[0]}")
-    hpardini_df = pd.read_csv(HPARDINI_FILES_FOLDER / hpardini_files[0], dtype = str)
+    hpardini_df = pd.read_csv(HPARDINI_FILES_FOLDER / hpardini_files[0], dtype = str, sep=';', encoding='latin-1')
     hpardini_df['file_name'] = hpardini_files[0]
 
     # Save to db
