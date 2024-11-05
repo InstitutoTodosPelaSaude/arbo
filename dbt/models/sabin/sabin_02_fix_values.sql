@@ -218,7 +218,11 @@ AND NOT result IN (
     '*', 
     'E',
     '',
-    'TESTE'
+    'TESTE',
+    'XXXXXX',
+    'XXXXXXX',
+    'XXXXXXXX',
+    'XXXXXXXXX'
 )
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
