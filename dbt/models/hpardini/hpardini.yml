@@ -112,6 +112,9 @@ models:
       - model_has_more_than_x_rows:
           n_rows: 0
     columns:
+
+      # IDENTIFICATION AND DEDUPLICATION TESTS
+      # ======================================
       - name: sample_id
         tests: 
           - not_null
@@ -121,6 +124,53 @@ models:
       - name: test_id
         tests:
           - not_null
+
+      # BASIC INFORMATION
+      # ======================================
+      - name: test_kit
+        tests: *test_kit_tests
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1] # 0 = negative, 1 = positive
+      - name: age
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 120
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+              config:
+                severity: warn
+          - not_null:
+              name: hpardini_03_age_not_null_last_7_days
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: ">10"
+                where: "date_testing > CURRENT_DATE - INTERVAL '7 days'"
+      - name: state
+        tests: 
+          - accepted_uf_names
+          - not_null:
+              name: hpardini_03_state_not_null_last_7_days
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: ">10"
+                where: "date_testing > CURRENT_DATE - INTERVAL '7 days'"
+          - not_null:
+              name: hpardini_03_state_not_null
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: ">10"
+      - name: sex
+        tests:
+          - accepted_values:
+              values: ["M", "F"]
+
 
 
   - name: hpardini_04_fill_results
@@ -132,6 +182,9 @@ models:
       - model_has_more_than_x_rows:
           n_rows: 0
     columns:
+
+      # IDENTIFICATION AND DEDUPLICATION TESTS
+      # ======================================
       - name: sample_id
         tests: 
           - not_null
@@ -153,45 +206,67 @@ models:
                 severity: error
                 error_if: ">100"
                 warn_if: ">10"
-      - name: SC2_test_result
-        quote: true
-        tests: &test_fill_values_test_result_columns
+                
+      # BASIC INFORMATION
+      # ======================================
+      - name: test_kit
+        tests: *test_kit_tests
+      - name: age
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 120
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+              config:
+                severity: warn
+          - not_null:
+              name: hpardini_04_age_not_null_last_7_days
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: ">10"
+                where: "date_testing > CURRENT_DATE - INTERVAL '7 days'"
+      - name: state
+        tests: 
+          - accepted_uf_names
+          - not_null:
+              name: hpardini_04_state_not_null_last_7_days
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: ">10"
+                where: "date_testing > CURRENT_DATE - INTERVAL '7 days'"
+          - not_null:
+              name: hpardini_04_state_not_null
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: ">10"
+      - name: sex
+        tests:
+          - accepted_values:
+              values: ["M", "F"]
+
+      # PATHOGEN TEST RESULTS
+      # ======================================
+      - name: DENV_test_result
+        tests: &test_pivot_test_result_columns_str
           - not_null
           - accepted_values:
               values: ['Pos', 'Neg', 'NT']
-      - name: FLUA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: FLUB_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: VSR_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: RINO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: META_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: PARA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: ADENO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: BOCA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: COVS_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: ENTERO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: BAC_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
+      - name: ZIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: CHIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: YFV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: MAYV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: OROV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: WNV_test_result
+        tests: *test_pivot_test_result_columns_str
 
 
   - name: hpardini_05_deduplicate
@@ -287,44 +362,22 @@ models:
           - accepted_values:
               values: ["M", "F"]
 
-      # Pathogen test results
+      # PATHOGEN TEST RESULTS
       # ======================================
-      - name: SC2_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: FLUA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: FLUB_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: VSR_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: RINO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: META_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: PARA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: ADENO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: BOCA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: COVS_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: ENTERO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: BAC_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
+      - name: DENV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: ZIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: CHIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: YFV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: MAYV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: OROV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: WNV_test_result
+        tests: *test_pivot_test_result_columns_str
 
 
   - name: hpardini_final
@@ -411,41 +464,19 @@ models:
         tests:
           - dbt_expectations.expect_column_to_exist
 
-      # Pathogen test results
+      # PATHOGEN TEST RESULTS
       # ======================================
-      - name: SC2_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: FLUA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: FLUB_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: VSR_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: RINO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: META_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: PARA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: ADENO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: BOCA_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: COVS_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: ENTERO_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
-      - name: BAC_test_result
-        quote: true
-        tests: *test_fill_values_test_result_columns
+      - name: DENV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: ZIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: CHIKV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: YFV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: MAYV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: OROV_test_result
+        tests: *test_pivot_test_result_columns_str
+      - name: WNV_test_result
+        tests: *test_pivot_test_result_columns_str
