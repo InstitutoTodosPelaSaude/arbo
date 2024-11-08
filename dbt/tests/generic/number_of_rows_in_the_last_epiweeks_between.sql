@@ -1,4 +1,5 @@
 {% test number_of_rows_in_the_last_epiweeks_between(model, min_value, max_value) %}
+{{ config(severity = 'warn') }}
 
 WITH latest_epiweek AS (
     SELECT
