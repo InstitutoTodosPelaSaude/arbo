@@ -87,13 +87,13 @@ class FileSystem():
             print(f"Error listing files in MinIO: {e}")
             
 
-    def save_content_in_file(self, relative_path, content, file_name):
+    def save_content_in_file(self, relative_path, content, file_name, log_context = None):
         try:
             if not relative_path.endswith("/"):
                 relative_path += "/"
                 
             object_name = self.root_path + relative_path + file_name
-            object_name = str(object_name)
+            object_name = str(object_name).replace("//", "/")
 
             self.client.put_object(
                 self.bucket_name,
@@ -105,6 +105,8 @@ class FileSystem():
             return True
         except Exception as e:
             print(f'Error saving content in file: {e}')
+            if log_context:
+                log_context.error(f'Error saving content in file: {e}')
             return False
 
 
