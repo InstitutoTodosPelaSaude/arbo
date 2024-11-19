@@ -21,6 +21,8 @@ from dagster.core.storage.dagster_run import FINISHED_STATUSES
 from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
+import io
+import sys
 import pathlib
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
@@ -28,6 +30,11 @@ from time import sleep
 import zipfile
 
 from .constants import dbt_manifest_path
+
+sys.path.insert(1, os.getcwd())
+from filesystem.filesystem import FileSystem
+
+COMBINED_FILES_FOLDER = "/data/arbo/data/combined/"
 
 load_dotenv()
 DB_HOST = os.getenv('DB_HOST')
@@ -61,13 +68,18 @@ def export_to_tsv(context):
     """
     Get the final combined data from the database and export to tsv
     """
-    # Create data folder if not exists
-    pathlib.Path('data/combined').mkdir(parents=True, exist_ok=True)
+    # Get the file system
+    file_system = FileSystem(root_path=COMBINED_FILES_FOLDER)
 
     # Export to xlsx
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
     df = pd.read_sql('select * from arboviroses."combined_05_location"', engine)
-    df.to_csv('data/combined/combined.tsv', sep='\t', index=False)
+
+    # Save to tsv
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, sep='\t', index=False)
+    csv_buffer.seek(0)
+    file_system.save_content_in_file('', io.BytesIO(csv_buffer.getvalue().encode('utf-8')).read(), 'combined.tsv')
     engine.dispose()
 
     context.add_output_metadata({
@@ -83,10 +95,20 @@ def zip_exported_file(context):
     """
     Zip the combined exported file
     """
-    with zipfile.ZipFile('data/combined/combined.zip', 'w',
+    file_system = FileSystem(root_path=COMBINED_FILES_FOLDER)
+
+    file_to_zip = file_system.get_file_content_as_io_bytes('combined.tsv')
+
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer,
+                         'w',
                          compression=zipfile.ZIP_DEFLATED,
                          compresslevel=9) as zf:
-        zf.write('data/combined/combined.tsv', arcname='combined.tsv')
+        zf.writestr('combined.tsv', file_to_zip.getvalue())
+    zip_buffer.seek(0)
+
+    file_system.save_content_in_file('', zip_buffer.read(), 'combined.zip')
+    
 
 combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
 

@@ -22,11 +22,17 @@ from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
 import pathlib
+import sys
+import io
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
 from .constants import dbt_manifest_path
-from .generate_matrices import generate_country_epiweek_matrix, generate_country_agegroup_matrix, generate_state_epiweek_matrix
+
+sys.path.insert(1, os.getcwd())
+from filesystem.filesystem import FileSystem
+
+MATRICES_FILES_FOLDER = "/data/arbo/data/matrices/"
 
 load_dotenv()
 DB_HOST = os.getenv('DB_HOST')
@@ -41,8 +47,6 @@ dagster_dbt_translator = DagsterDbtTranslator(
     settings=DagsterDbtTranslatorSettings(enable_asset_checks=True)
 )
 
-PATHOGENS = ['DENV']#['CHIKV', 'DENV', 'MAYV', 'OROV', 'WNV', 'YFV', 'ZIKV',]
-
 @dbt_assets(
         manifest=dbt_manifest_path, 
         select='matrices',
@@ -50,126 +54,6 @@ PATHOGENS = ['DENV']#['CHIKV', 'DENV', 'MAYV', 'OROV', 'WNV', 'YFV', 'ZIKV',]
 )
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
-
-@asset(
-    compute_kind="python", 
-    deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_pos_neg_results")
-    ]
-)
-def country_epiweek_matrices(context):
-    """
-    Generate country matrices for each pathogen and metric combination.
-    """
-    METRICS = ['PosNeg', 'Pos', 'totaltests', 'posrate']
-    for pathogen in PATHOGENS:
-        for metric in METRICS:
-            generate_country_epiweek_matrix(
-                cube_db_table='matrix_02_CUBE_pos_neg_results',
-                pathogen=pathogen,
-                metric=metric,
-                show_testkits=True,
-                matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_testkits_weeks_noigg'
-            )
-            generate_country_epiweek_matrix(
-                cube_db_table='matrix_02_CUBE_pos_neg_results',
-                pathogen=pathogen,
-                metric=metric,
-                show_testkits=False,
-                matrix_name=f'matrix_{pathogen.upper()}_country_{metric.lower()}_direct_weeks_noigg'
-            )
-
-@asset(
-    compute_kind="python", 
-    deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_pos_neg_results"),
-    ]
-)
-def state_epiweek_matrices(context):
-    """
-    Generate state matrices for each pathogen.
-    """
-    for pathogen in PATHOGENS:
-        generate_state_epiweek_matrix(
-            cube_db_table='matrix_02_CUBE_pos_neg_results',
-            pathogen=pathogen,
-            matrix_name=f'matrix_{pathogen.upper()}_state_posneg_testkits_weeks_noigg'
-        )
-
-@asset(
-    compute_kind="python", 
-    deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_02_CUBE_pos_neg_results")
-    ]
-)
-def country_agegroup_matrices():
-    """
-    Generate agegroup matrix for all pathogens and PosNeg metric.
-    """
-    generate_country_agegroup_matrix(
-        cube_db_table='matrix_02_CUBE_pos_neg_results',
-        matrix_name='matrix_ALL_country_agegroup_noigg'
-    )
-
-@asset(
-    compute_kind="python", 
-    deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups_renamed"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ARBO_pos_by_month_agegroups_renamed"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_month_agegroups_renamed"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_epiweek_state"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_agegroups"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state_filtered"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_year"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_pos_neg_by_epiweek"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_totaltests_by_epiweek_region"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "01_DENV_line_posrate_direct_week_country_years"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "02_DENV_line_bar_posrate_posneg_direct_week_country"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "03_DENV_bar_total_direct_weeks_regions"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "04_DENV_line_posrate_direct_weeks_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "06_DENV_heat_posrate_agegroups_week_country"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "07_DENV_barH_pos_agegroups_month_country"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "08_Arbo_barH_pos_agegroups_month_country"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_ALL_count_by_labid_testkit_pathogen_result")
-    ]
-)
-def export_matrices_to_tsv():
-    """
-    Export all matrices to TSV files. The TSV files are saved to the `matrices` folder.
-    """
-
-    
-    # Connect to the database
-    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-
-    # List of matrix tables
-    matrix_tables = ['01_DENV_line_posrate_direct_week_country_years', '02_DENV_line_bar_posrate_posneg_direct_week_country',
-                     '03_DENV_bar_total_direct_weeks_regions', '04_DENV_line_posrate_direct_weeks_states',
-                     '06_DENV_heat_posrate_agegroups_week_country', '07_DENV_barH_pos_agegroups_month_country',
-                     '08_Arbo_barH_pos_agegroups_month_country', '11_DENV_map_pos_direct_states', '11_DENV_map_pos_direct_cities', 
-                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities',
-                     'matrix_ALL_count_by_labid_testkit_pathogen_result']
-
-    # Create the matrices folder if it doesn't exist
-    path = 'data/matrices'
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
-
-    # Export each matrix table to a TSV file
-    for table in matrix_tables:
-        df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine)
-        df = df.fillna(0)
-        df.to_csv(f'{path}/{table}.tsv', sep='\t', index=False)
-
 
 @asset(
     compute_kind="python", 
@@ -219,21 +103,27 @@ def export_matrices_to_xlsx(context):
                      '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities',
                      'matrix_ALL_count_by_labid_testkit_pathogen_result']
 
-    # Create the matrices folder if it doesn't exist
-    path = 'data/matrices'
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    # Get file system
+    file_system = FileSystem(root_path=MATRICES_FILES_FOLDER)
 
-    # Delete all the files in the folder, ignoring the .gitkeep file
-    for file in os.listdir(path):
-        if file != '.gitkeep':
-            os.remove(os.path.join(path, file))
-            context.log.info(f'Deleted {file}')
+    # Delete all the files in the folder to avoid unnecessary files
+    for file in file_system.list_files_in_relative_path(""):
+        file = file.split("/")[-1] # Get the file name
+        deleted = file_system.delete_file(file)
 
-    # Export each matrix table to a TSV file
+        if not deleted:
+            raise Exception(f'Error deleting file {file}')
+        context.log.info(f'Deleted {file}')
+
+    # Export each matrix table to a XLSX file
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine, dtype='str')
 
-        df.to_excel(f'{path}/{table}.xlsx', index=False)
+        excel_buffer = io.BytesIO()
+        df.to_excel(excel_buffer, index=False)
+        excel_buffer.seek(0)
+
+        file_system.save_content_in_file('', excel_buffer.read(), f'{table}.xlsx')
 
 
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
