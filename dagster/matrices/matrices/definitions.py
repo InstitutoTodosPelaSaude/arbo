@@ -9,10 +9,6 @@ from .schedules import schedules
 
 defs = Definitions(
     assets=[arboviroses_dbt_assets,
-            country_epiweek_matrices,
-            country_agegroup_matrices,
-            state_epiweek_matrices,
-            export_matrices_to_tsv,
             export_matrices_to_xlsx],
     schedules=schedules,
     resources={
