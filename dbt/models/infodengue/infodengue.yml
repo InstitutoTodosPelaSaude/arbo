@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+    - name: dagster
+      description: Import raw data from lab
+      schema: arboviroses # or arboviroses
+      tables:
+        - name: infodengue_raw
+          meta: 
+            dagster:
+              asset_key: ["infodengue_raw"]
