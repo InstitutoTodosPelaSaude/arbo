@@ -29,6 +29,12 @@
             OR WNV_test_result   IN ('Pos','Neg')
         ) 
     )
+    OR ( 
+        test_kit in ('denv_serum', 'denv_antigen') 
+        AND NOT (
+            DENV_test_result     IN ('Pos','Neg') 
+        ) 
+    )
     OR ( test_kit = 'ns1_antigen' AND NOT (DENV_test_result  IN ('Pos','Neg')) )
     OR ( test_kit = 'denv_pcr'    AND NOT (DENV_test_result  IN ('Pos','Neg')) )
     OR ( test_kit = 'zikv_pcr'    AND NOT (ZIKV_test_result  IN ('Pos','Neg')) )
