@@ -22,11 +22,19 @@ from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
 import pathlib
+import sys
+import io
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+from time import sleep
 
 from .constants import dbt_manifest_path
 from .generate_matrices import generate_country_epiweek_matrix, generate_country_agegroup_matrix, generate_state_epiweek_matrix
+
+sys.path.insert(1, os.getcwd())
+from filesystem.filesystem import FileSystem
+
+MATRICES_FILES_FOLDER = "/data/arbo/data/matrices/"
 
 load_dotenv()
 DB_HOST = os.getenv('DB_HOST')
@@ -219,21 +227,29 @@ def export_matrices_to_xlsx(context):
                      '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities',
                      'matrix_ALL_count_by_labid_testkit_pathogen_result']
 
-    # Create the matrices folder if it doesn't exist
-    path = 'data/matrices'
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    # Get file system
+    file_system = FileSystem(root_path=MATRICES_FILES_FOLDER)
 
-    # Delete all the files in the folder, ignoring the .gitkeep file
-    for file in os.listdir(path):
-        if file != '.gitkeep':
-            os.remove(os.path.join(path, file))
-            context.log.info(f'Deleted {file}')
+    # Delete all the files in the folder to avoid unnecessary files
+    for file in file_system.list_files_in_relative_path(""):
+        file = file.split("/")[-1] # Get the file name
+        deleted = file_system.delete_file(file)
 
-    # Export each matrix table to a TSV file
+        if not deleted:
+            raise Exception(f'Error deleting file {file}')
+        context.log.info(f'Deleted {file}')
+
+    sleep(10)
+
+    # Export each matrix table to a XLSX file
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine, dtype='str')
 
-        df.to_excel(f'{path}/{table}.xlsx', index=False)
+        excel_buffer = io.BytesIO()
+        df.to_excel(excel_buffer, index=False)
+        excel_buffer.seek(0)
+
+        file_system.save_content_in_file('', excel_buffer.read(), f'{table}.xlsx')
 
 
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
