@@ -9,3 +9,43 @@ sources:
           meta: 
             dagster:
               asset_key: ["infodengue_raw"]
+
+models:
+  - name: infodengue_01_convert_types
+    description: Convert data types and rename columns
+    columns:
+      - name: SE
+        quote: true
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 6
+      - name: casos_est
+        quote: true
+        tests:
+          - not_null
+      - name: casos_est_min
+        quote: true
+        tests:
+          - not_null
+      - name: casos_est_max
+        quote: true
+        tests:
+          - not_null
+      - name: casos
+        quote: true
+        tests:
+          - not_null
+      - name: state_code
+        quote: true
+        tests:
+          - not_null
+      - name: state
+        quote: true
+        tests:
+          - not_null
+      - name: region
+        quote: true
+        tests:
+          - not_null
+
