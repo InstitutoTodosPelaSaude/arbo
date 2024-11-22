@@ -2,10 +2,10 @@
 WITH source_data AS (
     SELECT
         "SE"::TEXT,
-        "casos_est"::INT,
+        "casos_est"::INT AS casos_estimados,
         "casos_est_min"::INT,
         "casos_est_max"::INT,
-        "casos"::INT,
+        "casos"::INT AS casos_confirmados,
         "state_code",
         "state",
         "region",
