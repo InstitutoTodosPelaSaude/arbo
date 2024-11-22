@@ -23,11 +23,10 @@ from dagster.core.storage.dagster_run import FINISHED_STATUSES, DagsterRunStatus
 from dagster_slack import make_slack_on_run_failure_sensor
 import pandas as pd
 import os
-import pathlib
+import io
 import sys
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
-import shutil
 
 from .constants import dbt_manifest_path
 
@@ -35,6 +34,7 @@ sys.path.insert(1, os.getcwd())
 from filesystem.filesystem import FileSystem
 
 INFODENGUE_FILES_FOLDER = "/data/arbo/data/InfoDengue/"
+INFODENGUE_FILES_PUBLIC_FOLDER = "/public/data/arbo/infodengue/"
 INFODENGUE_FILES_EXTENSION = '.csv'
 
 load_dotenv()
@@ -162,6 +162,51 @@ def infodengue_remove_used_files(context):
     files_in_folder = file_system.list_files_in_relative_path("")
     context.log.info(f"Files that were not moved: {files_in_folder}")
     
+@asset(
+    compute_kind="python", 
+    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "infodengue_final")]
+)
+def export_to_csv(context):
+
+    # Get the file system
+    file_system = FileSystem(root_path=INFODENGUE_FILES_PUBLIC_FOLDER)
+
+    # Read table 
+    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+    df = pd.read_sql('select * from arboviroses."infodengue_final"', engine)
+
+    df = df[
+        [
+            'data_fimSE',
+            'casos_confirmados',
+            'casos_estimados',
+            'casos_est_min',
+            'casos_est_max',
+            'state_code',
+            'state',
+            'region'
+        ]
+    ]
+
+    # EXPORT DATA TO CSV
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, sep=',', index=False)
+    csv_buffer.seek(0)
+
+    # SAVE CONTENT IN MINIO
+    file_system.save_content_in_file(
+        '',
+        io.BytesIO(
+            csv_buffer.getvalue().encode('utf-8')
+        ).read(),
+        'Info Dengue Casos por Estado.csv'
+    )
+    engine.dispose()
+
+    context.add_output_metadata({
+        'num_rows': df.shape[0],
+    })
+
 # Failure sensor that sends a message to slack
 infodengue_slack_failure_sensor = make_slack_on_run_failure_sensor(
     monitored_jobs=[infodengue_all_assets_job],
