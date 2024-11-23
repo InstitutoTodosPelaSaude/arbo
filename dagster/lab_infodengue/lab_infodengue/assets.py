@@ -53,7 +53,7 @@ dagster_dbt_translator = DagsterDbtTranslator(
 @asset(compute_kind="python")
 def infodengue_raw(context):
     """
-    Read all excel files from data/InfoDengue folder and save to db
+    Read all CSV files from data/InfoDengue folder and save to db
     """
     file_system = FileSystem(root_path=INFODENGUE_FILES_FOLDER)
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
@@ -96,43 +96,6 @@ def infodengue_raw(context):
 def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
-infodengue_all_assets_job = define_asset_job(name="infodengue_all_assets_job")
-
-@sensor(
-    job=infodengue_all_assets_job,
-    default_status=DefaultSensorStatus.RUNNING,
-    minimum_interval_seconds=15 # 15 seconds
-)
-def new_infodengue_file_sensor(context: SensorEvaluationContext):
-    """
-    Check if there are new files in the infodengue folder and run the job if there are.
-    The job will only run if the last run is finished to avoid running multiple times.
-    """
-    # Check if there are new files in the infodengue folder
-    file_system = FileSystem(root_path=INFODENGUE_FILES_FOLDER)
-    files = file_system.list_files_in_relative_path("")
-    valid_files = [file for file in files if file.endswith(INFODENGUE_FILES_EXTENSION)]
-    if len(valid_files) == 0:
-        return
-
-    # Get the last run status of the job
-    job_to_look = 'infodengue_all_assets_job'
-    last_run = context.instance.get_runs(
-        filters=RunsFilter(job_name=job_to_look)
-    )
-    last_run_status = None
-    if len(last_run) > 0:
-        last_run_status = last_run[0].status
-
-    # If there are no runs running, run the job
-    if last_run_status in FINISHED_STATUSES or last_run_status is None:
-        # Do not run if the last status is an error
-        if last_run_status == DagsterRunStatus.FAILURE:
-            return SkipReason(f"Last run status is an error status: {last_run_status}")
-        
-        yield RunRequest()
-    else:
-        yield SkipReason(f"There are files in the infodengue folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")
 
 @asset(
     compute_kind="python", 
@@ -144,7 +107,11 @@ def infodengue_remove_used_files(context):
     """
     raw_data_table = 'infodengue_raw'
     file_system = FileSystem(root_path=INFODENGUE_FILES_FOLDER)
-    files_in_folder = [file for file in file_system.list_files_in_relative_path("") if file.endswith(INFODENGUE_FILES_EXTENSION)]
+    files_in_folder = [
+        file for file 
+        in file_system.list_files_in_relative_path("") 
+        if file.endswith(INFODENGUE_FILES_EXTENSION)
+    ]
     
     # Get the files that were used in the dbt process
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
@@ -206,6 +173,53 @@ def export_to_csv(context):
     context.add_output_metadata({
         'num_rows': df.shape[0],
     })
+
+
+# ====================================================== #
+# ======================= SENSORS ====================== # 
+# ====================================================== #
+
+infodengue_all_assets_job = define_asset_job(
+    name="infodengue_all_assets_job"
+)
+
+@sensor(
+    job=infodengue_all_assets_job,
+    default_status=DefaultSensorStatus.RUNNING,
+    minimum_interval_seconds=15 # 15 seconds
+)
+def new_infodengue_file_sensor(context: SensorEvaluationContext):
+    """
+    Check if there are new files in the infodengue folder and run the job.
+    The job will only run if the last run is finished to avoid running multiple times.
+    """
+
+    # Check if there are new files in the infodengue folder
+    file_system = FileSystem(root_path=INFODENGUE_FILES_FOLDER)
+    files = file_system.list_files_in_relative_path("")
+    valid_files = [file for file in files if file.endswith(INFODENGUE_FILES_EXTENSION)]
+    if len(valid_files) == 0:
+        return
+
+    # Get the last run status of the job
+    job_to_look = 'infodengue_all_assets_job'
+    last_run = context.instance.get_runs(
+        filters=RunsFilter(job_name=job_to_look)
+    )
+    last_run_status = None
+    if len(last_run) > 0:
+        last_run_status = last_run[0].status
+
+    # If there are no runs running, run the job
+    if last_run_status in FINISHED_STATUSES or last_run_status is None:
+        # Do not run if the last status is an error
+        if last_run_status == DagsterRunStatus.FAILURE:
+            return SkipReason(f"Last run status is an error status: {last_run_status}")
+        
+        yield RunRequest()
+    else:
+        yield SkipReason(f"There are files in the infodengue folder, but the job {job_to_look} is still running with status {last_run_status}. Files: {valid_files}")
+
 
 # Failure sensor that sends a message to slack
 infodengue_slack_failure_sensor = make_slack_on_run_failure_sensor(
