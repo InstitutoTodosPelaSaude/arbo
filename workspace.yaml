@@ -32,3 +32,7 @@ load_from:
     - python_module:
         module_name: lab_hpardini.definitions
         working_directory: dagster/lab_hpardini
+
+    - python_module:
+        module_name: lab_infodengue.definitions
+        working_directory: dagster/lab_infodengue
