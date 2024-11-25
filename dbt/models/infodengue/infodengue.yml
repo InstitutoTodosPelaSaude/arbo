@@ -33,7 +33,7 @@ models:
       - name: casos_est_min
         quote: true
         tests:
-          - not_null
+          - not_null:
               config:
                 severity: warn
                 error_if: ">10"
@@ -43,7 +43,7 @@ models:
       - name: casos_est_max
         quote: true
         tests:
-          - not_null
+          - not_null:
               config:
                 severity: warn
                 error_if: ">10"
@@ -52,7 +52,7 @@ models:
       - name: casos_confirmados
         quote: true
         tests:
-          - not_null
+          - not_null:
               config:
                 severity: warn
                 error_if: ">10"
