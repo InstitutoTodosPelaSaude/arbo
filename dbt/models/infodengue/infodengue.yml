@@ -25,21 +25,40 @@ models:
         quote: true
         tests:
           - not_null
+            config:
+                  severity: warn
+                  error_if: ">10"
+                  warn_if: ">1"
 
       - name: casos_est_min
         quote: true
         tests:
           - not_null
+            config:
+                  severity: warn
+                  error_if: ">10"
+                  warn_if: ">1"
+
 
       - name: casos_est_max
         quote: true
         tests:
           - not_null
+            config:
+                  severity: warn
+                  error_if: ">10"
+                  warn_if: ">1"
+
 
       - name: casos_confirmados
         quote: true
         tests:
           - not_null
+            config:
+                  severity: warn
+                  error_if: ">10"
+                  warn_if: ">1"
+
 
       - name: state_code
         quote: true
