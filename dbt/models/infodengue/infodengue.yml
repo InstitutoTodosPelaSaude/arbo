@@ -24,7 +24,7 @@ models:
       - name: casos_estimados
         quote: true
         tests:
-          - not_null
+          - not_null:
               config:
                 severity: warn
                 error_if: ">10"
