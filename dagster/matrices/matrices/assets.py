@@ -58,21 +58,6 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
 @asset(
     compute_kind="python", 
     deps=[
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups_renamed"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ARBO_pos_by_month_agegroups_renamed"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_month_agegroups_renamed"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_by_epiweek_state"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_ALL_pos_by_month_agegroups"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_agegroups"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state_filtered"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_state"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_by_epiweek_year"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_posrate_pos_neg_by_epiweek"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_totaltests_by_epiweek_region"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_DENV_pos_direct_states"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_cities"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "matrix_NEW_CHIKV_pos_direct_states"),
         get_asset_key_for_model([arboviroses_dbt_assets], "01_DENV_line_posrate_direct_week_country_years"),
         get_asset_key_for_model([arboviroses_dbt_assets], "02_DENV_line_bar_posrate_posneg_direct_week_country"),
         get_asset_key_for_model([arboviroses_dbt_assets], "03_DENV_bar_total_direct_weeks_regions"),
@@ -84,6 +69,10 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
         get_asset_key_for_model([arboviroses_dbt_assets], "11_DENV_map_pos_direct_cities"),
         get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_states"),
         get_asset_key_for_model([arboviroses_dbt_assets], "12_CHIKV_map_pos_direct_cities"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "14_CHIKV_line_posrate_direct_indirect_week_country_years"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "15_CHIKV_line_bar_posrate_posneg_direct_indirect_week_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "16_CHIKV_bar_total_direct_indirect_weeks_regions"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "17_CHIKV_heat_posrate_direct_indirect_agegroups_week_country"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_ALL_count_by_labid_testkit_pathogen_result")
     ]
 )
@@ -96,11 +85,21 @@ def export_matrices_to_xlsx(context):
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
     # List of matrix tables
-    matrix_tables = ['01_DENV_line_posrate_direct_week_country_years', '02_DENV_line_bar_posrate_posneg_direct_week_country',
-                     '03_DENV_bar_total_direct_weeks_regions', '04_DENV_line_posrate_direct_weeks_states',
-                     '06_DENV_heat_posrate_agegroups_week_country', '07_DENV_barH_pos_agegroups_month_country',
-                     '08_Arbo_barH_pos_agegroups_month_country', '11_DENV_map_pos_direct_states', '11_DENV_map_pos_direct_cities', 
-                     '12_CHIKV_map_pos_direct_states', '12_CHIKV_map_pos_direct_cities',
+    matrix_tables = ['01_DENV_line_posrate_direct_week_country_years',
+                     '02_DENV_line_bar_posrate_posneg_direct_week_country',
+                     '03_DENV_bar_total_direct_weeks_regions', 
+                     '04_DENV_line_posrate_direct_weeks_states',
+                     '06_DENV_heat_posrate_agegroups_week_country', 
+                     '07_DENV_barH_pos_agegroups_month_country',
+                     '08_Arbo_barH_pos_agegroups_month_country', 
+                     '11_DENV_map_pos_direct_states', 
+                     '11_DENV_map_pos_direct_cities', 
+                     '12_CHIKV_map_pos_direct_states', 
+                     '12_CHIKV_map_pos_direct_cities',
+                     '14_CHIKV_line_posrate_direct_indirect_week_country_years',
+                     '15_CHIKV_line_bar_posrate_posneg_direct_indirect_week_country',
+                     '16_CHIKV_bar_total_direct_indirect_weeks_regions',
+                     '17_CHIKV_heat_posrate_direct_indirect_agegroups_week_country',
                      'matrix_ALL_count_by_labid_testkit_pathogen_result']
 
     # Get file system
