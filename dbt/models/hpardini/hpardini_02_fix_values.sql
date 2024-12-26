@@ -27,6 +27,7 @@ SELECT
         result
         WHEN 'POSITIVO' THEN 1
         WHEN 'NEGATIVO' THEN 0
+        WHEN 'INCONCLUSIVO' THEN -1
         ELSE NULL
     END AS result,
 
@@ -44,4 +45,4 @@ SELECT
 FROM source_data
 WHERE 
     pathogen NOT IN ('SARS-COV-2')
-    AND result NOT IN ('INCONCLUSIVO')
+    AND result NOT IN (-1)
