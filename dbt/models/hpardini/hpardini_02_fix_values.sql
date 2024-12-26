@@ -42,4 +42,6 @@ SELECT
     file_name
 
 FROM source_data
-WHERE pathogen NOT IN ('SARS-COV-2')
+WHERE 
+    pathogen NOT IN ('SARS-COV-2')
+    AND result NOT IN ('INCONCLUSIVO')
