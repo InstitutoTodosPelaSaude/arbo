@@ -28,6 +28,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from time import sleep
 import zipfile
+from datetime import datetime
 
 from .constants import dbt_manifest_path
 
@@ -127,6 +128,12 @@ combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
     minimum_interval_seconds=180 # 3 minutes
 )
 def run_combined_sensor(context: SensorEvaluationContext):
+    # Run only in certain days
+    WEEK_DAYS_TO_RUN = [1, 2, 3] # Tuesday, Wednesday or Thursday
+    current_weekday = datetime.now().weekday()
+    if current_weekday not in WEEK_DAYS_TO_RUN:
+        return SkipReason(f"Today is not day to run")
+
     # Get the last run status of the job
     job_to_look = 'combined_all_assets_job'
     last_run = context.instance.get_runs(

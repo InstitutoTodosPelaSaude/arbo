@@ -36,3 +36,7 @@ load_from:
     - python_module:
         module_name: lab_infodengue.definitions
         working_directory: dagster/lab_infodengue
+
+    - python_module:
+        module_name: save_results.definitions
+        working_directory: dagster/save_results
