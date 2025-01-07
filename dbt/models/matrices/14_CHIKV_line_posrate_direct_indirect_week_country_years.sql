@@ -23,7 +23,8 @@ SELECT
     epiweek_month as "year",
     MAX(CASE WHEN pathogen = 'CHIKV' AND epiweek_year = 2022 THEN "posrate" * 100 ELSE NULL END) as "2022",
     MAX(CASE WHEN pathogen = 'CHIKV' AND epiweek_year = 2023 THEN "posrate" * 100 ELSE NULL END) as "2023",
-    MAX(CASE WHEN pathogen = 'CHIKV' AND epiweek_year = 2024 THEN "posrate" * 100 ELSE NULL END) as "2024"
+    MAX(CASE WHEN pathogen = 'CHIKV' AND epiweek_year = 2024 THEN "posrate" * 100 ELSE NULL END) as "2024",
+    MAX(CASE WHEN pathogen = 'CHIKV' AND epiweek_year = 2025 THEN "posrate" * 100 ELSE NULL END) as "2025"
 FROM source_data
 GROUP BY epiweek_month
 ORDER BY epiweek_month
