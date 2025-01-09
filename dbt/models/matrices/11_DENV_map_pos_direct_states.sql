@@ -7,7 +7,9 @@ WITH epiweeks AS (
     SELECT DISTINCT
         epiweek_enddate
     FROM {{ ref("matrix_01_pivoted") }}
-    WHERE epiweek_enddate >= '{{ epiweek_start }}'
+    WHERE 
+        epiweek_enddate >= '{{ epiweek_start }}' AND
+        state not in ('NOT REPORTED')  
 ),
 
 -- CTE para selecionar os dados de origem relevantes para cada semana epidemiológica
