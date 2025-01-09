@@ -8,8 +8,7 @@ WITH epiweeks AS (
         epiweek_enddate
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE 
-        epiweek_enddate >= '{{ epiweek_start }}' AND
-        state not in ('NOT REPORTED')
+        epiweek_enddate >= '{{ epiweek_start }}'
 ),
 
 -- CTE para selecionar os dados de origem relevantes para cada semana epidemiológica
@@ -80,6 +79,8 @@ SELECT
     "epiweek_cases"::INTEGER,
     "cumulative_cases"::INTEGER
 FROM source_data_cumulative_sum
-WHERE "cumulative_cases" > 0
+WHERE 
+    "cumulative_cases" > 0 AND
+    state not in ('NOT REPORTED')
 ORDER BY "semanas epidemiologicas", "state_code"
     
