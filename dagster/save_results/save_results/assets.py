@@ -28,7 +28,9 @@ load_dotenv()
 DAGSTER_SLACK_BOT_TOKEN = os.getenv('DAGSTER_SLACK_BOT_TOKEN')
 DAGSTER_SLACK_BOT_CHANNEL = os.getenv('DAGSTER_SLACK_BOT_CHANNEL')
 
-@asset(compute_kind="python")
+@asset(
+    compute_kind="python"
+)
 def create_new_folder(context):
     file_system = FileSystem(root_path=REPORTS_FILES_FOLDER)
 
