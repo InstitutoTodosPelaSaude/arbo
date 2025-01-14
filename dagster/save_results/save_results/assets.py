@@ -29,7 +29,8 @@ DAGSTER_SLACK_BOT_TOKEN = os.getenv('DAGSTER_SLACK_BOT_TOKEN')
 DAGSTER_SLACK_BOT_CHANNEL = os.getenv('DAGSTER_SLACK_BOT_CHANNEL')
 
 @asset(
-    compute_kind="python"
+    compute_kind="python",
+    deps=[AssetKey('zip_exported_file')]
 )
 def create_new_folder(context):
     file_system = FileSystem(root_path=REPORTS_FILES_FOLDER)
