@@ -93,16 +93,18 @@ source_data_cumulative_sum AS (
 
 -- Seleção final dos dados, filtrando apenas semanas com casos cumulativos maiores que zero
 SELECT
-    "semanas epidemiologicas",
-    "location_ibge_code",
-    "location",
-    "state_code",
-    "state",
-    "lat",
-    "long",
-    "epiweek_cases"::INTEGER,
-    "cumulative_cases"::INTEGER
+    "semanas epidemiologicas" as "Semanas epidemiologicas",
+    "location_ibge_code" as "location_ibge_code",
+    "location" as "Cidade",
+    "state_code" as "state_code",
+    "state" as "state",
+    "lat" as "lat",
+    "long" as "long",
+    "epiweek_cases"::INTEGER as "Casos da última semana",
+    "cumulative_cases"::INTEGER as "Casos cumulativos"
 FROM source_data_cumulative_sum
-WHERE "cumulative_cases" > 0
+WHERE 
+    "cumulative_cases" > 0 AND
+    location not in ('NOT REPORTED')
 ORDER BY "semanas epidemiologicas", "state_code", "location"
     

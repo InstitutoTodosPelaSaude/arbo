@@ -128,7 +128,7 @@ def export_matrices_to_xlsx(context):
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
 
 @asset_sensor(
-    asset_key=AssetKey('combined_05_location'),
+    asset_key=AssetKey('zip_exported_file'),
     job=matrices_all_assets_job,
     default_status=DefaultSensorStatus.RUNNING
 )
