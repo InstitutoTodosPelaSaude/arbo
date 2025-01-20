@@ -6,6 +6,7 @@ WITH source_data AS (
         "casos_est_min"::INT,
         "casos_est_max"::INT,
         "casos"::INT AS casos_confirmados,
+        "disease",
         "state_code",
         "state",
         "region",

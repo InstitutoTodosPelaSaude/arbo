@@ -57,8 +57,13 @@ models:
                 severity: warn
                 error_if: ">10"
                 warn_if: ">1"
-
+      
       - name: state_code
+        quote: true
+        tests:
+          - not_null
+
+      - name: disease
         quote: true
         tests:
           - not_null
