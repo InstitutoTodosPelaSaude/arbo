@@ -149,6 +149,7 @@ def export_to_csv(context):
             'casos_estimados',
             'casos_est_min',
             'casos_est_max',
+            'disease',
             'state_code',
             'state',
             'region'
