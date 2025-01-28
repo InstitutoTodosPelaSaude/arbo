@@ -28,7 +28,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from time import sleep
 import zipfile
-from datetime import datetime
+from datetime import datetime, time
 
 from .constants import dbt_manifest_path
 
@@ -121,18 +121,32 @@ combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
         AssetKey("sabin_07_final"), 
         AssetKey("fleury_06_final"),
         AssetKey("dbmol_final"),
-        AssetKey("target_final")
+        AssetKey("target_final"),
+        AssetKey("hpardini_final")
     ],
     job=combined_all_assets_job,
     default_status=DefaultSensorStatus.RUNNING,
     minimum_interval_seconds=180 # 3 minutes
 )
 def run_combined_sensor(context: SensorEvaluationContext):
-    # Run only in certain days
-    WEEK_DAYS_TO_RUN = [1, 2, 3] # Tuesday, Wednesday or Thursday
-    current_weekday = datetime.now().weekday()
-    if current_weekday not in WEEK_DAYS_TO_RUN:
-        return SkipReason(f"Today is not day to run")
+    # Defining constants for the start and end datetime
+    START_DAY = 1  # Tuesday
+    START_TIME = time(12, 0)  # 12:00 PM (noon)
+    END_DAY = 3  # Thursday
+    END_TIME = time(18, 0)  # 6:00 PM
+
+    # Getting the current date and time
+    current_datetime = datetime.now()
+    current_weekday = current_datetime.weekday()
+    current_time = current_datetime.time()
+
+    # Checking if the current time is within the allowed range (Tuesday noon to Thursday 6:00 PM)
+    if current_weekday < START_DAY or current_weekday > END_DAY:
+        return SkipReason(f"Execution is not permitted outside of the designated window.")
+    elif current_weekday == START_DAY and current_time < START_TIME:
+        return SkipReason(f"Execution is not permitted outside of the designated window.")
+    elif current_weekday == END_DAY and current_time > END_TIME:
+        return SkipReason(f"Execution is not permitted outside of the designated window.")
 
     # Get the last run status of the job
     job_to_look = 'combined_all_assets_job'
@@ -155,7 +169,8 @@ def run_combined_sensor(context: SensorEvaluationContext):
         'sabin_all_assets_job', 
         'fleury_all_assets_job',
         'dbmol_all_assets_job',
-        'target_all_assets_job'
+        'target_all_assets_job',
+        'hpardini_all_assets_job'
     ]
 
     # Check if there are new lab assets completed and run combined if it is true
