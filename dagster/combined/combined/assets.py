@@ -121,7 +121,8 @@ combined_all_assets_job = define_asset_job(name="combined_all_assets_job")
         AssetKey("sabin_07_final"), 
         AssetKey("fleury_06_final"),
         AssetKey("dbmol_final"),
-        AssetKey("target_final")
+        AssetKey("target_final"),
+        AssetKey("hpardini_final")
     ],
     job=combined_all_assets_job,
     default_status=DefaultSensorStatus.RUNNING,
