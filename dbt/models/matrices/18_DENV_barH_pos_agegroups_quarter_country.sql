@@ -1,8 +1,10 @@
 {{ config(materialized='table') }}
 
+{% set date_testing_start = '2024-01-01' %}
+
 WITH source_data AS (
     SELECT
-        TO_CHAR(TO_DATE("month", 'YYYY-MM'), 'YYYY-"Trim "Q') AS trimestre,
+        TO_CHAR(TO_DATE("date_testing", 'YYYY-MM-DD'), 'YYYY-"Trim "Q') AS trimestre,
         age_group,
         pathogen,
         {{ matrices_metrics('result') }}
@@ -10,7 +12,8 @@ WITH source_data AS (
     WHERE 
         "DENV_test_result" IN ('Pos', 'Neg') AND 
         test_kit IN ('arbo_pcr_3', 'ns1_antigen', 'denv_pcr') AND 
-        age_group != 'NOT REPORTED'
+        age_group != 'NOT REPORTED' AND
+        date_testing >= '{{ date_testing_start }}'
     GROUP BY trimestre, age_group, pathogen
 ),
 faixas_etarias AS (
