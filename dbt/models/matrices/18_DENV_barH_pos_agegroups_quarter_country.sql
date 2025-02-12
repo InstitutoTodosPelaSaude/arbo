@@ -4,7 +4,7 @@
 
 WITH source_data AS (
     SELECT
-        TO_CHAR("date_testing", 'YYYY-"Trim "Q') AS trimestre,
+        TO_CHAR("date_testing", 'YYYY - Q"º Trim "') AS trimestre,
         age_group,
         pathogen,
         {{ matrices_metrics('result') }}
