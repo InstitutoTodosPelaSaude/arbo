@@ -73,6 +73,9 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
         get_asset_key_for_model([arboviroses_dbt_assets], "15_CHIKV_line_bar_posrate_posneg_direct_indirect_week_country"),
         get_asset_key_for_model([arboviroses_dbt_assets], "16_CHIKV_bar_total_direct_indirect_weeks_regions"),
         get_asset_key_for_model([arboviroses_dbt_assets], "17_CHIKV_heat_posrate_direct_indirect_agegroups_week_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "18_DENV_barH_pos_agegroups_quarter_country"),
+        # get_asset_key_for_model([arboviroses_dbt_assets], "19_CHIKV_barH_pos_agegroups_quarter_country"),
+        # get_asset_key_for_model([arboviroses_dbt_assets], "20_ARBO_barH_pos_agegroups_quarter_country"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_ALL_count_by_labid_testkit_pathogen_result")
     ]
 )
@@ -100,6 +103,9 @@ def export_matrices_to_xlsx(context):
                      '15_CHIKV_line_bar_posrate_posneg_direct_indirect_week_country',
                      '16_CHIKV_bar_total_direct_indirect_weeks_regions',
                      '17_CHIKV_heat_posrate_direct_indirect_agegroups_week_country',
+                     '18_DENV_barH_pos_agegroups_quarter_country',
+                    #  '19_CHIKV_barH_pos_agegroups_quarter_country',
+                    #  '20_ARBO_barH_pos_agegroups_quarter_country',
                      'matrix_ALL_count_by_labid_testkit_pathogen_result']
 
     # Get file system
