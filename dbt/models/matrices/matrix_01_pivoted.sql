@@ -8,6 +8,7 @@ WITH source_data AS (
         epiweek_number,
         lab_id,
         "month",
+        date_testing,
         location_ibge_code,
         CASE WHEN location IS NULL THEN 'NOT REPORTED' ELSE location END AS location,
         CASE WHEN region IS NULL THEN 'NOT REPORTED' ELSE region END AS region,
