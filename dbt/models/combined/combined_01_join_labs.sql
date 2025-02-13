@@ -79,7 +79,7 @@ WITH source_data AS (
     UNION
 
     SELECT
-    'TARGET' as lab_id,
+    'HPARDINI' as lab_id,
     {{ columns | join(', ') }}
     FROM {{ ref("hpardini_final") }}
     
