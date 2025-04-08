@@ -74,6 +74,8 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
         get_asset_key_for_model([arboviroses_dbt_assets], "16_CHIKV_bar_total_direct_indirect_weeks_regions"),
         get_asset_key_for_model([arboviroses_dbt_assets], "17_CHIKV_heat_posrate_direct_indirect_agegroups_week_country"),
         get_asset_key_for_model([arboviroses_dbt_assets], "18_DENV_barH_pos_agegroups_quarter_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "19_CHIKV_barH_pos_agegroups_quarter_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "20_ARBO_barH_pos_agegroups_quarter_country"),
         get_asset_key_for_model([arboviroses_dbt_assets], "21_DENV_heat_posrate_direct_weeks_states"),
         get_asset_key_for_model([arboviroses_dbt_assets], "22_DENV_line_posrate_bar_pos_direct_week_country_infodengue"),
         get_asset_key_for_model([arboviroses_dbt_assets], "23_CHIKV_line_posrate_bar_pos_direct_week_country_infodengue"),
@@ -105,6 +107,8 @@ def export_matrices_to_xlsx(context):
                      '16_CHIKV_bar_total_direct_indirect_weeks_regions',
                      '17_CHIKV_heat_posrate_direct_indirect_agegroups_week_country',
                      '18_DENV_barH_pos_agegroups_quarter_country',
+                     '19_CHIKV_barH_pos_agegroups_quarter_country',
+                     '20_ARBO_barH_pos_agegroups_quarter_country',
                      '21_DENV_heat_posrate_direct_weeks_states',
                      '22_DENV_line_posrate_bar_pos_direct_week_country_infodengue',
                      '23_CHIKV_line_posrate_bar_pos_direct_week_country_infodengue',
@@ -122,16 +126,39 @@ def export_matrices_to_xlsx(context):
             raise Exception(f'Error deleting file {file}')
         context.log.info(f'Deleted {file}')
 
-    # Export each matrix table to a XLSX file
+    for file in file_system.list_files_in_relative_path("xlsx"):
+        file = file.split("/")[-1] # Get the file name
+        deleted = file_system.delete_file(file)
+        if not deleted:
+            raise Exception(f'Error deleting file {file}')
+        context.log.info(f'Deleted {file}')
+
+    for file in file_system.list_files_in_relative_path("csv"):
+        file = file.split("/")[-1]
+        deleted = file_system.delete_file(file)
+        if not deleted:
+            raise Exception(f'Error deleting file {file}')
+        context.log.info(f'Deleted {file}')
+
+    # Export each matrix table to a XLSX and CSV file
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine, dtype='str')
 
+        # Save the xlsx file
         excel_buffer = io.BytesIO()
         df.to_excel(excel_buffer, index=False)
         excel_buffer.seek(0)
-
-        file_system.save_content_in_file('', excel_buffer.read(), f'{table}.xlsx')
-
+        result = file_system.save_content_in_file('xlsx', excel_buffer.read(), f'{table}.xlsx', log_context=context.log)
+        if not result:
+            raise Exception(f'Error saving file {table}.xlsx')
+        
+        # Save the csv file
+        csv_buffer = io.BytesIO()
+        df.to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)
+        result = file_system.save_content_in_file('csv', io.BytesIO(csv_buffer.getvalue().encode('utf-8')).read(), f'{table}.csv', log_context=context.log)
+        if not result:
+            raise Exception(f'Error saving file {table}.csv')
 
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
 
