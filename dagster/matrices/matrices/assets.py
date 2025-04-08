@@ -153,7 +153,7 @@ def export_matrices_to_xlsx(context):
             raise Exception(f'Error saving file {table}.xlsx')
         
         # Save the csv file
-        csv_buffer = io.BytesIO()
+        csv_buffer = io.StringIO()
         df.to_csv(csv_buffer, index=False)
         csv_buffer.seek(0)
         result = file_system.save_content_in_file('csv', io.BytesIO(csv_buffer.getvalue().encode('utf-8')).read(), f'{table}.csv', log_context=context.log)
