@@ -126,16 +126,39 @@ def export_matrices_to_xlsx(context):
             raise Exception(f'Error deleting file {file}')
         context.log.info(f'Deleted {file}')
 
-    # Export each matrix table to a XLSX file
+    for file in file_system.list_files_in_relative_path("xlsx"):
+        file = file.split("/")[-1] # Get the file name
+        deleted = file_system.delete_file(file)
+        if not deleted:
+            raise Exception(f'Error deleting file {file}')
+        context.log.info(f'Deleted {file}')
+
+    for file in file_system.list_files_in_relative_path("csv"):
+        file = file.split("/")[-1]
+        deleted = file_system.delete_file(file)
+        if not deleted:
+            raise Exception(f'Error deleting file {file}')
+        context.log.info(f'Deleted {file}')
+
+    # Export each matrix table to a XLSX and CSV file
     for table in matrix_tables:
         df = pd.read_sql_query(f'SELECT * FROM arboviroses."{table}"', engine, dtype='str')
 
+        # Save the xlsx file
         excel_buffer = io.BytesIO()
         df.to_excel(excel_buffer, index=False)
         excel_buffer.seek(0)
-
-        file_system.save_content_in_file('', excel_buffer.read(), f'{table}.xlsx')
-
+        result = file_system.save_content_in_file('xlsx', excel_buffer.read(), f'{table}.xlsx', log_context=context.log)
+        if not result:
+            raise Exception(f'Error saving file {table}.xlsx')
+        
+        # Save the csv file
+        csv_buffer = io.BytesIO()
+        df.to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)
+        result = file_system.save_content_in_file('csv', io.BytesIO(csv_buffer.getvalue().encode('utf-8')).read(), f'{table}.csv', log_context=context.log)
+        if not result:
+            raise Exception(f'Error saving file {table}.csv')
 
 matrices_all_assets_job = define_asset_job(name="matrices_all_assets_job")
 
