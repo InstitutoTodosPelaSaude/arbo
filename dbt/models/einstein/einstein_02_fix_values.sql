@@ -78,3 +78,5 @@ SELECT
     file_name
 
 FROM source_data
+WHERE
+    test_id NOT IN ('2024234005520')
