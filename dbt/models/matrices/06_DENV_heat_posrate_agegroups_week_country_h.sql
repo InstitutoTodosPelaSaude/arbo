@@ -21,5 +21,5 @@ SELECT
     MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" * 100 ELSE NULL END) as "percentual"
 FROM source_data
 GROUP BY epiweek_enddate, age_group
-ORDER BY epiweek_enddate, age_group
+ORDER BY epiweek_enddate, age_group desc
     
