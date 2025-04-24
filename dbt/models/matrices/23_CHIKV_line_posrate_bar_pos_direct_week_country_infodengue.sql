@@ -36,8 +36,8 @@ infodengue_pos AS (
 
 SELECT 
     COALESCE(sp."Semanas epidemiológicas", svp."Semanas epidemiológicas") AS "Semanas epidemiológicas",
-    svp."Casos estimados de chikungunya (InfoDengue)",
-    sp."Positividade (Lab. parceiros)"
+    sp."Positividade (Lab. parceiros)",
+    svp."Casos estimados de chikungunya (InfoDengue)"
 FROM source_posrate sp
 FULL OUTER JOIN infodengue_pos svp
 ON sp."Semanas epidemiológicas" = svp."Semanas epidemiológicas"
