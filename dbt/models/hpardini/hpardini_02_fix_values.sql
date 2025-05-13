@@ -43,5 +43,5 @@ SELECT
 
 FROM source_data
 WHERE 
-    pathogen NOT IN ('SARS-COV-2')
+    pathogen NOT IN ('SARS-COV-2', 'INFLUENZA B', 'INFLUENZA A', 'RSV')
     AND result NOT IN ('INCONCLUSIVO')
