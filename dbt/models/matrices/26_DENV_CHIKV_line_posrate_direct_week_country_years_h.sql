@@ -28,7 +28,7 @@ WITH source_data AS (
 SELECT
     epiweek_enddate as "semana",
     MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" * 100 ELSE NULL END) as "Dengue",
-    MAX(CASE WHEN pathogen = 'CHIKV' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya",
+    MAX(CASE WHEN pathogen = 'CHIKV' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya"
 FROM source_data
 GROUP BY epiweek_enddate
 ORDER BY epiweek_enddate
