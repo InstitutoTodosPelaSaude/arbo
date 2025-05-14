@@ -86,6 +86,9 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
         get_asset_key_for_model([arboviroses_dbt_assets], "24_DENV_CHIKV_line_posrate_direct_indirect_week_country_r"),
         get_asset_key_for_model([arboviroses_dbt_assets], "24_DENV_CHIKV_line_posrate_direct_indirect_week_country_c"),
         get_asset_key_for_model([arboviroses_dbt_assets], "25_DENV_CHIKV_line_posrate_direct_indirect_week_country_years"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "26_DENV_CHIKV_line_posrate_direct_week_country_years_h"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "26_DENV_CHIKV_line_posrate_direct_week_country_years_r"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "26_DENV_CHIKV_line_posrate_direct_week_country_years_c"),
         get_asset_key_for_model([arboviroses_dbt_assets], "matrix_ALL_count_by_labid_testkit_pathogen_result")
     ]
 )
@@ -126,6 +129,9 @@ def export_matrices_to_xlsx(context):
                      '24_DENV_CHIKV_line_posrate_direct_indirect_week_country_r',
                      '24_DENV_CHIKV_line_posrate_direct_indirect_week_country_c',
                      '25_DENV_CHIKV_line_posrate_direct_indirect_week_country_years',
+                     '26_DENV_CHIKV_line_posrate_direct_week_country_years_h',
+                     '26_DENV_CHIKV_line_posrate_direct_week_country_years_r',
+                     '26_DENV_CHIKV_line_posrate_direct_week_country_years_c',
                      'matrix_ALL_count_by_labid_testkit_pathogen_result']
 
     # Get file system
