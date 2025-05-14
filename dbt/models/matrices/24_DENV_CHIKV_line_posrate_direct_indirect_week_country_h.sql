@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-{% set epiweek_start = '2022-01-01' %}
+{% set epiweek_start = '2022-01-08' %}
 
 WITH source_data AS (
     SELECT

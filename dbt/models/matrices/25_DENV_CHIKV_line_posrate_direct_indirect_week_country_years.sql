@@ -21,7 +21,7 @@ WITH source_data AS (
 
 SELECT
     epiweek_enddate as "semana_correta",
-    TO_CHAR(MAKE_DATE(2022, EXTRACT(MONTH FROM epiweek_enddate)::int, EXTRACT(DAY FROM epiweek_enddate)::int), 'YYYY-MM-DD') as "semana_ajustada",
+    TO_CHAR(MAKE_DATE(2022, EXTRACT(MONTH FROM epiweek_enddate)::int, EXTRACT(DAY FROM epiweek_enddate)::int), 'YYYY-MM-DD') as semana_ajustada,
     TO_CHAR(epiweek_enddate, 'DD') || '/' ||
         CASE TO_CHAR(epiweek_enddate, 'MM')
             WHEN '01' THEN 'Jan'
@@ -49,4 +49,4 @@ SELECT
     MAX(CASE WHEN pathogen = 'CHIKV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2025' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya - 2025"
 FROM source_data
 GROUP BY epiweek_enddate
-ORDER BY epiweek_enddate
+ORDER BY semana_ajustada
