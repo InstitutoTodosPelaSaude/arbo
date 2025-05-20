@@ -22,7 +22,7 @@ source_data AS (
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE 
         "CHIKV_test_result" IN ('Pos', 'Neg') AND
-        test_kit NOT IN ('igg_serum') AND
+        test_kit IN ('arbo_pcr_3', 'chikv_pcr', 'igm_serum') AND
         epiweek_enddate >= '{{ epiweek_start }}'
     GROUP BY epiweek_enddate, state_code, state, pathogen
 ),
