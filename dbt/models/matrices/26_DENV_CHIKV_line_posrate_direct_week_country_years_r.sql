@@ -21,5 +21,5 @@ SELECT
     "Chikungunya"
 FROM source_data
 WHERE 
-    "epiweek_enddate" >= (SELECT epiweek_enddate FROM last_epiweek) - {{ last_year_days_threshold }} 
+    "epiweek_enddate" > (SELECT epiweek_enddate FROM last_epiweek) - {{ last_year_days_threshold }} 
 ORDER BY epiweek_enddate 
