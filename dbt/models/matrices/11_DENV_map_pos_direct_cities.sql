@@ -25,7 +25,7 @@ source_data AS (
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE 
         "DENV_test_result" IN ('Pos', 'Neg') AND
-        test_kit IN ('arbo_pcr_3', 'ns1_antigen', 'denv_pcr') AND
+        test_kit IN ('arbo_pcr_3', 'ns1_antigen', 'denv_pcr', 'denv_serum', 'denv_antigen') AND
         epiweek_enddate >= '{{ epiweek_start }}'
     GROUP BY epiweek_enddate, state_code, state, location, location_ibge_code, lat, long, pathogen
     ORDER BY epiweek_enddate, state_code
