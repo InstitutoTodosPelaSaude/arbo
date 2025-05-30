@@ -12,7 +12,8 @@ SELECT
     source_data.lab_id,	
     source_data.sample_id,	
     source_data.test_id,	
-    source_data.test_kit,	
+    source_data.test_kit,
+    source_data.test_method,
     source_data.sex,	
     source_data.age,
     CASE

@@ -1,0 +1,11 @@
+test_kit, test_method, test_description
+arbo_pcr_3, PCR multiplex, Exame PCR que detecta DENV, ZIKV e CHIKV
+chikv_pcr, PCR singleplex, Exame PCR que detecta apenas CHIKV
+denv_pcr, PCR singleplex, Exame PCR que detecta apenas DENV
+igg_serum, Sorologia (IgG), Exame sorológico que detecta IgG
+igm_serum, Sorologia (IgM), Exame sorológico que detecta IgM
+mayv_pcr, PCR singleplex, Exame PCR que detecta apenas MAYV
+ns1_antigen, Antígeno singleplex, Exame de antígeno que detecta a NS1 de DENV
+orov_pcr, PCR singleplex, Exame PCR que detecta apenas OROV
+yfv_pcr, PCR singleplex, Exame PCR que detecta apenas YFV
+zikv_pcr, PCR singleplex, Exame PCR que detecta apenas ZIKV

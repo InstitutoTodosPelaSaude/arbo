@@ -1,4 +1,18 @@
 sources:
+  - name: test_methods
+    description: Table to map test_kits to test_methods created by dbt seed
+    schema: arboviroses
+    tables:
+      - name: test_methods
+        description: Seed table with test methods and descriptions
+        columns:
+          - name: test_kit
+            description: The name of the test kit, formatted as "test_kit_name"
+          - name: test_method
+            description: The method group of the test kit
+          - name: test_description
+            description: A description of the test kit
+
   - name: age_groups
     description: Table to map age groups created by dbt seed
     schema: arboviroses
@@ -106,6 +120,9 @@ models:
           - accepted_values:
               name: test_kit_accepted_values
               values: ['denv_serum', 'denv_antigen', 'arbo_pcr_3','chikv_pcr','denv_pcr','zikv_pcr','mayv_pcr','orov_pcr','yfv_pcr','igg_serum','igm_serum','ns1_antigen', 'zika_pcr']
+      - name: test_method
+        tests:
+          - not_null
       - name: age
         tests:
           - dbt_utils.not_null_proportion:
