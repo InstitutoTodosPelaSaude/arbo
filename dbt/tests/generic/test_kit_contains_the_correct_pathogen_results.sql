@@ -30,7 +30,7 @@
         ) 
     )
     OR ( 
-        test_kit in ('denv_serum', 'denv_antigen') 
+        test_kit in ('denv_serum', 'ns1_antigen') 
         AND NOT (
             DENV_test_result     IN ('Pos','Neg') 
         ) 

@@ -33,7 +33,7 @@ SELECT
     CASE
         -- WRONG TEST KIT JUST TEMPORARY SOLUTION
         WHEN pathogen = 'DENV'  AND detalhe_exame = 'IMUNOENSAIO ENZIMATICO' THEN 'denv_serum'
-        WHEN pathogen = 'DENV'  AND detalhe_exame = 'IMUNOCROMATOGRAFIA'     THEN 'denv_antigen'
+        WHEN pathogen = 'DENV'  AND detalhe_exame = 'IMUNOCROMATOGRAFIA'     THEN 'ns1_antigen'
 
         WHEN pathogen = 'DENV'  AND detalhe_exame = 'PCR EM TEMPO REAL'      THEN 'denv_pcr'
         WHEN pathogen = 'CHIKV' AND detalhe_exame = 'PCR EM TEMPO REAL'      THEN 'chikv_pcr'
