@@ -104,7 +104,7 @@ def export_matrices_to_xlsx(context):
     # List of matrix tables
     matrix_tables = ['01_DENV_line_posrate_direct_week_country_years',
                      '02_DENV_line_bar_posrate_posneg_direct_week_country',
-                     '03_DENV_bar_total_direct_months_regions'
+                     '03_DENV_bar_total_direct_months_regions',
                      '03_DENV_bar_total_direct_weeks_regions', 
                      '04_DENV_line_posrate_direct_weeks_states',
                      '06_DENV_heat_posrate_agegroups_week_country_r', 
