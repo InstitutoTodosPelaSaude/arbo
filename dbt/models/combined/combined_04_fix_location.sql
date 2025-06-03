@@ -2,9 +2,16 @@
 
 {{ config(materialized='table') }}
 
+{% set column_names = dbt_utils.get_filtered_columns_in_relation(from=ref('combined_03_dates'), except=["location", "state"]) %}
+
 WITH source_data AS (
 
-    SELECT * 
+    SELECT
+        {% for column_name in column_names %}
+            "{{ column_name }}",
+        {% endfor %}
+        {{ normalize_text("location") }} as "location",
+        {{ normalize_text("state") }} as "state"
     FROM {{ ref("combined_03_dates") }}
 
 )
