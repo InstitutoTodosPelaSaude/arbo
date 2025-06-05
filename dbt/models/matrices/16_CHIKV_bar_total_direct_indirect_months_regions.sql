@@ -1,5 +1,7 @@
 {{ config(materialized='table') }}
 
+{% set month_start = '2022-01' %}
+
 WITH source_data AS (
     SELECT
         "month",
@@ -10,7 +12,8 @@ WITH source_data AS (
     WHERE 
         "CHIKV_test_result" IN ('Pos', 'Neg') AND 
         test_kit IN ('arbo_pcr_3', 'igm_serum', 'chikv_pcr') AND 
-        region != 'NOT REPORTED'
+        region != 'NOT REPORTED' AND
+        "month" >= '{{ month_start }}'
     GROUP BY "month", region, pathogen
     ORDER BY "month", region, pathogen
 ),
