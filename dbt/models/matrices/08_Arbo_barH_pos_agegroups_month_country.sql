@@ -14,6 +14,7 @@ WITH source_data AS (
             WHEN "CHIKV_test_result" IN ('Pos', 'Neg') THEN test_kit IN ('chikv_pcr', 'ns1_antigen', 'igm_serum', 'arbo_pcr_3')
             WHEN "ZIKV_test_result" IN ('Pos', 'Neg') THEN test_kit IN ('zika_pcr', 'ns1_antigen', 'igm_serum', 'arbo_pcr_3')
             WHEN "WNV_test_result" IN ('Pos', 'Neg') THEN test_kit IN ('ns1_antigen', 'igm_serum', 'arbo_pcr_3')
+            WHEN "YFV_test_result" IN ('Pos', 'Neg') THEN test_kit IN ('yfv_pcr', 'igm_serum')
             ELSE TRUE
         END
     AND age_group != 'NOT REPORTED'
