@@ -59,7 +59,8 @@ def arboviroses_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource):
     compute_kind="python", 
     deps=[
         get_asset_key_for_model([arboviroses_dbt_assets], "01_DENV_line_posrate_direct_week_country_years"),
-        get_asset_key_for_model([arboviroses_dbt_assets], "02_DENV_line_bar_posrate_posneg_direct_week_country"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "02_DENV_line_bar_posrate_posneg_direct_week_country_h"),
+        get_asset_key_for_model([arboviroses_dbt_assets], "02_DENV_line_bar_posrate_posneg_direct_week_country_r"),
         get_asset_key_for_model([arboviroses_dbt_assets], "03_DENV_bar_total_direct_months_regions_h"),
         get_asset_key_for_model([arboviroses_dbt_assets], "03_DENV_bar_total_direct_months_regions_r"),
         get_asset_key_for_model([arboviroses_dbt_assets], "03_DENV_bar_total_direct_weeks_regions"),
@@ -108,7 +109,8 @@ def export_matrices_to_xlsx(context):
 
     # List of matrix tables
     matrix_tables = ['01_DENV_line_posrate_direct_week_country_years',
-                     '02_DENV_line_bar_posrate_posneg_direct_week_country',
+                     '02_DENV_line_bar_posrate_posneg_direct_week_country_h',
+                     '02_DENV_line_bar_posrate_posneg_direct_week_country_r',
                      '03_DENV_bar_total_direct_months_regions_h',
                      '03_DENV_bar_total_direct_months_regions_r',
                      '03_DENV_bar_total_direct_weeks_regions', 
