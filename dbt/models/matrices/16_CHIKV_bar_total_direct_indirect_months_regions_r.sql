@@ -25,7 +25,7 @@ months_to_include AS (
         "Ano-Mês"
     FROM months_ranked
     WHERE month_rank <= {{ last_year_month_threshold }}
-),
+)
 
 SELECT
     *
