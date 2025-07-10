@@ -18,7 +18,10 @@ WITH source_data AS (
 SELECT
     age_group as "faixas etárias",
     epiweek_enddate as "semana epidemiológica",
-    MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" * 100 ELSE NULL END) as "percentual"
+    MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" * 100 ELSE NULL END) as "percentual",
+    SUM(CASE WHEN pathogen = 'DENV' THEN "Pos" ELSE 0 END) as "positivos",
+    SUM(CASE WHEN pathogen = 'DENV' THEN "Neg" ELSE 0 END) as "negativos",
+    SUM(CASE WHEN pathogen = 'DENV' THEN "totaltests" ELSE 0 END) as "totaltests"
 FROM source_data
 GROUP BY epiweek_enddate, age_group
 ORDER BY epiweek_enddate, age_group desc
