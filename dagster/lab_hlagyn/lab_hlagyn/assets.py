@@ -25,6 +25,7 @@ import sys
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import shutil
+import re
 
 from .constants import dbt_manifest_path
 
@@ -65,6 +66,63 @@ def hlagyn_raw(context):
         hlagyn_df = pd.read_excel(file_system.get_file_content_as_io_bytes(file_to_get), skiprows=1, dtype = str)
     hlagyn_df['file_name'] = hlagyn_files[0]
     context.log.info(f"Reading file {hlagyn_files[0]}")
+
+    # Normalize 'Cidade' and 'UF' columns when they come with another column name
+    if 'Cidade' not in hlagyn_df.columns:
+        hlagyn_df.rename(columns={
+                'Cidade (Inst Saúde)': 'Cidade'
+            }, inplace=True)
+    
+    if 'UF' not in hlagyn_df.columns:
+        hlagyn_df.rename(columns={
+                'UF (Inst Saúde)': 'UF'
+            }, inplace=True)
+        
+    # Sometimes the result columns like 'CT_I', 'CT_N', 'CT_ORF1AB', etc. appear as 'Resultado' in the files.
+    # We need to rename them back to 'CT_I', 'CT_N', 'CT_ORF1AB', etc., using the values from the columns.
+    # For example: If all values start with 'CT_I:', we rename the column to 'CT_I'.
+    
+    # Select all columns with the name "Resultado", "Resultado.1", etc.
+    resultado_cols = [col for col in hlagyn_df.columns if col.startswith("Resultado")]
+
+    for col in resultado_cols:
+        # Consider both NaN and empty or whitespace-only strings as empty
+        col_sem_na = hlagyn_df[col].dropna()
+        col_sem_na = col_sem_na[col_sem_na.astype(str).str.strip() != ""]
+        if col_sem_na.empty:
+            hlagyn_df.drop(columns=[col], inplace=True)
+            continue  # If the column is empty, skip to the next iteration
+
+        # Get the first non-null value to extract the prefix (e.g., "CT_I:")
+        first_value = hlagyn_df[col].dropna().astype(str).iloc[0]
+        match = re.match(r'^([\w\d]+):\s*(.*)', first_value)
+        if match:
+            prefix = match.group(1)  # Example: "CT_I"
+            # 3. Rename the column
+            hlagyn_df.rename(columns={col: prefix}, inplace=True)
+            # 4. Remove the prefix from the column values
+            hlagyn_df[prefix] = (
+                hlagyn_df[prefix]
+                .astype(str)
+                .str.replace(r'^[\w\d]+:\s*', '', regex=True)
+                .replace({'nan': '', 'None': ''})  # Fix "nan" and "None" values to empty string
+                .apply(lambda x: x.strip() if isinstance(x, str) else x)  # Remove extra spaces
+            )
+
+    # After processing, check if only one 'Resultado' column remains
+    resultado_restantes = [col for col in hlagyn_df.columns if col.startswith("Resultado")]
+    if len(resultado_restantes) == 1:
+        col_antiga = resultado_restantes[0]
+        hlagyn_df.rename(columns={col_antiga: "Resultado"}, inplace=True)
+
+    # Map columns when identifying a ARBOVIRUS file
+    if 'VIRUS_ZIKA' in hlagyn_df.columns:
+        # Rename the columns to match the expected names
+        hlagyn_df.rename(columns={
+            'VIRUS_ZIKA': 'Zika vírus',
+            'VIRUS_DENGUE': 'Dengue vírus',
+            'VIRUS_CHIKU': 'Chikungunya vírus',
+        }, inplace=True)
         
     # Save to db
     hlagyn_df.to_sql('hlagyn_raw', engine, schema='arboviroses', if_exists='replace', index=False)
