@@ -27,6 +27,7 @@ import pathlib
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from time import sleep
+from io import StringIO, BytesIO
 import zipfile
 from datetime import datetime, time
 
@@ -74,19 +75,16 @@ def export_to_tsv(context):
 
     # Export to xlsx
     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-    df = pd.read_sql('select * from arboviroses."combined_05_location"', engine)
+    cursor = engine.raw_connection().cursor()
 
-    # Save to tsv
-    csv_buffer = io.StringIO()
-    df.to_csv(csv_buffer, sep='\t', index=False)
-    csv_buffer.seek(0)
-    file_system.save_content_in_file('', io.BytesIO(csv_buffer.getvalue().encode('utf-8')).read(), 'combined.tsv')
+    # Export data
+    tsv_buffer = StringIO()
+    cursor.copy_expert(f'COPY (SELECT * FROM arboviroses."combined_05_location") TO STDOUT WITH CSV DELIMITER E\'\t\' HEADER', tsv_buffer)
+    tsv_buffer.seek(0)
+
+    file_system.save_content_in_file('', BytesIO(tsv_buffer.getvalue().encode('utf-8')).read(), 'combined.tsv')
+
     engine.dispose()
-
-    context.add_output_metadata({
-        'num_rows': df.shape[0],
-        # 'laboratories': df['laboratory'].nunique(),
-    })
 
 @asset(
     compute_kind="python", 
