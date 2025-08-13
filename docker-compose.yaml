@@ -11,8 +11,8 @@ services:
     volumes:
       - .:/usr/app/arboviroses/
     entrypoint: ["./entrypoint.sh"]
-    mem_limit: "6g"
-    mem_reservation: "3g"
+    mem_limit: "3g"
+    mem_reservation: "1g"
     memswap_limit: -1  
 
   xlsx2csv:
