@@ -30,10 +30,7 @@ SELECT
     -- test_kit
     CASE
         WHEN detalhe_exame IN (
-            'PCRCHIK', 'PCRDE', 'VIRUSZICA',
-
-            'PCRDECT', 'PCRCHIKCT',
-            'VIRUSZICACT' -- Historical - 2022
+            'PCRCHIK', 'PCRDE', 'VIRUSZICA'
         ) AND exame ILIKE 'PCR para Zika, Chikungunya e Dengue'
         THEN 'arbo_pcr_3'
         	
@@ -44,9 +41,7 @@ SELECT
             'ZIKAGINDICE',
             'ZIKAIGG2',
             -- Chikungunya IgG
-            'RCHIKUNGMELISAIGG',
-            -- Mayaro IgG
-            'MAYROVIGG'
+            'RCHIKUNGMELISAIGG'
         ) THEN 'igg_serum'
 
         WHEN detalhe_exame IN (
@@ -54,26 +49,21 @@ SELECT
             'DENGUEMELISA',
             'DENGUEMIC',
             'DENGIGM',
-            'DENGUEMI',
             -- Zika IgM
             'ZIKAM1',
             'ZIKAM2',
             -- Chikungunya IgM
-            'RCHIKUNGMELISAIGM',
-            -- Mayaro IgM
-            'MAYVIGM'
+            'RCHIKUNGMELISAIGM'
         ) THEN 'igm_serum'
         
         WHEN detalhe_exame IN (
-            'DNS1',
             'NS1ELISA',
             'NS1IMUNOCRO'
         ) THEN 'ns1_antigen'
 
         -- PCR
         WHEN detalhe_exame IN (
-            'PCRDE', 
-            'PCRDECT'
+            'PCRDE'
         ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO V_RUS DENGUE ' 
         THEN 'denv_pcr'
 
@@ -99,7 +89,6 @@ SELECT
         ) THEN 'zikv_pcr'
 
         WHEN detalhe_exame IN (
-            'DEVORO',
             'OROVPCR'
         ) THEN 'orov_pcr'
 
@@ -107,9 +96,6 @@ SELECT
             'RESMAYARO',
             'MAYARO'
         ) THEN 'mayv_pcr'
-
-        WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFIC'
-        THEN 'yfv_pcr'
 
         WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFV'
         THEN 'yfv_pcr'
