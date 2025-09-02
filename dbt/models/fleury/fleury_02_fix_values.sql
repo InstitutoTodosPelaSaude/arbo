@@ -140,6 +140,8 @@ transformed AS (
         result ILIKE 'RECOMENDAMOS A REPETICAO DESTE EXAME APOS UMA SEMANA%'
         OR result IS NULL
         OR result = 'INDETERMINADO'
+        OR result = 'INDETERMINADA'
+        OR result = '*'
         OR result = 'INCONCLUSIVO'
         
         -- Remoção temporária de resultados com valores
@@ -148,6 +150,10 @@ transformed AS (
         OR result ILIKE 'SUPERIOR A 1/%'
     )
     AND test_id NOT IN ('6330770357_400', '2020054349_200', '2020055814_200', '8950225454_100')
+    AND NOT (
+        pathogen IN ('ZIKA VIRUS - IGM', 'ZIKA VIRUS - IGG') 
+        AND result ~ '^[0-9]+,[0-9]+$'
+    )
 )
 
 SELECT *
