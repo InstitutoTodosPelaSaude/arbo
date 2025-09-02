@@ -107,6 +107,10 @@ transformed AS (
 
             -- Non-reactive (negative): <0.9 | Indeterminate: 0.9–1.1 | Reactive (positive): >1.1
             WHEN exame in ('DENGUEG', 'DENGUEM', 'DENGUENS1') and result = 'INFERIOR A 0,9' THEN 0
+            WHEN exame in ('DENGUEG', 'DENGUEM', 'DENGUENS1') and result = 'INFERIOR A 0,5' THEN 0
+            WHEN exame IN ('DENGUEG', 'DENGUEM', 'DENGUENS1')
+                AND result ~ '^[0-9]+(,[0-9]+)?$'
+                AND CAST(REPLACE(result, ',', '.') AS NUMERIC) < 0.9 THEN 0
             WHEN exame IN ('DENGUEG', 'DENGUEM', 'DENGUENS1')
                 AND result ~ '^[0-9]+(,[0-9]+)?$'
                 AND CAST(REPLACE(result, ',', '.') AS NUMERIC) > 1.1 THEN 1
