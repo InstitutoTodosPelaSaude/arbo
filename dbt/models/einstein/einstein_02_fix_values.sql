@@ -80,3 +80,4 @@ SELECT
 FROM source_data
 WHERE
     test_id NOT IN ('2024234005520')
+    AND date_testing >= '2025-08-01' -- Com as mudanças dos IDs do Einstein, consideramos dados a partir de 2025-08-01 para inclusão
