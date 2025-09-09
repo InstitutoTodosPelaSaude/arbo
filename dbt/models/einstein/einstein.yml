@@ -33,6 +33,16 @@ sources:
             asset_key: ["einstein_raw"]
 
 models:
+  - name: einstein_01_convert_types
+    description: Convert types
+    columns:
+      - name: test_id
+        tests:
+          - not_null
+          - dbt_utils.regex_match:
+              regex: '^[0-9A-F]{10}$'
+              message: "test_id must be exactly 10 characters long and only contain digits (0-9) or letters (A-F)."
+
   - name: einstein_02_fix_values
     description: Fix values and add the sample_id column in the raw table
     columns:
