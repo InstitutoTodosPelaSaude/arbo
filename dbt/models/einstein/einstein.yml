@@ -40,7 +40,7 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "REGEXP_CONTAINS(test_id, '^[0-9A-F]{10}$')"
+              expression: "~ '^[0-9A-F]{10}$'"
 
   - name: einstein_02_fix_values
     description: Fix values and add the sample_id column in the raw table
