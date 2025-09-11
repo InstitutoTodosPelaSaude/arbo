@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-{% set epiweek_start = '2024-11-03' %}
+{% set epiweek_start = '2024-11-24' %}
 
 -- CTE para selecionar todas as datas finais de semana epidemiológica
 WITH epiweeks AS (
@@ -24,8 +24,8 @@ source_data AS (
         {{ matrices_metrics('result') }}
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE 
-        "DENV_test_result" IN ('Pos', 'Neg') AND
-        test_kit IN ('arbo_pcr_3', 'ns1_antigen', 'denv_pcr', 'denv_serum') AND
+        "CHIKV_test_result" IN ('Pos', 'Neg') AND 
+        test_kit IN ('arbo_pcr_3', 'chikv_pcr', 'igm_serum') AND
         epiweek_enddate >= '{{ epiweek_start }}'
     GROUP BY epiweek_enddate, state_code, state, location, location_ibge_code, lat, long, pathogen
     ORDER BY epiweek_enddate, state_code
@@ -55,7 +55,7 @@ epiweeks_locations AS (
         l.long
     FROM epiweeks e
     CROSS JOIN location_data l
-),
+), 
 
 -- CTE que calcula a soma de casos por semana epidemiológica e localização
 -- Inclui semanas e localizações sem casos usando COALESCE para garantir que zeros sejam registrados
@@ -68,7 +68,7 @@ source_data_sum AS (
         e.state as "state",
         e.lat as "lat",
         e.long as "long",
-        COALESCE(SUM(CASE WHEN pathogen = 'DENV' THEN "Pos" ELSE 0 END), 0) as "cases"
+        COALESCE(SUM(CASE WHEN pathogen = 'CHIKV' THEN "Pos" ELSE 0 END), 0) as "cases"
     FROM epiweeks_locations e
     LEFT JOIN source_data s ON e.epiweek_enddate = s.epiweek_enddate 
                              AND e.location_ibge_code = s.location_ibge_code
@@ -105,6 +105,7 @@ SELECT
 FROM source_data_cumulative_sum
 WHERE 
     "cumulative_cases" > 0 AND
-    location not in ('NOT REPORTED')
+    location not in ('NOT REPORTED') AND
+    state not in ('NOT REPORTED')
 ORDER BY "semanas epidemiologicas", "state_code", "location"
     
