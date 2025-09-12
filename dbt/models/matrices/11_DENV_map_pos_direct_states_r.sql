@@ -1,5 +1,6 @@
 {{ config(materialized='table') }}
 
+WITH
 source_data AS (
     SELECT *
     FROM {{ ref("11_DENV_map_pos_direct_states_h") }}

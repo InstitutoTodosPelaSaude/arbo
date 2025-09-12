@@ -1,5 +1,6 @@
 {{ config(materialized='table') }}
 
+WITH
 source_data AS (
     SELECT *
     FROM {{ ref("12_CHIKV_map_pos_direct_cities_h") }}
