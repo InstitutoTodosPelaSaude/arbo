@@ -7,11 +7,11 @@ source_data AS (
 ),
 
 last_epiweek AS (
-    SELECT MAX("Semanas epidemiologicas") as epiweek_enddate
+    SELECT MAX("Semanas epidemiológicas") as epiweek_enddate
     FROM source_data
 )
 
 SELECT *
 FROM source_data
 WHERE 
-    "Semanas epidemiologicas" >= (SELECT epiweek_enddate FROM last_epiweek)
+    "Semanas epidemiológicas" >= (SELECT epiweek_enddate FROM last_epiweek)
