@@ -7,6 +7,8 @@ WITH source_data AS (
         "casos_est_max"::INT,
         "casos"::INT AS casos_confirmados,
         "disease",
+        "city",
+        "city_ibge_code"::TEXT,
         "state_code",
         "state",
         "region",

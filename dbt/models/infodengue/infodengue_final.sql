@@ -1,7 +1,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key=['"SE"', 'state_code', 'disease'],
+        unique_key=['"SE"', 'city_ibge_code',  'state_code', 'disease'],
         incremental_strategy='merge',
         merge_exclude_columns = ['created_at']
     )
