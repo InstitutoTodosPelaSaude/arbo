@@ -31,6 +31,8 @@ SELECT
     month,
     "data_fimSE",
     casos_estimados,
+    city_ibge_code,
+    city,
     state_code,
     state,
     region
