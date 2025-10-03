@@ -129,51 +129,51 @@ def infodengue_remove_used_files(context):
     files_in_folder = file_system.list_files_in_relative_path("")
     context.log.info(f"Files that were not moved: {files_in_folder}")
     
-@asset(
-    compute_kind="python", 
-    deps=[get_asset_key_for_model([arboviroses_dbt_assets], "infodengue_final")]
-)
-def export_to_csv(context):
+# @asset(
+#     compute_kind="python", 
+#     deps=[get_asset_key_for_model([arboviroses_dbt_assets], "infodengue_final")]
+# )
+# def export_to_csv(context):
 
-    # Get the file system
-    file_system = FileSystem(root_path=INFODENGUE_FILES_PUBLIC_FOLDER)
+#     # Get the file system
+#     file_system = FileSystem(root_path=INFODENGUE_FILES_PUBLIC_FOLDER)
 
-    # Read table 
-    engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-    df = pd.read_sql('select * from arboviroses."infodengue_final"', engine)
+#     # Read table 
+#     engine = create_engine(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
+#     df = pd.read_sql('select * from arboviroses."infodengue_final"', engine)
 
-    df = df[
-        [
-            'data_fimSE',
-            'casos_confirmados',
-            'casos_estimados',
-            'casos_est_min',
-            'casos_est_max',
-            'disease',
-            'state_code',
-            'state',
-            'region'
-        ]
-    ]
+#     df = df[
+#         [
+#             'data_fimSE',
+#             'casos_confirmados',
+#             'casos_estimados',
+#             'casos_est_min',
+#             'casos_est_max',
+#             'disease',
+#             'state_code',
+#             'state',
+#             'region'
+#         ]
+#     ]
 
-    # EXPORT DATA TO CSV
-    csv_buffer = io.StringIO()
-    df.to_csv(csv_buffer, sep=',', index=False)
-    csv_buffer.seek(0)
+#     # EXPORT DATA TO CSV
+#     csv_buffer = io.StringIO()
+#     df.to_csv(csv_buffer, sep=',', index=False)
+#     csv_buffer.seek(0)
 
-    # SAVE CONTENT IN MINIO
-    file_system.save_content_in_file(
-        '',
-        io.BytesIO(
-            csv_buffer.getvalue().encode('utf-8')
-        ).read(),
-        'Info Dengue Casos por Estado.csv'
-    )
-    engine.dispose()
+#     # SAVE CONTENT IN MINIO
+#     file_system.save_content_in_file(
+#         '',
+#         io.BytesIO(
+#             csv_buffer.getvalue().encode('utf-8')
+#         ).read(),
+#         'Info Dengue Casos por Estado.csv'
+#     )
+#     engine.dispose()
 
-    context.add_output_metadata({
-        'num_rows': df.shape[0],
-    })
+#     context.add_output_metadata({
+#         'num_rows': df.shape[0],
+#     })
 
 
 # ====================================================== #
@@ -181,7 +181,8 @@ def export_to_csv(context):
 # ====================================================== #
 
 infodengue_all_assets_job = define_asset_job(
-    name="infodengue_all_assets_job"
+    name="infodengue_all_assets_job",
+
 )
 
 @sensor(

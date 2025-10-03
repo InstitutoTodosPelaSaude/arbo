@@ -7,7 +7,7 @@ from .assets import (
     arboviroses_dbt_assets, 
     infodengue_raw, 
     infodengue_remove_used_files, 
-    export_to_csv,
+    # export_to_csv,
 
     infodengue_all_assets_job,
     infodengue_slack_failure_sensor,
@@ -20,7 +20,7 @@ defs = Definitions(
     assets=[
         arboviroses_dbt_assets, 
         infodengue_raw,
-        export_to_csv,
+        # export_to_csv,
         infodengue_remove_used_files
     ],
     schedules=schedules,
