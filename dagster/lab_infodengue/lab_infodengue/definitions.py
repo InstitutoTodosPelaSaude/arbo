@@ -20,7 +20,7 @@ defs = Definitions(
     assets=[
         arboviroses_dbt_assets, 
         infodengue_raw,
-        export_to_csv,
+        # export_to_csv,
         infodengue_remove_used_files
     ],
     schedules=schedules,
