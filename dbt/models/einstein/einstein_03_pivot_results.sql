@@ -16,7 +16,8 @@ WITH source_data AS (
                 'DENGUE IGG, TESTE RÁPIDO',
                 'DENGUE IGM, TESTE RÁPIDO',
                 'DENGUE NS1, TESTE RÁPIDO',
-                'ANTÍGENO NS1 DO VIRUS DA DENGUE'
+                'ANTÍGENO NS1 DO VIRUS DA DENGUE',
+                'NS1 EUROIMMUN'
             ], 
             'detalhe_exame', 
             'result', 

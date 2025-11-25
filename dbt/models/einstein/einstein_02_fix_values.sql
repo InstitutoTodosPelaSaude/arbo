@@ -53,7 +53,8 @@ SELECT
         ) THEN 'igm_serum'
         WHEN UPPER(detalhe_exame) IN (
             'DENGUE NS1, TESTE RÁPIDO',
-            'ANTÍGENO NS1 DO VIRUS DA DENGUE'
+            'ANTÍGENO NS1 DO VIRUS DA DENGUE',
+            'NS1 EUROIMMUN'
         ) THEN 'ns1_antigen'
         ELSE 'UNKNOWN'
     END AS test_kit,
