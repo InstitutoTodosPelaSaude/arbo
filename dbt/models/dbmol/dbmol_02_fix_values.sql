@@ -57,7 +57,6 @@ source_data_fix_values AS (
             
             WHEN 'DETECCAO MOLECULAR DO ZIKA VIRUS' THEN 'zikv_pcr'
             WHEN 'DETECCAO E TIPAGEM DO VIRUS DA DENGUE' THEN 'denv_pcr'
-            WHEN 'ANTIGENO NS1 DO VÍRUS DA DENGUE' THEN 'denv_antigen'
             WHEN 'DENGUE NS1' THEN 'ns1_antigen'
             WHEN 'DENGUE - ANTICORPOS IGM' THEN 'igm_serum'
             WHEN 'DENGUE - ANTICORPOS IGG' THEN 'igg_serum'

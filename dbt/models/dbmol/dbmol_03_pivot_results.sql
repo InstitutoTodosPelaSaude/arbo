@@ -15,8 +15,7 @@ SELECT
                 'DENGM',
                 'DENGUE',
                 'DNS1',
-                'TDENGE',
-                'NS1 EUROIMMUN'
+                'TDENGE'
             ], 
             'detalhe_exame', 
             'result', 
