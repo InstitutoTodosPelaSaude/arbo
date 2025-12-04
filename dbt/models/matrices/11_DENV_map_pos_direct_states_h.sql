@@ -59,15 +59,26 @@ source_data_sum AS (
     GROUP BY e.epiweek_enddate, e.state_code, e.state
 ),
 
+population AS (
+    SELECT
+        "DS_UF_SIGLA" as state_code,
+        sum("Populacao"::int) as population_qty
+    FROM {{ ref("macroregions") }}
+    where "ADM2_PCODE" ilike 'BR%'
+    GROUP BY "DS_UF_SIGLA"
+),
+
 -- CTE que calcula a soma cumulativa dos casos para cada estado
 source_data_cumulative_sum AS (
     SELECT
         "semanas epidemiologicas",
-        "state_code",
+        source_data_sum."state_code",
         "state",
         "cases" AS "epiweek_cases",
-        SUM("cases") OVER (PARTITION BY "state" ORDER BY "semanas epidemiologicas") as "cumulative_cases"
+        population."population_qty",
+        SUM("cases") OVER (PARTITION BY source_data_sum."state_code" ORDER BY "semanas epidemiologicas") as "cumulative_cases"
     FROM source_data_sum
+    LEFT JOIN population ON source_data_sum.state_code = population.state_code
     ORDER BY "semanas epidemiologicas", "state_code"
 )
 
