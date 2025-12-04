@@ -25,7 +25,7 @@ source_data AS (
     FROM {{ ref("matrix_01_pivoted") }}
     WHERE 
         "DENV_test_result" IN ('Pos', 'Neg') AND
-        test_kit IN ('arbo_pcr_3', 'ns1_antigen', 'denv_pcr', 'denv_serum') AND
+        test_kit IN ('arbo_pcr_3', 'ns1_antigen', 'denv_pcr') AND
         epiweek_enddate >= '{{ epiweek_start }}'
     GROUP BY epiweek_enddate, state_code, state, location, location_ibge_code, lat, long, pathogen
     ORDER BY epiweek_enddate, state_code
@@ -75,33 +75,45 @@ source_data_sum AS (
     GROUP BY e.epiweek_enddate, e.location_ibge_code, e.location, e.state_code, e.state, e.lat, e.long
 ),
 
+population AS (
+    SELECT
+        regexp_replace("ADM2_PCODE", '^BR', '')::int as location_ibge_code,
+        "Populacao"::int as population_qty
+    FROM {{ ref("macroregions") }}
+    where "ADM2_PCODE" ilike 'BR%'
+),
+
 -- CTE que calcula a soma cumulativa dos casos para cada localização
 source_data_cumulative_sum AS (
     SELECT
         "semanas epidemiologicas",
-        "location_ibge_code",
+        source_data_sum."location_ibge_code",
         "location",
         "state_code",
         "state",
         "lat",
         "long",
+        population."population_qty",
         "cases" AS "epiweek_cases",
-        SUM("cases") OVER (PARTITION BY "location_ibge_code" ORDER BY "semanas epidemiologicas") as "cumulative_cases"
+        SUM("cases") OVER (PARTITION BY source_data_sum."location_ibge_code" ORDER BY "semanas epidemiologicas") as "cumulative_cases"
     FROM source_data_sum
+    LEFT JOIN population ON source_data_sum.location_ibge_code = population.location_ibge_code
     ORDER BY "semanas epidemiologicas", "state_code", "location"
 )
 
 -- Seleção final dos dados, filtrando apenas semanas com casos cumulativos maiores que zero
 SELECT
-    "semanas epidemiologicas" as "Semanas epidemiologicas",
+    "semanas epidemiologicas" as "Semana epidemiológica",
     "location_ibge_code" as "location_ibge_code",
-    "location" as "Cidade",
-    "state_code" as "state_code",
-    "state" as "state",
+    "location" as "Nome do município",
+    "state_code" as "UF",
+    "state" as "Nome do estado",
     "lat" as "lat",
     "long" as "long",
-    "epiweek_cases"::INTEGER as "Casos da última semana",
-    "cumulative_cases"::INTEGER as "Casos cumulativos"
+    "population_qty" as "População do município",
+    "epiweek_cases"::INTEGER as "Exames positivos da última semana",
+    "cumulative_cases"::INTEGER as "Exames positivos cumulativos",
+    "cumulative_cases"::float / NULLIF("population_qty", 0) * 100000 AS "Positivos cumul. por 100.000 hab."
 FROM source_data_cumulative_sum
 WHERE 
     "cumulative_cases" > 0 AND
