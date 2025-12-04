@@ -11,12 +11,21 @@ services:
     volumes:
       - .:/usr/app/arboviroses/
     entrypoint: ["./entrypoint.sh"]
+    networks:
+      - arbonetwork
+      - shared-network
     mem_limit: "3g"
     mem_reservation: "1g"
     memswap_limit: -1  
 
   xlsx2csv:
     build: ./xlsx2csv_converter
-    ports:
-      - "2140:2140"
     entrypoint: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "2140"]
+    networks:
+      - arbonetwork
+
+networks:
+  arbonetwork:
+    driver: bridge
+  shared-network:
+    external: true
