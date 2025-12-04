@@ -87,8 +87,10 @@ SELECT
     "semanas epidemiologicas" as "Semana epidemiológica",
     "state_code" as "UF",
     "state" as "Nome do estado",
+    "population_qty" as "População do estado",
     "epiweek_cases"::INTEGER as "Exames positivos da última semana",
-    "cumulative_cases"::INTEGER as "Exames positivos cumulativos"
+    "cumulative_cases"::INTEGER as "Exames positivos cumulativos",
+    "cumulative_cases"::float / NULLIF("population_qty", 0) * 100000 AS "Positivos cumul. por 100.000 hab."
 FROM source_data_cumulative_sum
 WHERE 
     "cumulative_cases" > 0 AND
