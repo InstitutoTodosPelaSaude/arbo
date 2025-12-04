@@ -73,11 +73,11 @@ source_data_cumulative_sum AS (
 
 -- Seleção final dos dados, filtrando apenas semanas com casos cumulativos maiores que zero
 SELECT
-    "semanas epidemiologicas" as "Semanas epidemiológicas",
-    "state_code" as "Código do estado",
-    "state" as "Estado",
-    "epiweek_cases"::INTEGER as "Casos na última semana",
-    "cumulative_cases"::INTEGER as "Casos cumulativos"
+    "semanas epidemiologicas" as "Semana epidemiológica",
+    "state_code" as "UF",
+    "state" as "Nome do estado",
+    "epiweek_cases"::INTEGER as "Exames positivos da última semana",
+    "cumulative_cases"::INTEGER as "Exames positivos cumulativos"
 FROM source_data_cumulative_sum
 WHERE 
     "cumulative_cases" > 0 AND
