@@ -17,7 +17,8 @@ SELECT
     epiweek_enddate as "Semanas epidemiológicas",
     MAX(CASE WHEN pathogen = 'DENV' THEN "posrate" * 100 ELSE NULL END) as "Positividade (%)",
     SUM(CASE WHEN pathogen = 'DENV' THEN "Pos" ELSE 0 END) as "Positivos",
-    SUM(CASE WHEN pathogen = 'DENV' THEN "Neg" ELSE 0 END) as "Negativos"
+    SUM(CASE WHEN pathogen = 'DENV' THEN "Neg" ELSE 0 END) as "Negativos",
+    SUM(CASE WHEN pathogen = 'DENV' THEN "totaltests" ELSE 0 END) as "Total de casos"
 FROM source_data
 GROUP BY epiweek_enddate
 ORDER BY epiweek_enddate
