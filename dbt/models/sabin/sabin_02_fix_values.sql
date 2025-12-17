@@ -144,6 +144,7 @@ SELECT
         WHEN result = '''' THEN 0
 
         WHEN result = 'NAO REAGENTE' THEN 0
+        WHEN result = 'NAO RE' THEN 0
         
         WHEN result = 'NEGATIVO' THEN 0
         WHEN result = 'POSITIVO' THEN 1
@@ -151,6 +152,7 @@ SELECT
         WHEN result = 'REAGENTE' THEN 1
         WHEN result = 'REAGENTE 1:200' THEN 1
         WHEN result = 'REAGENTE''' THEN 1
+        WHEN result = 'REAGEN' THEN 1
 
         WHEN result = 'DETECTADO' THEN 1
 
