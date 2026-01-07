@@ -42,11 +42,13 @@ SELECT
     MAX(CASE WHEN pathogen = 'DENV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2023' THEN "posrate" * 100 ELSE NULL END) as "Dengue - 2023",
     MAX(CASE WHEN pathogen = 'DENV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2024' THEN "posrate" * 100 ELSE NULL END) as "Dengue - 2024",
     MAX(CASE WHEN pathogen = 'DENV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2025' THEN "posrate" * 100 ELSE NULL END) as "Dengue - 2025",
+    MAX(CASE WHEN pathogen = 'DENV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2026' THEN "posrate" * 100 ELSE NULL END) as "Dengue - 2026",
 
     MAX(CASE WHEN pathogen = 'CHIKV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2022' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya - 2022",
     MAX(CASE WHEN pathogen = 'CHIKV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2023' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya - 2023",
     MAX(CASE WHEN pathogen = 'CHIKV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2024' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya - 2024",
-    MAX(CASE WHEN pathogen = 'CHIKV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2025' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya - 2025"
+    MAX(CASE WHEN pathogen = 'CHIKV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2025' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya - 2025",
+    MAX(CASE WHEN pathogen = 'CHIKV' AND TO_CHAR(epiweek_enddate, 'YYYY') = '2026' THEN "posrate" * 100 ELSE NULL END) as "Chikungunya - 2026"
 FROM source_data
 GROUP BY epiweek_enddate
 ORDER BY semana_ajustada
