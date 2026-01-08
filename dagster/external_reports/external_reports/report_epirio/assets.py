@@ -79,7 +79,7 @@ def report_epirio_send_email(context: AssetExecutionContext):
     # Apply mappers {date} and {epiweek} to subject and body text
     epiweek_number = get_epiweek_str(
         datetime_ = datetime.now() - timedelta(days=6), # Get the number from the last epiweek
-        format = 'SE{EPINUM}_%Y',
+        format = 'SE{EPINUM}.{EPIYEAR}',
         zfill = 2
     )
     subject = add_date_to_text(EXTERNAL_REPORTS_EPIRIO_SUBJECT)
