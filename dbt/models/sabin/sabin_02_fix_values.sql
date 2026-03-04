@@ -248,3 +248,38 @@ AND NOT (
     -- Inconsistência de dados
     detalhe_exame IN ('YFV') AND exame ILIKE 'PAINEL MOLECULAR PARA DENGUE %'
 )
+AND detalhe_exame IN (
+    'PCRCHIK', 'PCRDE', 'VIRUSZICA',
+    -- Dengue IgG
+            'DENGIGG', 'DENGUEGI',
+            -- Zika IgG
+            'ZIKAGINDICE',
+            'ZIKAIGG2',
+            -- Chikungunya IgG
+            'RCHIKUNGMELISAIGG',
+    -- Dengue IgM
+            'DENGUEMELISA',
+            'DENGUEMIC',
+            'DENGIGM',
+            -- Zika IgM
+            'ZIKAM1',
+            'ZIKAM2',
+            -- Chikungunya IgM
+            'RCHIKUNGMELISAIGM',
+    'NS1ELISA',
+            'NS1IMUNOCRO',
+    'PCRDE',
+    'DENV',
+    'PCRD',
+    'CHIKVPCR-BIOMOL',
+            'PCRCHIKCT',
+            'CHIKUPCR',
+            'CHICK',
+    'ZIKAPCRBIO',
+            'ZIKAV',
+    'OROVPCR',
+    'RESMAYARO',
+            'MAYARO',
+    'YFV'
+    
+)

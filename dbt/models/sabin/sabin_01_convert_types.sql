@@ -10,7 +10,7 @@ WITH source_data AS (
     FROM {{ source('dagster', 'sabin_raw') }}
 )
 SELECT
-    "Código Posto" AS codigo_posto,
+    -- "Código Posto" AS codigo_posto,
     "OS" AS test_id,
     "Estado" AS state,
     "Municipio" AS location,
