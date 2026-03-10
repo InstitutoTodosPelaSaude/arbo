@@ -3,7 +3,7 @@
 {% set epiweek_start = '2022-01-01' %}
 {% set states = dbt_utils.get_column_values(
     table=ref('matrix_01_infodengue'),
-    column='state',
+    column='state_code',
     where="epiweek_enddate >= '" ~ epiweek_start ~ "'"
 ) 
    | reject('equalto', None) 
@@ -31,13 +31,13 @@ infodengue_data AS (
     SELECT
         epiweek_enddate,
         region,
-        state,
+        state_code,
         sum(casos_estimados) as "Pos"
     FROM {{ ref("matrix_01_infodengue") }}
     WHERE
         disease = 'chikungunya' AND
         epiweek_enddate >= '{{ epiweek_start }}'
-    GROUP BY epiweek_enddate, region, state
+    GROUP BY epiweek_enddate, region, state_code
 ),
 
 source_total AS (
@@ -74,10 +74,10 @@ infodengue_pos AS (
     SELECT
         sc.epiweek_enddate as "Semanas epidemiológicas",
         sc.region,
-        sc.state,
+        sc.state_code,
         SUM(sc."Pos")::int AS "infodengue_pos"
     FROM infodengue_data sc
-    GROUP BY sc.epiweek_enddate, sc.region, sc.state
+    GROUP BY sc.epiweek_enddate, sc.region, sc.state_code
 )
 
 SELECT 
@@ -97,7 +97,7 @@ SELECT
     SUM(CASE WHEN svp.region = 'Sudeste' THEN "infodengue_pos" ELSE 0 END) as "Sudeste (InfoDengue)",
     SUM(CASE WHEN svp.region = 'Sul' THEN "infodengue_pos" ELSE 0 END) as "Sul (InfoDengue)",
     {% for st in states %}
-      SUM(CASE WHEN svp.state = '{{ st | replace("'", "''") }}' 
+      SUM(CASE WHEN svp.state_code = '{{ st | replace("'", "''") }}' 
                THEN svp."infodengue_pos" ELSE 0 END) 
       AS "{{ st }} (InfoDengue)"{{ "," if not loop.last }}
     {% endfor %}
