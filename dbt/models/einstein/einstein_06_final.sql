@@ -12,7 +12,7 @@ WITH source_data AS(
     *
     FROM {{ ref("einstein_05_deduplicate") }}
 )
-SELECT
+SELECTjsansijisajd
     *,
     NULL as patient_id,
     CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo' AS created_at,
