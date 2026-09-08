@@ -334,6 +334,8 @@ source_data_fix_values AS (
     AND NOT detalhe_exame IN (
         'MAT', 'MATERIAL', 'METODO', 'SOROTI',
         'TITG', 'TITM' -- MAYARO TIT
+        --- acrescentar
+        'TEXTO', '2CT', 'CT', 'RNASEP'
     )
     AND NOT result IN ('RESULTADO CONFERIDO E LIBERADO.')
     AND NOT result ILIKE '%RESULTADO FORMATADO%'
