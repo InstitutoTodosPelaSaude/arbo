@@ -69,14 +69,12 @@ source_data_fix_values AS (
                     WHEN detalhe_exame = 'AACHIM' THEN 'igm_serum'
                     ELSE 'UNKNOWN'
                 END
-            --- Acrescimo de novos exames
-            WHEN 'MONKEYPOX' THEN 'mpox_pcr'
-	        WHEN 'FEBRE AMARELA - DETECÇÃO POR PCR' THEN 'feama_pcr'
+            WHEN 'FEBRE AMARELA - DETECÇÃO POR PCR' THEN 'yfv_pcr'
 	        WHEN 'ESTUDO SOROLÓGICO -  VÍRUS FEBRE AMARELA IGG E IGM'
 	        THEN 
 		        CASE 
-	 	            WHEN detalhe_exame = 'IGG' THEN 'feama_igg'
-                    WHEN detalhe_exame = 'IGM' THEN 'feama_igm'
+	 	            WHEN detalhe_exame = 'IGG' THEN 'yfv_igg'
+                    WHEN detalhe_exame = 'IGM' THEN 'yfv_igm'
                     ELSE 'UNKNOWN' 
                 END
 
@@ -86,10 +84,10 @@ source_data_fix_values AS (
         "CodigoProcedimento",
 
         CASE 
-            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGG' THEN 'MAYV_IGG'
-            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGM' THEN 'MAYV_IGM'
-            WHEN exame = 'CHIKUNGUNYA VIRUS IGM' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGM' 
-            WHEN exame = 'CHIKUNGUNYA VIRUS IGG' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGG'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGG' THEN 'mayv_igg'
+            WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGM' THEN 'mayv_igm'
+            WHEN exame = 'CHIKUNGUNYA VIRUS IGM' AND detalhe_exame = 'RESUL'  THEN 'chikv_igm' 
+            WHEN exame = 'CHIKUNGUNYA VIRUS IGG' AND detalhe_exame = 'RESUL'  THEN 'chikv_igg'
             ELSE detalhe_exame
         END AS detalhe_exame,
 
@@ -121,7 +119,7 @@ source_data_fix_values AS (
 
             -- Testes diversos com resultado textual
             WHEN 
-                detalhe_exame IN ('DNS1', 'ZIKA', 'TDENGE', 'CHIKV', 'ZIKAP', 'FEAMA', 'MPOX')
+                detalhe_exame IN ('DNS1', 'ZIKA', 'TDENGE', 'CHIKV', 'ZIKAP', 'FEAMA')
                 OR
                 ( exame ILIKE 'PAINEL DE ARBOVIROSES%' AND detalhe_exame IN ('CHIKUN', 'DENGUE', 'ZIKAV') ) -- PZDC
                 OR
@@ -287,6 +285,7 @@ source_data_fix_values AS (
     'LEGPN',
     'LISPCR',
     'MENLX',
+    'MPOX',
     'MYPNA',
     'MYPNE',
     'MYPNG',
@@ -334,7 +333,6 @@ source_data_fix_values AS (
     AND NOT detalhe_exame IN (
         'MAT', 'MATERIAL', 'METODO', 'SOROTI',
         'TITG', 'TITM' -- MAYARO TIT
-        --- acrescentar
         'TEXTO', '2CT', 'CT', 'RNASEP'
     )
     AND NOT result IN ('RESULTADO CONFERIDO E LIBERADO.')
