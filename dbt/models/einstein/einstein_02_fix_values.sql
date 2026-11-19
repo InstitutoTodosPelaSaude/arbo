@@ -37,27 +37,38 @@ SELECT
     test_id,
 
     -- test_kit
-    CASE
-        WHEN UPPER(detalhe_exame) IN (
-            'VÍRUS DENGUE:',
-            'VÍRUS CHIKUNGUNYA:',
-            'VÍRUS ZIKA:'
-        ) THEN 'arbo_pcr_3'
-        WHEN UPPER(detalhe_exame) IN (
-            'DENGUE IGG',
-            'DENGUE IGG, TESTE RÁPIDO'
-        ) THEN 'igg_serum'
-        WHEN UPPER(detalhe_exame) IN (
-            'DENGUE IGM',
-            'DENGUE IGM, TESTE RÁPIDO'
-        ) THEN 'igm_serum'
-        WHEN UPPER(detalhe_exame) IN (
-            'DENGUE NS1, TESTE RÁPIDO',
-            'ANTÍGENO NS1 DO VIRUS DA DENGUE',
-            'NS1 EUROIMMUN'
-        ) THEN 'ns1_antigen'
-        ELSE 'UNKNOWN'
-    END AS test_kit,
+CASE unaccent(UPPER(exame))
+    WHEN 'ANTIGENO NS1 DO VIRUS DA DENGUE' THEN 'ns1_antigen'
+    WHEN 'DENGUE' THEN 'denv_pcr'
+    WHEN 'DENGUE TESTE RAPIDO IGG' THEN 'denv_igg'
+    WHEN 'PCR MULTIPLEX ZIKA, DENGUE E CHIKUNGUNYA' THEN
+        CASE unaccent(UPPER(detalhe_exame))
+            WHEN 'VIRUS ZIKA:'        THEN 'zikv_pcr'
+            WHEN 'VIRUS DENGUE:'      THEN 'denv_pcr'
+            WHEN 'VIRUS CHIKUNGUNYA:' THEN 'chikv_pcr'
+            ELSE 'UNKNOWN'
+        END
+    WHEN 'SOROLOGIA PARA DENGUE IGG E IGM' THEN
+        CASE unaccent(UPPER(detalhe_exame))
+            WHEN 'DENGUE IGM' THEN 'denv_igm'
+            WHEN 'DENGUE IGG' THEN 'denv_igg'
+            ELSE 'UNKNOWN'
+        END
+    WHEN 'TESTE RAPIDO PARA DENGUE IGG E NS1' THEN
+        CASE unaccent(UPPER(detalhe_exame))
+            WHEN 'DENGUE IGG, TESTE RAPIDO' THEN 'denv_igg'
+            WHEN 'DENGUE NS1, TESTE RAPIDO' THEN 'ns1_antigen'
+            ELSE 'UNKNOWN'
+        END
+    WHEN 'TESTE RAPIDO PARA DENGUE IGM E NS1' THEN
+        CASE unaccent(UPPER(detalhe_exame))
+            WHEN 'DENGUE IGM, TESTE RAPIDO' THEN 'denv_igm'
+            WHEN 'DENGUE NS1, TESTE RAPIDO' THEN 'ns1_antigen'
+            ELSE 'UNKNOWN'
+        END
+    ELSE 'UNKNOWN'
+END AS test_kit,
+
     
     CASE 
         WHEN sex ILIKE 'F%' THEN 'F'
