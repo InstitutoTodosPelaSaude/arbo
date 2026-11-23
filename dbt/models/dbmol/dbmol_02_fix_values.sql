@@ -88,6 +88,8 @@ source_data_fix_values AS (
             WHEN exame = 'ESTUDO SOROLOGICO VIRUS MAYARO - ANTICORPOS IGG E IGM' and detalhe_exame = 'IGM' THEN 'MAYV_IGM'
             WHEN exame = 'CHIKUNGUNYA VIRUS IGM' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGM' 
             WHEN exame = 'CHIKUNGUNYA VIRUS IGG' AND detalhe_exame = 'RESUL'  THEN 'CHIKV_IGG'
+            WHEN exame = 'ESTUDO SOROLOGICO -  VIRUS FEBRE AMARELA IGG E IGM' AND detalhe_exame = 'IGG'  THEN 'YFV_IGG'
+            WHEN exame = 'ESTUDO SOROLOGICO -  VIRUS FEBRE AMARELA IGG E IGM' AND detalhe_exame = 'IGM'  THEN 'YFV_IGM'
             ELSE detalhe_exame
         END AS detalhe_exame,
 

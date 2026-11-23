@@ -54,7 +54,10 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'FEAMA',
+	            'YFV_IGG',
+	            'YFV_IGM'
+
             ], 
             'detalhe_exame', 
             'result', 
