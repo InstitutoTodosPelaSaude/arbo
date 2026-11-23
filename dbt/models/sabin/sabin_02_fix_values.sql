@@ -29,77 +29,23 @@ SELECT
 
     -- test_kit
     CASE
-        WHEN detalhe_exame IN (
-            'PCRCHIK', 'PCRDE', 'VIRUSZICA'
-        ) AND exame ILIKE 'PCR para Zika, Chikungunya e Dengue'
-        THEN 'arbo_pcr_3'
-        	
-        WHEN detalhe_exame IN (
-            -- Dengue IgG
-            'DENGIGG', 'DENGUEGI',
-            -- Zika IgG
-            'ZIKAGINDICE',
-            'ZIKAIGG2',
-            -- Chikungunya IgG
-            'RCHIKUNGMELISAIGG'
-        ) THEN 'igg_serum'
-
-        WHEN detalhe_exame IN (
-            -- Dengue IgM
-            'DENGUEMELISA',
-            'DENGUEMIC',
-            'DENGIGM',
-            -- Zika IgM
-            'ZIKAM1',
-            'ZIKAM2',
-            -- Chikungunya IgM
-            'RCHIKUNGMELISAIGM'
-        ) THEN 'igm_serum'
-        
-        WHEN detalhe_exame IN (
-            'NS1ELISA',
-            'NS1IMUNOCRO'
-        ) THEN 'ns1_antigen'
-
-        -- PCR
-        WHEN detalhe_exame IN (
-            'PCRDE'
-        ) AND exame ILIKE 'DETECÇÃO MOLECULAR DO V_RUS DENGUE ' 
-        THEN 'denv_pcr'
-
-        WHEN detalhe_exame = 'PCRDE' AND exame ILIKE 'DETECÇÃO MOLECULAR DO VÍRUS DENGUE COM GENOTIPAGEM'
-        THEN 'denv_pcr'
-
-        WHEN detalhe_exame = 'DENV' AND exame ILIKE 'DETECÇÃO MOLECULAR DO VÍRUS DENGUE COM GENOTIPAGEM'
-        THEN 'denv_pcr'
-
-        WHEN detalhe_exame = 'PCRD' AND exame ILIKE 'DETECÇÃO E TIPAGEM DO VÍRUS DA DENGUE'
-        THEN 'denv_pcr'
-
-        WHEN detalhe_exame IN (
-            'CHIKVPCR-BIOMOL',
-            'PCRCHIKCT',
-            'CHIKUPCR',
-            'CHICK'
-        ) THEN 'chikv_pcr'
-
-        WHEN detalhe_exame IN (
-            'ZIKAPCRBIO',
-            'ZIKAV'
-        ) THEN 'zikv_pcr'
-
-        WHEN detalhe_exame IN (
-            'OROVPCR'
-        ) THEN 'orov_pcr'
-
-        WHEN detalhe_exame IN (
-            'RESMAYARO',
-            'MAYARO'
-        ) THEN 'mayv_pcr'
-
-        WHEN exame = 'FEBRE AMARELA PCR' and detalhe_exame = 'YFV'
-        THEN 'yfv_pcr'
-
+        WHEN detalhe_exame IN ('RCHIKUNGMELISAIGG','IGGCHIKUN','CHIKUNG1','CHIKUNG2') THEN 'chikv_igg'
+        WHEN detalhe_exame IN ('RCHIKUNGMELISAIGM','IGMCHIKUNELISA','IGMCHIKUN','CHIKUNM1','CHIKUNM2') THEN 'chikv_igm'
+        WHEN detalhe_exame IN ('DENGIGG','DENGUEGI') THEN 'denv_igg'
+        WHEN detalhe_exame IN ('DENGUEMELISA','DENGUEMIC','DENGIGM','DENGUEMI') THEN 'denv_igm'
+        WHEN detalhe_exame IN ('ZIKAGINDICE','ZIKAIGG2','ZIKAG') THEN 'zikv_igg'
+        WHEN detalhe_exame IN ('ZIKAM2','ZIKAM1','ZIKAMINDICE','ZIKAM') THEN 'zikv_igm'
+        WHEN detalhe_exame = 'FEBREGLC' THEN 'yfv_igg'
+        WHEN detalhe_exame = 'FEBREMLC' THEN 'yfv_igm'
+        WHEN detalhe_exame = 'OROG' THEN 'orov_igg'
+        WHEN detalhe_exame = 'OROM' THEN 'orov_igm'
+        WHEN detalhe_exame IN ('DNS1','NS1IMUNOCRO','NS1ELISA') THEN 'ns1_antigen'
+        WHEN detalhe_exame IN ('DEVORO','OROVPCR') THEN 'orov_pcr'
+        WHEN detalhe_exame IN ('PCRDE','DENV1','DENV2','DENV3','DENV4','DENV','PCRD') THEN 'denv_pcr'
+        WHEN detalhe_exame IN ('MAYARO','RESMAYARO') THEN 'mayv_pcr'
+        WHEN detalhe_exame = 'YF' THEN 'yfv_pcr'
+        WHEN detalhe_exame = 'CHIKVPCR-BIOMOL' THEN 'chikv_pcr'
+        WHEN detalhe_exame IN ('ZIKAPCRBIO','ZIKAV','ZIKA1','ZIKA2','ZIKAPCR') THEN 'zikv_pcr'
         ELSE 'UNKNOWN'
     END AS test_kit,
 
@@ -191,8 +137,8 @@ SELECT
 
 FROM source_data
 WHERE NOT detalhe_exame in (
-    'OBSGERALINTERNA', 
-    'FEBREGLC', 'FEBREMLC' -- Redundance of results
+    'OBSGERALINTERNA'
+    --'FEBREGLC', 'FEBREMLC' -- Redundance of results
 )
 AND result IS NOT NULL
 AND NOT result IN (
@@ -214,34 +160,25 @@ AND NOT result IN (
 )
 -- WIP: remove this filter
 AND NOT detalhe_exame IN (
-    'ADOLFOLUTZPDF',
-    
-    -- Redundância de exames Chikungunya ELISA IgM e IgG
+    'PCRDECT',
+    'CHIKUNGMPDF',
+    'RES.ARQUIVADO.TXT',
+    'INDICEM1',
+    'INDICEG',
     'RCHIKUNGMIMUNOG',
-    'RCHIKUGMIMUNOM',
-    -- Febre Amarela (Yellow Fever)
-    'YF',
-    -- Febre do Nilo Ocidental
-    'FLAVIRUS',
-
-    -- Redundância de exames
+    'ZIKAPCRCT',
+    'YFV',
+    'DENGUEGPDF',
+    'CHIKUNGGELISA',
+    'CHIKUNGMELISAG',
     'CHIKUNGMIMUN',
-    'CHIKUNGGIMUN',
-    'PCRCHIKCT'
+    'RES.ARQUIVADO.RTF',
     'YFIC',
-    -- 2022
-    'TITULOMAYARO',
-    'TITMAYIGM',
-    -- Momentaneamente até implementar divisão dos testes
-    'DENV1',
-    'DENV2',
-    'DENV3',
-    'DENV4',
-    'ZIKA1',
-    'ZIKA2',
-    -- Momentaneamente até saber como tratar
-    'FENILOM',
-    'FENILOG'
+    'RCHIKUGMIMUNOM',
+    'CHIKUNGGIMUN',
+    'VITAKPDF',
+    'PCRCHIKCT',
+    'ADOLFOLUTZPDF',
 )
 AND NOT (
     -- Remover exames com detalhe_exame YFV e exame PAINEL MOLECULAR PARA DENGUE
@@ -249,37 +186,23 @@ AND NOT (
     detalhe_exame IN ('YFV') AND exame ILIKE 'PAINEL MOLECULAR PARA DENGUE %'
 )
 AND detalhe_exame IN (
-    'PCRCHIK', 'PCRDE', 'VIRUSZICA',
-    -- Dengue IgG
-            'DENGIGG', 'DENGUEGI',
-            -- Zika IgG
-            'ZIKAGINDICE',
-            'ZIKAIGG2',
-            -- Chikungunya IgG
-            'RCHIKUNGMELISAIGG',
-    -- Dengue IgM
-            'DENGUEMELISA',
-            'DENGUEMIC',
-            'DENGIGM',
-            -- Zika IgM
-            'ZIKAM1',
-            'ZIKAM2',
-            -- Chikungunya IgM
-            'RCHIKUNGMELISAIGM',
-    'NS1ELISA',
-            'NS1IMUNOCRO',
-    'PCRDE',
-    'DENV',
-    'PCRD',
-    'CHIKVPCR-BIOMOL',
-            'PCRCHIKCT',
-            'CHIKUPCR',
-            'CHICK',
-    'ZIKAPCRBIO',
-            'ZIKAV',
-    'OROVPCR',
-    'RESMAYARO',
-            'MAYARO',
-    'YFV'
-    
+  -- Chikungunya
+  'RCHIKUNGMELISAIGG','IGGCHIKUN','CHIKUNG1','CHIKUNG2',
+  'RCHIKUNGMELISAIGM','IGMCHIKUNELISA','IGMCHIKUN','CHIKUNM1','CHIKUNM2',
+  'CHIKVPCR-BIOMOL',
+  -- Dengue
+  'DENGIGG','DENGUEGI',
+  'DENGUEMELISA','DENGUEMIC','DENGIGM','DENGUEMI',
+  'DNS1','NS1IMUNOCRO','NS1ELISA',
+  'PCRDE','DENV1','DENV2','DENV3','DENV4','DENV','PCRD',
+  -- Zika
+  'ZIKAGINDICE','ZIKAIGG2','ZIKAG',
+  'ZIKAM2','ZIKAM1','ZIKAMINDICE','ZIKAM',
+  'ZIKAPCRBIO','ZIKAV','ZIKA1','ZIKA2','ZIKAPCR',
+  -- Febre amarela
+  'FEBREGLC','FEBREMLC','YF',
+  -- Oropouche
+  'OROG','OROM','DEVORO','OROVPCR',
+  -- Mayaro
+  'MAYARO','RESMAYARO'
 )
