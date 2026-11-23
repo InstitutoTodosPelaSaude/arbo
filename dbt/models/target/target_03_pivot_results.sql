@@ -42,7 +42,7 @@ SELECT
     {{
         pivot_pathogen_results(
             [
-                ''
+                'FAV'
             ], 
             'detalhe_exame', 
             'result', 

@@ -68,6 +68,7 @@ SELECT
         WHEN exame IN ('CHIKVQL') THEN 'chikv_pcr'
         WHEN exame IN ('ZIKVQL') THEN 'zikv_pcr'
         WHEN exame IN ('PMDZC') THEN 'arbo_pcr_3'
+        WHEN exame IN ('FAVQL') THEN 'yfv_pcr'
     END AS test_kit,
     CASE 
         WHEN result = 'NAO DETECTADO' THEN 0
