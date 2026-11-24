@@ -8,91 +8,94 @@ WITH source_data AS (
 )
 SELECT
     *,
-    {{ 
+    {{
         pivot_pathogen_results(
             [
-                'DENGG',
-                'DENGM',
-                'DENGUE',
-                'DNS1',
-                'TDENGE'
-            ], 
-            'detalhe_exame', 
-            'result', 
+                -- já existentes
+                'DENGG', 'DENGM', 'DENGUE', 'TDENGE',
+                -- IgG
+                'DENGIGG', 'DENGUEGI',
+                -- IgM
+                'DENGUEMELISA', 'DENGUEMIC', 'DENGIGM', 'DENGUEMI',
+                -- NS1
+                'DNS1', 'NS1IMUNOCRO', 'NS1ELISA',
+                -- PCR
+                'PCRDE', 'PCRD', 'DENV', 'DENV1', 'DENV2', 'DENV3', 'DENV4'
+            ],
+            'detalhe_exame',
+            'result',
             'DENV_test_result'
         )
     }},
     {{
         pivot_pathogen_results(
             [
-                'ZICAG',
-                'ZICAM',
-                'ZIKA',
-                'ZIKAP',
-                'ZIKAV'
-            ], 
-            'detalhe_exame', 
-            'result', 
+                -- já existentes
+                'ZICAG', 'ZICAM', 'ZIKA', 'ZIKAP', 'ZIKAV',
+                -- IgG
+                'ZIKAGINDICE', 'ZIKAIGG2', 'ZIKAG',
+                -- IgM
+                'ZIKAM1', 'ZIKAM2', 'ZIKAMINDICE', 'ZIKAM',
+                -- PCR
+                'ZIKAPCRBIO', 'ZIKA1', 'ZIKA2', 'ZIKAPCR'
+            ],
+            'detalhe_exame',
+            'result',
             'ZIKV_test_result'
         )
     }},
     {{
         pivot_pathogen_results(
             [
-                'AACHIG',
-                'AACHIM',
-                'CHIKUN',
-                'CHIKV',
-                'CHIKV_IGG',
-                'CHIKV_IGM',
-            ], 
-            'detalhe_exame', 
-            'result', 
+                -- já existentes
+                'AACHIG', 'AACHIM', 'CHIKUN', 'CHIKV', 'CHIKV_IGG', 'CHIKV_IGM',
+                -- IgG
+                'RCHIKUNGMELISAIGG', 'IGGCHIKUN', 'CHIKUNG1', 'CHIKUNG2',
+                -- IgM
+                'RCHIKUNGMELISAIGM', 'IGMCHIKUNELISA', 'IGMCHIKUN', 'CHIKUNM1', 'CHIKUNM2',
+                -- PCR
+                'CHIKVPCR-BIOMOL'
+            ],
+            'detalhe_exame',
+            'result',
             'CHIKV_test_result'
         )
     }},
     {{
         pivot_pathogen_results(
             [
-                'FEAMA',
-	            'YFV_IGG',
-	            'YFV_IGM'
-
-            ], 
-            'detalhe_exame', 
-            'result', 
+                -- já existentes
+                'FEAMA', 'YFV_IGG', 'YFV_IGM',
+                -- sabin
+                'FEBREGLC', 'FEBREMLC', 'YF'
+            ],
+            'detalhe_exame',
+            'result',
             'YFV_test_result'
         )
     }},
     {{
         pivot_pathogen_results(
             [
-                'MAYV_IGG',
-                'MAYV_IGM',
-            ], 
-            'detalhe_exame', 
-            'result', 
+                -- já existentes
+                'MAYV_IGG', 'MAYV_IGM',
+                -- PCR
+                'MAYARO', 'RESMAYARO'
+            ],
+            'detalhe_exame',
+            'result',
             'MAYV_test_result'
         )
     }},
     {{
         pivot_pathogen_results(
             [
-                ''
-            ], 
-            'detalhe_exame', 
-            'result', 
+                'OROG', 'OROM',        -- IgG / IgM
+                'DEVORO', 'OROVPCR'    -- PCR
+            ],
+            'detalhe_exame',
+            'result',
             'OROV_test_result'
-        )
-    }},
-    {{
-        pivot_pathogen_results(
-            [
-                ''
-            ], 
-            'detalhe_exame', 
-            'result', 
-            'WNV_test_result'
         )
     }}
 FROM source_data
